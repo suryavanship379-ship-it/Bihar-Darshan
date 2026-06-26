@@ -43,6 +43,7 @@ interface CommunityData {
   creatorName: string;
   status: string;
   memberCount: number;
+  members?: string[];
 }
 
 interface PostData {
@@ -91,7 +92,8 @@ const CommunityFeed = () => {
     try {
       const docSnap = await getDoc(doc(db, "communityGroups", id!));
       if (docSnap.exists()) {
-        setCommunity({ id: docSnap.id, ...docSnap.data() } as CommunityData);
+        const data = docSnap.data();
+        setCommunity({ id: docSnap.id, members: [], ...data } as unknown as CommunityData);
       }
     } catch (err) {
       console.error("Error fetching community:", err);
@@ -140,6 +142,41 @@ const CommunityFeed = () => {
       console.error("Error fetching posts:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleJoin = async () => {
+    if (!currentUser || !community) {
+      navigate("/login");
+      return;
+    }
+    const communityRef = doc(db, "communityGroups", community.id);
+    const isJoined = community.members?.includes(currentUser.uid);
+
+    try {
+      if (isJoined) {
+        await updateDoc(communityRef, {
+          members: arrayRemove(currentUser.uid),
+          memberCount: community.memberCount - 1,
+        });
+        setCommunity({
+          ...community,
+          members: (community.members || []).filter(uid => uid !== currentUser.uid),
+          memberCount: Math.max(0, community.memberCount - 1),
+        });
+      } else {
+        await updateDoc(communityRef, {
+          members: arrayUnion(currentUser.uid),
+          memberCount: community.memberCount + 1,
+        });
+        setCommunity({
+          ...community,
+          members: [...(community.members || []), currentUser.uid],
+          memberCount: community.memberCount + 1,
+        });
+      }
+    } catch (err) {
+      console.error("Error toggling join status:", err);
     }
   };
 
@@ -348,13 +385,24 @@ const CommunityFeed = () => {
             {community?.description}
           </p>
 
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <button
               onClick={() => navigate("/community")}
               className="flex items-center gap-2 px-5 py-2.5 rounded-[1rem] bg-white border border-gray-200 hover:bg-gray-50 text-sm font-semibold transition-all shadow-sm text-brand-dark"
             >
               <ArrowLeft size={16} />
               All Communities
+            </button>
+            <button
+              onClick={handleToggleJoin}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-[1rem] text-sm font-bold uppercase tracking-wider transition-all shadow-sm ${
+                community?.members?.includes(currentUser?.uid || "")
+                  ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-brand-dark text-white hover:bg-brand-dark/90 shadow-md"
+              }`}
+            >
+              <Users size={16} />
+              {community?.members?.includes(currentUser?.uid || "") ? "Leave" : "Join"}
             </button>
             <button
               onClick={() => {
