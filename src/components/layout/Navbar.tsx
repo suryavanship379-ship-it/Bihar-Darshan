@@ -32,12 +32,14 @@ const Navbar = () => {
   const getPath = (item: string) => {
     if (item === "Home") return "/";
     if (item === "Culture") return "/culture";
+    if (item === "Gallery") return "/gallery";
     return `/#${item.toLowerCase()}`;
   };
 
   const isActive = (item: string) => {
     if (item === "Home" && location.pathname === "/") return true;
     if (item === "Culture" && location.pathname === "/culture") return true;
+    if (item === "Gallery" && location.pathname === "/gallery") return true;
     return false;
   };
 
