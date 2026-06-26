@@ -3,20 +3,21 @@
 
 @theme {
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
-  --font-signature: "Cormorant Garamond", serif;
+  --font-serif: "Cormorant Garamond", serif;
+  --font-display: "Playfair Display", serif;
 
   --color-gold: #D4A017;
   --color-gold-dark: #B8860B;
   --color-gold-light: #F0D060;
   --color-brand-gold: #D4A017;
   --color-brand-dark: #111827;
-  --color-brand-gray: #FAFAF8;
+  --color-brand-gray: #F8F5EF;
+  --color-accent-brown: #6B4F2A;
   --color-primary: #111827;
   --color-secondary: #6B7280;
-  --color-bg: #FFFFFF;
+  --color-bg: #F8F5EF;
   --color-bg-dark: #0F1419;
-  --color-bg-section: #FAFAF8;
+  --color-bg-section: #F8F5EF;
   --color-card-border: #E5E7EB;
 }
 
