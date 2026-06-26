@@ -6,6 +6,7 @@ import Tourism from './pages/Tourism';
 import Tribals from './pages/Tribals';
 import Gallery from './pages/Gallery';
 import DistrictsDetails from './pages/DistrictsDetails';
+import LoginPage from './pages/Login';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/tribals" element={<Tribals />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/districts/:name" element={<DistrictsDetails />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </Router>
   );

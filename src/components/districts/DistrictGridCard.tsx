@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MapPin, ArrowRight } from "lucide-react";
 
 interface DistrictGridCardProps {
@@ -47,9 +48,13 @@ const DistrictGridCard = ({
         </div>
 
         {/* Arrow button */}
-        <button className="flex-shrink-0 w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-gold group-hover:border-gold group-hover:text-white transition-all duration-300">
+        <Link
+          to={`/districts/${name.toLowerCase()}`}
+          className="flex-shrink-0 w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-gold group-hover:border-gold group-hover:text-white transition-all duration-300"
+          onClick={(e) => e.stopPropagation()}
+        >
           <ArrowRight size={14} strokeWidth={2.5} />
-        </button>
+        </Link>
       </div>
     </div>
   );
