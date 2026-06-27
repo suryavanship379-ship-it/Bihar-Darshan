@@ -4,6 +4,7 @@ import Districts from './pages/Districts';
 import Culture from './pages/Culture';
 import Tourism from './pages/Tourism';
 import Tribals from './pages/Tribals';
+import TribeDetail from './pages/TribeDetail';
 import Gallery from './pages/Gallery';
 import DistrictsDetails from './pages/DistrictsDetails';
 import LoginPage from './pages/Login';
@@ -17,6 +18,7 @@ function App() {
         <Route path="/culture" element={<Culture />} />
         <Route path="/tourism" element={<Tourism />} />
         <Route path="/tribals" element={<Tribals />} />
+        <Route path="/tribals/:id" element={<TribeDetail />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/districts/:name" element={<DistrictsDetails />} />
         <Route path="/login" element={<LoginPage />} />
