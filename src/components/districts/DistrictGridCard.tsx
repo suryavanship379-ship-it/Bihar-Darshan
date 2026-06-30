@@ -20,7 +20,7 @@ const DistrictGridCard = ({
       onClick={onClick}
     >
       {/* Image */}
-      <div className="relative `aspect-16/10` overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden">
         <img
           src={image}
           alt={name}
@@ -50,7 +50,7 @@ const DistrictGridCard = ({
         {/* Arrow button */}
         <Link
           to={`/districts/${name.toLowerCase()}`}
-          className="flex-`shrink-0` w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-gold group-hover:border-gold group-hover:text-white transition-all duration-300"
+          className="flex-shrink-0 w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-gold group-hover:border-gold group-hover:text-white transition-all duration-300"
           onClick={(e) => e.stopPropagation()}
         >
           <ArrowRight size={14} strokeWidth={2.5} />

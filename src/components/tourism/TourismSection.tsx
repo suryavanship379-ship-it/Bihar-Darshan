@@ -141,8 +141,8 @@ const TourismSection = () => {
                     <span className="text-[10px] font-bold text-brand-dark uppercase tracking-wider">{trip.rating}</span>
                   </div>
                   {/* <div className="bg-brand-dark/80 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-lg border border-white/10 flex items-center gap-2 text-white"> */}
-                  {/* <Compass size={14} className="text-brand-gold" /> */}
-                  {/* <span className="text-[10px] font-bold uppercase tracking-wider">{idx === 0 ? "Bestseller"}</span> */}
+                    {/* <Compass size={14} className="text-brand-gold" /> */}
+                    {/* <span className="text-[10px] font-bold uppercase tracking-wider">{idx === 0 ? "Bestseller"}</span> */}
                   {/* </div> */}
                   {trip.videoUrl && (
                     <div className="bg-brand-gold/90 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-lg border border-brand-gold/20 flex items-center gap-2 text-brand-dark">
