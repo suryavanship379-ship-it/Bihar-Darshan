@@ -59,6 +59,8 @@ const Navbar = () => {
     if (item === "Home") return "/";
     if (item === "Districts") return "/districts";
     if (item === "Culture") return "/culture";
+    if (item === "Community") return "/community";
+    if (item === "MarketPlace") return "/marketplace";
     if (item === "Tourism") return "/tourism";
     if (item === "Tribes") return "/tribals";
     if (item === "Gallery") return "/gallery";
@@ -69,6 +71,8 @@ const Navbar = () => {
     if (item === "Home" && location.pathname === "/") return true;
     if (item === "Districts" && location.pathname === "/districts") return true;
     if (item === "Culture" && location.pathname === "/culture") return true;
+    if (item === "Community" && (location.pathname === "/community" || location.pathname === "/Community")) return true;
+    if (item === "MarketPlace" && (location.pathname === "/marketplace" || location.pathname === "/Marketplace")) return true;
     if (item === "Tourism" && location.pathname === "/tourism") return true;
     if (item === "Tribes" && location.pathname === "/tribals") return true;
     if (item === "Gallery" && location.pathname === "/gallery") return true;

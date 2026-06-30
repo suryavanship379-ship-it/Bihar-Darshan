@@ -10,6 +10,8 @@ import Gallery from './pages/Gallery';
 import DistrictsDetails from './pages/DistrictsDetails';
 import LoginPage from './pages/Login';
 import Profile from './pages/Profile';
+import Community from './pages/Community';
+import MarketPlace from './pages/MarketPlace';
 
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -49,6 +51,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/districts" element={<Districts />} />
           <Route path="/culture" element={<Culture />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/Community" element={<Community />} />
+          <Route path="/marketplace" element={<MarketPlace />} />
+          <Route path="/Marketplace" element={<MarketPlace />} />
           <Route path="/tourism" element={<Tourism />} />
           <Route path="/tribals" element={<Tribals />} />
           <Route path="/tribals/:id" element={<TribeDetail />} />
