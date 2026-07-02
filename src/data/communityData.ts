@@ -240,6 +240,7 @@ export const discussions: Discussion[] = [
     replies: 16,
     tag: 'Destinations',
     tagColor: 'bg-blue-100 text-blue-700',
+    content: 'Rajgir has so much to offer — from hot springs to ancient ruins. Here is my complete guide to making the most of your trip.',
   },
   {
     id: 'd3',
@@ -273,6 +274,9 @@ export const discussions: Discussion[] = [
     replies: 45,
     tag: 'Tips',
     tagColor: 'bg-green-100 text-green-700',
+    content: 'Bihar has so many offbeat places that most tourists never see. From the ruins of Vikramshila to the wetlands of Kanwar Lake, here are my top picks.',
+    mediaUrl: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800&q=80',
+    mediaType: 'image',
   },
   {
     id: 'd5',
@@ -297,6 +301,16 @@ export const discussions: Discussion[] = [
     replies: 38,
     tag: 'Itinerary',
     tagColor: 'bg-yellow-100 text-yellow-700',
+    content: 'Planning my first multi-city trip across Bihar. Looking at Patna → Nalanda → Rajgir → Bodh Gaya → Vaishali. Any suggestions on timing and transport?',
+    poll: {
+      question: 'What is the best way to travel between cities in Bihar?',
+      options: [
+        { id: 'p1', text: 'Hire a private car/driver for flexibility', votes: 34 },
+        { id: 'p2', text: 'Use local buses — cheap and authentic', votes: 18 },
+        { id: 'p3', text: 'Mix of trains and autos', votes: 27 },
+        { id: 'p4', text: 'Join a guided tour group', votes: 8 },
+      ]
+    }
   },
   {
     id: 'd7',

@@ -11,8 +11,7 @@ import type { DetailTab } from '../components/community/CommunityDetailTabs';
 import DiscussionComposer from '../components/community/DiscussionComposer';
 import DiscussionFeed from '../components/community/DiscussionFeed';
 import CommunitySidebar from '../components/community/CommunitySidebar';
-import CreatePostModal from '../components/community/CreatePostModal';
-import { TabMembers, TabMedia, TabGuides, TabEvents, TabAbout } from '../components/community/CommunityTabContents';
+import { TabMedia, TabAbout } from '../components/community/CommunityTabContents';
 import {
   communities,
   discussions,
@@ -26,16 +25,6 @@ const CommunityPage = () => {
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('Discussions');
   const [customDiscussions, setCustomDiscussions] = useState<Discussion[]>([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [joinedCommunities, setJoinedCommunities] = useState<string[]>([]);
-
-  const toggleJoinCommunity = (communityId: string) => {
-    setJoinedCommunities(prev => 
-      prev.includes(communityId) 
-        ? prev.filter(id => id !== communityId) 
-        : [...prev, communityId]
-    );
-  };
 
   // Scroll to top on mount
   useEffect(() => {
@@ -92,19 +81,15 @@ const CommunityPage = () => {
 
   // ── Detail View ────────────────────────────────────────────────────────────
   if (selectedCommunity) {
-    const isJoined = joinedCommunities.includes(selectedCommunity.id);
-
     return (
       <div className="min-h-screen bg-[#F8F5EF] selection:bg-brand-gold selection:text-brand-dark font-sans">
         <Navbar forceDarkText={true} />
 
         <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-          {/* Header (Back link + Banner + Stats) */}
+          {/* Header (Back link + Banner) */}
           <CommunityDetailHeader
             community={selectedCommunity}
             onBack={() => setSelectedCommunity(null)}
-            isJoined={isJoined}
-            onToggleJoin={() => toggleJoinCommunity(selectedCommunity.id)}
           />
 
           {/* Tab bar */}
@@ -119,12 +104,9 @@ const CommunityPage = () => {
               <div className="flex flex-col gap-4 min-w-0">
                 <DiscussionComposer 
                   onPost={handlePost} 
-                  isJoined={isJoined}
-                  onJoinClick={() => toggleJoinCommunity(selectedCommunity.id)}
                 />
                 <DiscussionFeed 
                   discussions={communityDiscussions} 
-                  isJoined={isJoined}
                 />
               </div>
 
@@ -132,9 +114,7 @@ const CommunityPage = () => {
               <CommunitySidebar
                 community={selectedCommunity}
                 contributors={contributors}
-                onCreatePost={() => setIsCreateModalOpen(true)}
-                isJoined={isJoined}
-                onJoinClick={() => toggleJoinCommunity(selectedCommunity.id)}
+                onViewGuidelines={() => setActiveTab('About')}
               />
             </div>
           )}
@@ -157,11 +137,6 @@ const CommunityPage = () => {
             </div>
           )}
 
-          {activeTab === 'Events' && (
-            <div className="mt-4">
-              <TabEvents />
-            </div>
-          )}
 
           {activeTab === 'About' && (
             <div className="mt-4 max-w-4xl mx-auto">
@@ -171,14 +146,6 @@ const CommunityPage = () => {
         </main>
 
         <Footer />
-
-        {/* Create Post Modal */}
-        {isCreateModalOpen && (
-          <CreatePostModal 
-            onClose={() => setIsCreateModalOpen(false)}
-            onPost={handlePost}
-          />
-        )}
 
         {/* Global Aesthetics Overlay */}
         <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.02] mix-blend-multiply">
@@ -204,10 +171,6 @@ const CommunityPage = () => {
             <h2 className="text-2xl font-bold text-gray-900">Explore Communities</h2>
             <p className="text-sm text-gray-500 mt-0.5">Join a community that matches your interest</p>
           </div>
-          <button className="text-sm font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1 transition-colors duration-200 group">
-            View All
-            <span className="group-hover:translate-x-0.5 transition-transform duration-200">→</span>
-          </button>
         </div>
 
         {/* Category filters */}

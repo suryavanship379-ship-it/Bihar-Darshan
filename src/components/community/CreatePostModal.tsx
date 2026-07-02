@@ -98,7 +98,6 @@ const CreatePostModal = ({ onClose, onPost }: CreatePostModalProps) => {
             >
               <option value="Destinations">Destinations</option>
               <option value="Tips">Tips</option>
-              <option value="Events">Events</option>
               <option value="Itinerary">Itinerary</option>
             </select>
           </div>
