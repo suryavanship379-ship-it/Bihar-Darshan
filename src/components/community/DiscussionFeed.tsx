@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import DiscussionItem from './DiscussionItem';
 import DiscussionFilters from './DiscussionFilters';
-import DiscussionPostModal from './DiscussionPostModal';
 import type { DiscussionFilter } from './DiscussionFilters';
 import type { Discussion } from '../../data/communityData';
 
@@ -14,7 +13,6 @@ interface DiscussionFeedProps {
 const DiscussionFeed = ({ discussions, isJoined }: DiscussionFeedProps) => {
   const [filter, setFilter] = useState<DiscussionFilter>('All Posts');
   const [visibleCount, setVisibleCount] = useState(5);
-  const [selectedPost, setSelectedPost] = useState<Discussion | null>(null);
 
   const filtered =
     filter === 'All Posts'
@@ -37,25 +35,17 @@ const DiscussionFeed = ({ discussions, isJoined }: DiscussionFeedProps) => {
       </div>
 
       {/* Discussion list */}
-      <div className="px-4">
+      <div>
         {visible.length === 0 ? (
           <p className="py-8 text-center text-sm text-gray-400">No discussions found.</p>
         ) : (
           <div className="flex flex-col">
             {visible.map((d) => (
-              <DiscussionItem key={d.id} discussion={d} onClick={() => setSelectedPost(d)} />
+              <DiscussionItem key={d.id} discussion={d} />
             ))}
           </div>
         )}
       </div>
-
-      {selectedPost && (
-        <DiscussionPostModal 
-          post={selectedPost} 
-          onClose={() => setSelectedPost(null)} 
-          isJoined={isJoined}
-        />
-      )}
 
       {/* Load more */}
       {hasMore && (

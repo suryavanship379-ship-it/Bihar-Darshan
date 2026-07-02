@@ -145,10 +145,7 @@ export const TabAbout = ({ community }: { community: Community }) => {
             <span className="block text-2xl font-black text-gray-900">{community.posts}</span>
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Posts</span>
           </div>
-          <div className="text-center p-3 rounded-lg bg-gray-50">
-            <span className="block text-2xl font-black text-emerald-600">{community.online}</span>
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Online</span>
-          </div>
+
           <div className="text-center p-3 rounded-lg bg-gray-50">
             <span className="block text-2xl font-black text-gray-900">{community.createdOn?.split(', ')[1] || '2024'}</span>
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Since</span>

@@ -1,13 +1,10 @@
-import { MessageSquare, Users, Image, BookOpen, Calendar, Info } from 'lucide-react';
+import { MessageSquare, Users, Image, BookOpen, Info } from 'lucide-react';
 
-export type DetailTab = 'Discussions' | 'Members' | 'Media' | 'Guides' | 'Events' | 'About';
+export type DetailTab = 'Discussions' | 'Media' | 'About';
 
 const tabs: { label: DetailTab; icon: React.ReactNode }[] = [
   { label: 'Discussions', icon: <MessageSquare size={14} /> },
-  { label: 'Members',     icon: <Users size={14} />          },
   { label: 'Media',       icon: <Image size={14} />          },
-  { label: 'Guides',      icon: <BookOpen size={14} />       },
-  { label: 'Events',      icon: <Calendar size={14} />       },
   { label: 'About',       icon: <Info size={14} />           },
 ];
 
@@ -18,7 +15,7 @@ interface CommunityDetailTabsProps {
 
 const CommunityDetailTabs = ({ active, onChange }: CommunityDetailTabsProps) => {
   return (
-    <div className="border-b border-gray-100 bg-white rounded-t-xl">
+    <div className="border-b border-gray-100 bg-white rounded-t-xl shadow-sm">
       <div className="flex overflow-x-auto scrollbar-hide">
         {tabs.map(({ label, icon }) => {
           const isActive = active === label;
