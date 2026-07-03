@@ -1,6 +1,12 @@
 import { MessageSquare, Users, Image, BookOpen, Info } from 'lucide-react';
 
-export type DetailTab = 'Discussions' | 'Media' | 'About';
+// export type DetailTab = 'Discussions' | 'Media' | 'About';
+export type DetailTab =
+  | 'Discussions'
+  | 'Members'
+  | 'Media'
+  | 'Guides'
+  | 'About';
 
 const tabs: { label: DetailTab; icon: React.ReactNode }[] = [
   { label: 'Discussions', icon: <MessageSquare size={14} /> },

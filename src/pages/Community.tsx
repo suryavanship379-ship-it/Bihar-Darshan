@@ -11,7 +11,13 @@ import type { DetailTab } from '../components/community/CommunityDetailTabs';
 import DiscussionComposer from '../components/community/DiscussionComposer';
 import DiscussionFeed from '../components/community/DiscussionFeed';
 import CommunitySidebar from '../components/community/CommunitySidebar';
-import { TabMedia, TabAbout } from '../components/community/CommunityTabContents';
+// import { TabMedia, TabAbout } from '../components/community/CommunityTabContents';
+import {
+  TabMedia,
+  TabAbout,
+  TabMembers,
+  TabGuides,
+} from '../components/community/CommunityTabContents';
 import {
   communities,
   discussions,
@@ -119,11 +125,11 @@ const CommunityPage = () => {
             </div>
           )}
 
-          {activeTab === 'Members' && (
+          {/* {activeTab === 'Members' && (
             <div className="mt-4">
               <TabMembers contributors={contributors} />
             </div>
-          )}
+          )} */}
 
           {activeTab === 'Media' && (
             <div className="mt-4">
@@ -131,11 +137,11 @@ const CommunityPage = () => {
             </div>
           )}
 
-          {activeTab === 'Guides' && (
+          {/* {activeTab === 'Guides' && (
             <div className="mt-4">
               <TabGuides />
             </div>
-          )}
+          )} */}
 
 
           {activeTab === 'About' && (
