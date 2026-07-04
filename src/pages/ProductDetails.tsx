@@ -177,24 +177,10 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              {/* Buttons */}
-              <div className="flex flex-wrap gap-5 mt-10">
-                <a
-                  href={selectedProduct.mapLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-brand-gold hover:bg-yellow-500 transition px-8 py-4 rounded-xl font-bold"
-                >
-                  View on Google Maps
-                </a>
+              
 
-                <a
-                  href={`mailto:${selectedProduct.email}`}
-                  className="border-2 border-brand-gold hover:bg-brand-gold transition px-8 py-4 rounded-xl font-bold"
-                >
-                  Contact Seller
-                </a>
-              </div>
+                
+              
             </motion.div>
           </motion.div>
         </Container>
