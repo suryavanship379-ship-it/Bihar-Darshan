@@ -147,8 +147,8 @@ const Districts = () => {
             {/* ── Right Side — Map ── */}
             <div className="relative">
               {/* Legend card */}
-              <div className="absolute top-0 right-0 z-10 bg-white/10 backdrop-blur-md rounded-xl border border-white/15 shadow-[0_4px_20px_rgba(0,0,0,0.2)] px-4 py-3">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="relative md:absolute md:top-0 md:right-0 mb-4 md:mb-0 z-10 bg-white/10 backdrop-blur-md rounded-xl border border-white/15 shadow-[0_4px_20px_rgba(0,0,0,0.2)] px-4 py-3 flex flex-row md:flex-col gap-4 md:gap-2 justify-center">
+                <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-gold" />
                   <span className="text-xs font-semibold text-white/90">
                     Selected District

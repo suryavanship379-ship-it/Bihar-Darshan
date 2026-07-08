@@ -158,21 +158,21 @@ const Profile = () => {
                   className="bg-white border-2 border-[#5c3a21] text-[#5c3a21] hover:bg-[#fdf9ef] font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm group"
                 >
                   <Edit3 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span className="hidden sm:inline">Edit</span>
+                  <span>Edit</span>
                 </button>
                 <button
                   onClick={handleShare}
                   className="bg-[#5c3a21] hover:bg-[#4a2e1a] text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group"
                 >
                   <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span className="hidden sm:inline">Share</span>
+                  <span>Share</span>
                 </button>
                 <button
                   onClick={handleLogout}
                   className="bg-red-500/10 hover:bg-red-500/20 text-red-700 border-2 border-red-500/30 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm group"
                 >
                   <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span className="hidden sm:inline">Logout</span>
+                  <span>Logout</span>
                 </button>
               </div>
             </div>

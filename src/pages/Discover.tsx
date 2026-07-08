@@ -25,7 +25,7 @@ interface DiscoverItem {
 }
 
 const Discover = () => {
-  const { cultureSubmissions } = useContributions();
+  const { cultureSubmissions, personalitySubmissions } = useContributions();
   const location = useLocation();
   const [activeCategory, setActiveCategory] = useState(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -39,6 +39,22 @@ const Discover = () => {
     return 'All';
   });
   const [activeDistrict, setActiveDistrict] = useState("All Districts");
+  const [activeSubcategory, setActiveSubcategory] = useState(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const subcat = searchParams.get('subcategory');
+    if (subcat) {
+      const lower = subcat.toLowerCase();
+      if (lower === 'historical') return 'Historical';
+      if (lower === 'sports') return 'Sports';
+      if (lower === 'politician') return 'Politician';
+      if (lower === 'art & cinema' || lower === 'arts & cinema' || lower === 'art & cinema' || lower === 'arts and cinema') return 'Arts & Cinema';
+      if (lower === 'literature') return 'Literature';
+    }
+    if (location.state && (location.state as any).activeSubcategory) {
+      return (location.state as any).activeSubcategory;
+    }
+    return 'All';
+  });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -52,6 +68,20 @@ const Discover = () => {
     else if (location.state && (location.state as any).activeCategory) {
       targetCategory = (location.state as any).activeCategory;
     }
+
+    const subcat = searchParams.get('subcategory');
+    let targetSubcategory = 'All';
+    if (subcat) {
+      const lower = subcat.toLowerCase();
+      if (lower === 'historical') targetSubcategory = 'Historical';
+      else if (lower === 'sports') targetSubcategory = 'Sports';
+      else if (lower === 'politician') targetSubcategory = 'Politician';
+      else if (lower === 'art & cinema' || lower === 'arts & cinema' || lower === 'arts and cinema') targetSubcategory = 'Arts & Cinema';
+      else if (lower === 'literature') targetSubcategory = 'Literature';
+    } else if (location.state && (location.state as any).activeSubcategory) {
+      targetSubcategory = (location.state as any).activeSubcategory;
+    }
+    setActiveSubcategory(targetSubcategory);
 
     if (targetCategory !== 'All') {
       setActiveCategory(targetCategory);
@@ -86,14 +116,17 @@ const Discover = () => {
     videoUrl: item.videoUrl
   }));
 
-  const unifiedPersonalities: DiscoverItem[] = personalities.map(item => ({
+  const combinedPersonalityData = [...personalitySubmissions, ...personalities];
+
+  const unifiedPersonalities: DiscoverItem[] = combinedPersonalityData.map(item => ({
     id: `personality-${item.id}`,
     type: "Personality",
     district: item.district,
     image: item.imageUrl,
     title: item.name,
     description: item.description,
-    personalityCategory: item.category
+    personalityCategory: item.category,
+    submittedBy: (item as any).author
   }));
 
   const allDiscoverItems = [...unifiedCulture, ...unifiedPersonalities];
@@ -115,7 +148,18 @@ const Discover = () => {
       (activeCategory === "Personalities" && item.type === "Personality");
 
     const matchDistrict = activeDistrict === "All Districts" || item.district.toLowerCase() === activeDistrict.toLowerCase();
-    return matchCategory && matchDistrict;
+    
+    const matchSubcategory =
+      activeCategory !== "Personalities" ||
+      activeSubcategory === "All" ||
+      (item.personalityCategory && (
+        item.personalityCategory.toLowerCase() === activeSubcategory.toLowerCase() ||
+        (activeSubcategory === "Arts & Cinema" && item.personalityCategory.includes("Cinema")) ||
+        (activeSubcategory === "Art & Cinema" && item.personalityCategory.includes("Cinema")) ||
+        (item.personalityCategory === "Arts & Cinema" && activeSubcategory.includes("Cinema"))
+      ));
+
+    return matchCategory && matchDistrict && matchSubcategory;
   });
 
   return (
@@ -244,6 +288,25 @@ const Discover = () => {
             </AnimatePresence>
           </div>
         </div>
+
+        {/* Personalities Subcategories Filter */}
+        {activeCategory === "Personalities" && (
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full mb-10 bg-white p-3 rounded-[1.5rem] shadow-sm border border-gray-100">
+            {["All", "Historical", "Sports", "Politician", "Arts & Cinema", "Literature"].map((subcat) => (
+              <button
+                key={subcat}
+                onClick={() => setActiveSubcategory(subcat)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                  activeSubcategory === subcat
+                    ? "bg-brand-gold text-brand-dark shadow-sm"
+                    : "bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                {subcat}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Results Grid */}
         <div className="mb-24">

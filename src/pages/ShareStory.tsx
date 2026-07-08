@@ -8,6 +8,7 @@ import galleryBg from "../assets/gallery-hero.png";
 import foodBg from "../assets/bihar-food.png";
 import festivalBg from "../assets/bihar-folk-dance.png";
 import heroBg from "../assets/hero.png";
+import heritageBg from "../assets/bihar-heritage.png";
 import "./ShareStory.css";
 
 const BIHAR_DISTRICTS = [
@@ -26,12 +27,12 @@ const GALLERY_CATEGORIES = [
 ];
 
 const ShareStory = () => {
-  const { addCultureSubmission, addGallerySubmission } = useContributions();
+  const { addCultureSubmission, addGallerySubmission, addPersonalitySubmission } = useContributions();
   const navigate = useNavigate();
-  const [category, setCategory] = useState<"gallery" | "food" | "festival" | null>(null);
+  const [category, setCategory] = useState<"gallery" | "food" | "festival" | "personality">("gallery");
 
   // Form Fields
-  const [title, setTitle] = useState(""); // Name of food/festival
+  const [title, setTitle] = useState(""); // Name of food/festival/personality
   const [caption, setCaption] = useState("");
   const [personName, setPersonName] = useState("");
   const [description, setDescription] = useState("");
@@ -44,6 +45,9 @@ const ShareStory = () => {
   const [mediaType, setMediaType] = useState<"photo" | "video">("photo");
   const [galleryCategory, setGalleryCategory] = useState("Community");
   const [videoUrl, setVideoUrl] = useState("");
+
+  // Personality specific
+  const [personalityCategory, setPersonalityCategory] = useState("Historical");
 
   // Media upload state
   const [mediaFile, setMediaFile] = useState<string | null>(null); // Base64 data URL
@@ -122,8 +126,10 @@ const ShareStory = () => {
 
     if (category === "gallery") {
       if (!caption.trim()) newErrors.caption = "Caption is required";
-    } else if (category === "food" || category === "festival") {
-      if (!title.trim()) newErrors.title = `Name of ${category === "food" ? "Food" : "Festival"} is required`;
+    } else if (category === "food" || category === "festival" || category === "personality") {
+      if (!title.trim()) {
+        newErrors.title = category === "personality" ? "Personality name is required" : `Name of ${category === "food" ? "Food" : "Festival"} is required`;
+      }
       if (!description.trim()) newErrors.description = "Description is required";
     }
 
@@ -178,9 +184,9 @@ const ShareStory = () => {
 
           setIsSubmitting(false);
           if (category === "food") {
-            navigate("/culture?category=food", { state: { activeCategory: "Food" } });
+            navigate("/discover?category=food", { state: { activeCategory: "Food" } });
           } else {
-            navigate("/culture?category=festival", { state: { activeCategory: "Festival" } });
+            navigate("/discover?category=festival", { state: { activeCategory: "Festivals" } });
           }
         } else if (category === "gallery") {
           addGallerySubmission({
@@ -195,6 +201,21 @@ const ShareStory = () => {
 
           setIsSubmitting(false);
           navigate("/gallery");
+        } else if (category === "personality") {
+          const finalCategory = personalityCategory === "Art & Cinema" ? "Arts & Cinema" : personalityCategory;
+          addPersonalitySubmission({
+            name: title,
+            category: finalCategory as any,
+            district: "Patna",
+            description: description,
+            imageUrl: mediaFile || "https://via.placeholder.com/400x600?text=Profile+Coming+Soon",
+            author: personName,
+          });
+
+          setIsSubmitting(false);
+          navigate(`/discover?category=personalities&subcategory=${finalCategory.toLowerCase()}`, {
+            state: { activeCategory: "Personalities", activeSubcategory: finalCategory }
+          });
         }
       } catch (err) {
         console.error(err);
@@ -214,13 +235,14 @@ const ShareStory = () => {
     setWhatSpecial("");
     setDistrict("Bihar");
     setVideoUrl("");
+    setPersonalityCategory("Historical");
     setMediaFile(null);
     setFileName("");
     setIsSuccess(false);
     setErrors({});
   };
 
-  const changeCategory = (catId: "gallery" | "food" | "festival") => {
+  const changeCategory = (catId: "gallery" | "food" | "festival" | "personality") => {
     setCategory(catId);
     resetForm();
   };
@@ -249,6 +271,14 @@ const ShareStory = () => {
       icon: PartyPopper,
       buttonText: "Share Festival →",
       bgImage: festivalBg,
+    },
+    {
+      id: "personality" as const,
+      title: "Personality",
+      description: "Discover and share stories of legendary personalities and pride of Bihar.",
+      icon: User,
+      buttonText: "Share Personality →",
+      bgImage: heritageBg,
     },
   ];
 
@@ -293,76 +323,44 @@ const ShareStory = () => {
       <main className="share-story-content-container">
         <div className="share-story-card-panel">
           
-          {category === null ? (
-            <>
-              {/* Category Selector Block */}
-              <div className="share-story-title-group animate-slide-down">
-                <div className="share-story-decor-badge">
-                  <Camera className="gold-icon" size={20} />
-                </div>
-                <h1 className="share-story-main-title">Share Your Bihar Story</h1>
-                <div className="heritage-divider">
-                  <span className="divider-line"></span>
-                  <span className="divider-motif">✦</span>
-                  <span className="divider-line"></span>
-                </div>
-                <p className="share-story-subtitle">
-                  "Every picture, every tradition and every flavour tells the story of Bihar."
-                </p>
+          <div className="share-story-form-section animate-slide-down">
+            <div className="form-header-center">
+              <div className="share-story-decor-badge">
+                <Camera className="gold-icon" size={20} />
               </div>
+              <h2 className="share-story-form-title-main">
+                Share Your <span className="gold-text">Story</span>
+              </h2>
+              <div className="heritage-divider">
+                <span className="divider-line"></span>
+                <span className="divider-motif">✦</span>
+                <span className="divider-line"></span>
+              </div>
+              <p className="share-story-form-subtitle">
+                Showcase the beauty, flavours and traditions of Bihar through your lens. <Heart size={13} fill="#D4A017" className="gold-heart-inline" />
+              </p>
+            </div>
 
-              <div className="share-story-categories-grid">
-                {categories.map((cat) => {
-                  const IconComponent = cat.icon;
-                  return (
-                    <div
-                      key={cat.id}
-                      onClick={() => changeCategory(cat.id)}
-                      className="share-story-category-card"
-                    >
-                      {/* Zooming background image div */}
-                      <div 
-                        className="category-card-bg"
-                        style={{ backgroundImage: `url(${cat.bgImage})` }}
-                      />
-                      
-                      {/* Dark overlay for text readability */}
-                      <div className="category-card-overlay"></div>
-
-                      {/* Content aligned bottom center */}
-                      <div className="category-card-content">
-                        <div className="share-story-icon-wrapper">
-                          <IconComponent size={24} />
-                        </div>
-                        <h3 className="share-story-card-title">{cat.title}</h3>
-                        <p className="share-story-card-desc">{cat.description}</p>
-                        <button className="category-explore-btn">
-                          {cat.buttonText}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <div className="share-story-form-section animate-slide-down">
-              <div className="form-header-center">
-                <div className="share-story-decor-badge">
-                  <Camera className="gold-icon" size={20} />
+            {/* Category Dropdown Selection */}
+            <div className="share-story-form" style={{ gap: '12px', marginBottom: '24px' }}>
+              <div className="form-group-step">
+                <div className="step-title-row">
+                  <span className="step-number">★</span>
+                  <h3 className="step-title">Category *</h3>
                 </div>
-                <h2 className="share-story-form-title-main">
-                  Share Your <span className="gold-text">Story</span>
-                </h2>
-                <div className="heritage-divider">
-                  <span className="divider-line"></span>
-                  <span className="divider-motif">✦</span>
-                  <span className="divider-line"></span>
-                </div>
-                <p className="share-story-form-subtitle">
-                  Showcase the beauty, flavours and traditions of Bihar through your lens. <Heart size={13} fill="#D4A017" className="gold-heart-inline" />
-                </p>
+                <select
+                  value={category}
+                  onChange={(e) => changeCategory(e.target.value as any)}
+                  className="form-control-dark font-semibold text-gold"
+                  style={{ cursor: "pointer" }}
+                >
+                  <option value="gallery">Gallery</option>
+                  <option value="food">Food</option>
+                  <option value="festival">Festival</option>
+                  <option value="personality">Personality</option>
+                </select>
               </div>
+            </div>
 
               {errors.submit && (
                 <div className="form-control form-control-error" style={{ marginBottom: "24px", background: "rgba(217, 56, 56, 0.1)", color: "#f78888", border: "1px solid #d93838" }}>
@@ -493,13 +491,6 @@ const ShareStory = () => {
 
                   {/* Action buttons */}
                   <div className="form-actions-bar">
-                    <button
-                      type="button"
-                      onClick={() => setCategory(null)}
-                      className="btn-back"
-                    >
-                      ← Back to Categories
-                    </button>
                     <button
                       type="submit"
                       disabled={isSubmitting}
@@ -672,13 +663,6 @@ const ShareStory = () => {
 
                   {/* Action buttons */}
                   <div className="form-actions-bar">
-                    <button
-                      type="button"
-                      onClick={() => setCategory(null)}
-                      className="btn-back"
-                    >
-                      ← Back to Categories
-                    </button>
                     <button
                       type="submit"
                       disabled={isSubmitting}
@@ -872,12 +856,181 @@ const ShareStory = () => {
                   {/* Action buttons */}
                   <div className="form-actions-bar">
                     <button
-                      type="button"
-                      onClick={() => setCategory(null)}
-                      className="btn-back"
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-publish-gradient"
                     >
-                      ← Back to Categories
+                      {isSubmitting ? (
+                        <>
+                          <div className="spinner" />
+                          <span>Publishing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send size={15} />
+                          <span>Submit Story</span>
+                        </>
+                      )}
                     </button>
+                  </div>
+                </form>
+              )}
+
+              {category === "personality" && (
+                <form onSubmit={handleSubmit} className="share-story-form">
+                  {/* Step 1: Upload Personality Photo */}
+                  <div className="form-group-step">
+                    <div className="step-title-row">
+                      <span className="step-number">1</span>
+                      <h3 className="step-title">Upload Personality Photo</h3>
+                      <span className="step-subtitle-icon">
+                        <Camera size={14} className="gold-icon" /> Share personality photo
+                      </span>
+                    </div>
+
+                    <div className="upload-split-layout">
+                      <div
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`drag-drop-zone-split ${isDragging ? "drag-drop-active" : ""}`}
+                      >
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          accept="image/*"
+                          style={{ display: "none" }}
+                        />
+
+                        {mediaFile ? (
+                          <div className="preview-media-box-split">
+                            <div className="media-thumbnail-preview-split">
+                              <img src={mediaFile} alt="Preview" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="upload-icon-circle-split">
+                            <Upload size={24} className="gold-icon" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="upload-details-split">
+                        {mediaFile ? (
+                          <div className="uploaded-details-content">
+                            <p className="media-filename">{fileName}</p>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setMediaFile(null);
+                                setFileName("");
+                              }}
+                              className="btn-remove-media"
+                            >
+                              Remove file
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="upload-primary-text">
+                              Drag & drop your personality photo here
+                            </p>
+                            <p className="upload-browse-text">
+                              or <span className="browse-link" onClick={() => fileInputRef.current?.click()}>browse files</span>
+                            </p>
+                            <p className="upload-secondary-text">
+                              Supports JPG, PNG, WEBP (Max 5MB)
+                            </p>
+                          </>
+                        )}
+
+                        <div className="upload-tip-box">
+                          <Sparkles size={14} className="gold-icon" />
+                          <span>Tip: High-quality portraits look best for iconic legends!</span>
+                        </div>
+                      </div>
+                    </div>
+                    {errors.media && <p className="form-error-msg">{errors.media}</p>}
+                  </div>
+
+                  {/* Step 2: Personality Name */}
+                  <div className="form-group-step">
+                    <div className="step-title-row">
+                      <span className="step-number">2</span>
+                      <h3 className="step-title">Personality Name</h3>
+                      <Tag size={13} className="step-icon-indicator" />
+                    </div>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g. Aryabhata"
+                      className={`form-control-dark ${errors.title ? "form-control-error" : ""}`}
+                    />
+                    {errors.title && <p className="form-error-msg">{errors.title}</p>}
+                  </div>
+
+                  {/* Step 3: Category Dropdown */}
+                  <div className="form-group-step">
+                    <div className="step-title-row">
+                      <span className="step-number">3</span>
+                      <h3 className="step-title">Category</h3>
+                      <Sparkles size={13} className="step-icon-indicator" />
+                    </div>
+                    <select
+                      value={personalityCategory}
+                      onChange={(e) => setPersonalityCategory(e.target.value)}
+                      className="form-control-dark font-semibold text-white"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <option value="Historical">Historical</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Politician">Politician</option>
+                      <option value="Art & Cinema">Art & Cinema</option>
+                      <option value="Literature">Literature</option>
+                    </select>
+                  </div>
+
+                  {/* Step 4: Description */}
+                  <div className="form-group-step">
+                    <div className="step-title-row">
+                      <span className="step-number">4</span>
+                      <h3 className="step-title">Description</h3>
+                      <FileText size={13} className="step-icon-indicator" />
+                    </div>
+                    <textarea
+                      rows={4}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Describe their achievements, contributions, and historical legacy..."
+                      className={`form-control-dark ${errors.description ? "form-control-error" : ""}`}
+                      style={{ resize: "none" }}
+                    />
+                    {errors.description && <p className="form-error-msg">{errors.description}</p>}
+                  </div>
+
+                  {/* Step 5: Name of Author / Contributor */}
+                  <div className="form-group-step">
+                    <div className="step-title-row">
+                      <span className="step-number">5</span>
+                      <h3 className="step-title">Name of Author / Contributor</h3>
+                      <User size={13} className="step-icon-indicator" />
+                    </div>
+                    <input
+                      type="text"
+                      value={personName}
+                      onChange={(e) => setPersonName(e.target.value)}
+                      placeholder="e.g. Priya Kumari"
+                      className={`form-control-dark ${errors.personName ? "form-control-error" : ""}`}
+                    />
+                    {errors.personName && <p className="form-error-msg">{errors.personName}</p>}
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="form-actions-bar">
                     <button
                       type="submit"
                       disabled={isSubmitting}
@@ -903,7 +1056,6 @@ const ShareStory = () => {
                 <span>🔒</span> Your content will be reviewed before it appears on the site.
               </div>
             </div>
-          )}
 
         </div>
       </main>

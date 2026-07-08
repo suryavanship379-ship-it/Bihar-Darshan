@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-// import { Search, MapPin } from 'lucide-react';
 import {
   Search,
   MapPin,
@@ -7,11 +6,10 @@ import {
   ChevronDown,
   Quote
 } from "lucide-react";
-// import { motion, AnimatePresence } from 'framer-motion';
-// import React, { useMemo, useState } from "react";
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Container from '../components/layout/Container';
+import { useContributions } from '../data/ContributionContext';
 
 export interface Personality {
   id: number;
@@ -122,41 +120,47 @@ export const personalities: Personality[] = [
 export default function Personalities() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDist, setSelectedDist] = useState('All Districts');
+  const { personalitySubmissions } = useContributions();
+
+  const allPersonalities = useMemo(() => {
+    return [...personalitySubmissions, ...personalities];
+  }, [personalitySubmissions]);
 
   const getUniqueDistricts = () => {
-    const dists = personalities.map(p => p.district);
+    const dists = allPersonalities.map(p => p.district);
     return ['All Districts', ...new Set(dists)];
   };
-const categories = [
-  "All",
-  "Historical",
-  "Politician",
-  "Arts & Cinema",
-  "Literature",
-  "Sports",
-];
 
-const [selectedCat, setSelectedCat] = useState("All");
+  const categories = [
+    "All",
+    "Historical",
+    "Politician",
+    "Arts & Cinema",
+    "Literature",
+    "Sports",
+  ];
+
+  const [selectedCat, setSelectedCat] = useState("All");
 
   const districts = getUniqueDistricts();
 
- const filteredData = useMemo(() => {
-  return personalities.filter((p) => {
-    const matchSearch =
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredData = useMemo(() => {
+    return allPersonalities.filter((p) => {
+      const matchSearch =
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchDistrict =
-      selectedDist === "All Districts" ||
-      p.district === selectedDist;
+      const matchDistrict =
+        selectedDist === "All Districts" ||
+        p.district === selectedDist;
 
-    const matchCategory =
-      selectedCat === "All" ||
-      p.category === selectedCat;
+      const matchCategory =
+        selectedCat === "All" ||
+        p.category === selectedCat;
 
-    return matchSearch && matchDistrict && matchCategory;
-  });
-}, [searchTerm, selectedDist, selectedCat]);
+      return matchSearch && matchDistrict && matchCategory;
+    });
+  }, [searchTerm, selectedDist, selectedCat, allPersonalities]);
 
   return (
     <div className="min-h-screen bg-[#fcfcfc] font-sans pb-24">

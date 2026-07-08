@@ -4,7 +4,7 @@ import heroImage from "../../assets/hero.png";
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative h-screen overflow-hidden">
+    <section id="home" className="relative min-h-screen lg:h-screen py-24 lg:py-0 overflow-hidden">
       {/* Hero Background */}
       <img
         src={heroImage}
@@ -17,7 +17,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
 
       {/* Hero Content */}
-      <div className="relative z-10 flex items-center justify-center h-full text-center px-4 pb-24 sm:pb-32">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-200px)] lg:h-full text-center px-4 pb-12 lg:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -68,9 +68,9 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.8, duration: 1.2 }}
-        className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4 z-20"
+        className="relative lg:absolute mt-8 lg:mt-0 lg:bottom-10 left-0 lg:left-1/2 lg:-translate-x-1/2 w-full max-w-7xl px-4 z-20"
       >
-        <div className="border border-white/20 rounded-[3rem] py-8 px-8 sm:px-16 flex flex-wrap items-center justify-center sm:justify-between gap-10 sm:gap-4 transition-all duration-500 hover:border-white/40">
+        <div className="border border-white/20 rounded-[2rem] lg:rounded-[3rem] py-6 lg:py-8 px-6 lg:px-16 flex flex-wrap items-center justify-center lg:justify-between gap-6 lg:gap-4 transition-all duration-500 hover:border-white/40">
           <StatItem icon={<Landmark size={24} strokeWidth={1.2} />} value="500+" label="Attractions" />
           <div className="hidden sm:block w-px h-10 bg-white/10" />
           <StatItem icon={<Map size={24} strokeWidth={1.2} />} value="38" label="Districts" />

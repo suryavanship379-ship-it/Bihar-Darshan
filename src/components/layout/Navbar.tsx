@@ -185,7 +185,7 @@ const Navbar = ({ forceDarkText = false }: NavbarProps = {}) => {
 
       {/* Mobile Dropdown */}
       {mobileOpen && (
-        <div className="xl:hidden mt-3 rounded-3xl bg-white dark:bg-black shadow-2xl border border-black/5 p-8">
+        <div className="xl:hidden absolute top-full left-4 right-4 mt-3 rounded-3xl bg-white dark:bg-black shadow-2xl border border-black/5 p-8 max-h-[80vh] overflow-y-auto z-[250]">
           <nav className="flex flex-col gap-6">
             {navItems.map((item) => (
               <div key={item.label} className="flex flex-col gap-2">

@@ -107,12 +107,12 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/8">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
-          <div className="flex-1" />
-          <p className="text-center text-white/30 text-sm">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="hidden sm:block flex-1" />
+          <p className="text-center text-white/30 text-sm order-2 sm:order-2">
             © 2026 Bihar Darshan. All Rights Reserved.
           </p>
-          <div className="flex-1 flex justify-end">
+          <div className="flex-1 flex justify-center sm:justify-end order-1 sm:order-3">
             <button
               onClick={scrollToTop}
               className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center text-white/40 hover:text-white hover:border-white/50 transition-all duration-300 cursor-pointer"

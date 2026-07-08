@@ -154,7 +154,7 @@ to-black/20" />
               Explore the heritage, culture, and vibrant life of Patna.
             </p>
 
-            <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-8 max-w-5xl shadow-2xl">
+            <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 max-w-5xl shadow-2xl">
               {stats.map((stat, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-full border border-brand-gold/30 bg-brand-gold/5 flex items-center justify-center text-brand-gold shrink-0">

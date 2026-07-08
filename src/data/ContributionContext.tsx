@@ -2,23 +2,38 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { CultureItem } from './cultureData';
 import type { GalleryItem } from './galleryData';
 
+export interface PersonalityItem {
+  id: number;
+  name: string;
+  category: 'Politician' | 'Arts & Cinema' | 'Historical' | 'Literature' | 'Sports';
+  district: string;
+  description: string;
+  imageUrl: string;
+  author: string;
+}
+
 interface ContributionContextValue {
   cultureSubmissions: CultureItem[];
   gallerySubmissions: GalleryItem[];
+  personalitySubmissions: PersonalityItem[];
   addCultureSubmission: (submission: Omit<CultureItem, 'id' | 'featured'>) => void;
   addGallerySubmission: (submission: Omit<GalleryItem, 'id' | 'likes' | 'views' | 'comments' | 'uploadDate'>) => void;
+  addPersonalitySubmission: (submission: Omit<PersonalityItem, 'id'>) => void;
 }
 
 const ContributionContext = createContext<ContributionContextValue>({
   cultureSubmissions: [],
   gallerySubmissions: [],
+  personalitySubmissions: [],
   addCultureSubmission: () => {},
   addGallerySubmission: () => {},
+  addPersonalitySubmission: () => {},
 });
 
 export const ContributionProvider = ({ children }: { children: React.ReactNode }) => {
   const [cultureSubmissions, setCultureSubmissions] = useState<CultureItem[]>([]);
   const [gallerySubmissions, setGallerySubmissions] = useState<GalleryItem[]>([]);
+  const [personalitySubmissions, setPersonalitySubmissions] = useState<PersonalityItem[]>([]);
 
   // Load submissions from localStorage on mount
   useEffect(() => {
@@ -30,6 +45,10 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
       const storedGallery = localStorage.getItem('bihar_gallery_submissions');
       if (storedGallery) {
         setGallerySubmissions(JSON.parse(storedGallery));
+      }
+      const storedPersonality = localStorage.getItem('bihar_personality_submissions');
+      if (storedPersonality) {
+        setPersonalitySubmissions(JSON.parse(storedPersonality));
       }
     } catch (error) {
       console.error('Failed to load contributions from localStorage:', error);
@@ -66,13 +85,27 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     });
   }, []);
 
+  const addPersonalitySubmission = useCallback((submission: Omit<PersonalityItem, 'id'>) => {
+    setPersonalitySubmissions((prev) => {
+      const newItem: PersonalityItem = {
+        ...submission,
+        id: Date.now(),
+      };
+      const updated = [newItem, ...prev];
+      localStorage.setItem('bihar_personality_submissions', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   return (
     <ContributionContext.Provider
       value={{
         cultureSubmissions,
         gallerySubmissions,
+        personalitySubmissions,
         addCultureSubmission,
         addGallerySubmission,
+        addPersonalitySubmission,
       }}
     >
       {children}

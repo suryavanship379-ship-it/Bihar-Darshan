@@ -250,8 +250,8 @@ const Carousel = ({
         onTouchEnd={() => setIsHovered(false)}
       >
         {/* Fading Edges */}
-        <div className="absolute left-[-24px] top-0 bottom-0 w-24 md:w-64 bg-gradient-to-r from-bg via-bg/80 to-transparent z-40 pointer-events-none backdrop-blur-[1px] opacity-90" />
-        <div className="absolute right-[-24px] top-0 bottom-0 w-24 md:w-64 bg-gradient-to-l from-bg via-bg/80 to-transparent z-40 pointer-events-none backdrop-blur-[1px] opacity-90" />
+        <div className="absolute left-0 lg:left-[-24px] top-0 bottom-0 w-16 md:w-64 bg-gradient-to-r from-bg via-bg/80 to-transparent z-40 pointer-events-none backdrop-blur-[1px] opacity-90" />
+        <div className="absolute right-0 lg:right-[-24px] top-0 bottom-0 w-16 md:w-64 bg-gradient-to-l from-bg via-bg/80 to-transparent z-40 pointer-events-none backdrop-blur-[1px] opacity-90" />
 
         <div
           ref={scrollRef}
