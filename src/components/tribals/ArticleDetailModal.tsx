@@ -208,20 +208,6 @@ const ArticleDetailModal = ({ article, isOpen, onClose }: ArticleDetailModalProp
                 })}
               </div>
 
-              {/* Tags */}
-              {article.tags.length > 0 && (
-                <div className="mt-10 pt-6 border-t border-[#3e2723]/10 flex flex-wrap items-center gap-2">
-                  <Tag className="w-4 h-4 text-[#5d4037]/50 mr-1" />
-                  {article.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 bg-[#e8dec0]/80 border border-[#3e2723]/10 rounded-full text-xs font-semibold text-[#5d4037] hover:bg-[#D4A017]/15 hover:border-[#D4A017]/30 transition-colors cursor-default"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
 
               {/* Back Button */}
               <div className="mt-8 pt-6 border-t border-[#3e2723]/10">

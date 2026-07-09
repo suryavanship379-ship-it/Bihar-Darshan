@@ -7,7 +7,7 @@ interface JourneyCardProps {
 
 const JourneyCard = ({ trip }: JourneyCardProps) => {
   return (
-    <div className="bg-[#fdf9ef] rounded-[2rem] shadow-lg overflow-hidden flex flex-col group border border-[#e2d5b8] transform transition-transform hover:-translate-y-2 duration-300">
+    <Link to={`/tourism/${trip.id}`} className="bg-[#fdf9ef] rounded-[2rem] shadow-lg overflow-hidden flex flex-col group border border-[#e2d5b8] transform transition-transform hover:-translate-y-2 duration-300">
 
       {/* Image */}
       <div className="relative h-64 overflow-hidden p-2">
@@ -33,16 +33,15 @@ const JourneyCard = ({ trip }: JourneyCardProps) => {
         </p>
 
         <div className="mt-auto">
-          <Link
-            to={`/tourism/${trip.id}`}
+          <span
             className="text-[#d4a017] font-bold text-sm uppercase tracking-wider hover:text-[#5c3a21] transition-colors"
           >
             READ MORE
-          </Link>
+          </span>
         </div>
 
       </div>
-    </div>
+    </Link>
   );
 };
 

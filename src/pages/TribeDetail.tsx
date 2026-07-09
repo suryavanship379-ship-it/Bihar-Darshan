@@ -471,7 +471,7 @@ const TribeDetail = () => {
                 <img
                   src={tribe.image}
                   alt={tribe.englishName}
-                  className="w-full max-w-[20rem] lg:max-w-[32rem] h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700 scale-110 lg:scale-125 my-8 lg:my-0"
+                  className="w-full max-w-[20rem] lg:max-w-[32rem] h-auto object-contain drop-shadow-2xl my-8 lg:my-0"
                 />
               </motion.div>
 

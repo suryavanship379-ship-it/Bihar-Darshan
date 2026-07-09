@@ -354,26 +354,7 @@ const Profile = () => {
                         <img src={avatar} alt={`Avatar ${idx}`} className="w-full h-full object-cover" />
                       </button>
                     ))}
-
-                    <button
-                      onClick={() => setIsCustomAvatar(true)}
-                      className={`w-16 h-16 rounded-full overflow-hidden border-4 transition-all duration-300 flex items-center justify-center bg-white ${isCustomAvatar ? 'border-[#d4a017] scale-110 shadow-lg ring-2 ring-[#5c3a21]' : 'border-white shadow-sm opacity-70 hover:opacity-100'}`}
-                    >
-                      <ImageIcon className="w-6 h-6 text-[#5c3a21]" />
-                    </button>
                   </div>
-
-                  {isCustomAvatar && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                      <input
-                        type="text"
-                        value={customAvatarInput}
-                        onChange={(e) => setCustomAvatarInput(e.target.value)}
-                        className="w-full bg-white border-2 border-[#e2d5b8] rounded-xl px-4 py-3 text-[#5c3a21] text-sm focus:outline-none focus:border-[#d4a017] transition-colors shadow-sm"
-                        placeholder="Paste image URL here..."
-                      />
-                    </motion.div>
-                  )}
                 </div>
 
                 {/* Background Selection */}
