@@ -59,11 +59,12 @@ const ArticleCard = ({
 
   return (
     <motion.article
+      onClick={() => onReadMore(article)}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1, margin: "50px" }}
       transition={{ delay: (index % 4) * 0.08, duration: 0.5 }}
-      className="group bg-[#e8dec0]/80 rounded-2xl overflow-hidden border border-[#3e2723]/10 hover:border-[#D4A017]/50 transition-all duration-500 flex flex-col hover:-translate-y-1.5 hover:shadow-[0_8px_30px_-8px_rgba(62,39,35,0.18)]"
+      className="group bg-[#e8dec0]/80 rounded-2xl overflow-hidden border border-[#3e2723]/10 hover:border-[#D4A017]/50 transition-all duration-500 flex flex-col hover:-translate-y-1.5 hover:shadow-[0_8px_30px_-8px_rgba(62,39,35,0.18)] cursor-pointer"
     >
       {/* Top Source Bar */}
       <div className="flex justify-between items-center px-4 py-2 border-b border-[#3e2723]/10 bg-[#e8dec0]/40">
@@ -118,13 +119,12 @@ const ArticleCard = ({
         </div>
 
         {/* Read More */}
-        <button
-          onClick={() => onReadMore(article)}
-          className="inline-flex items-center text-[#b71c1c] hover:text-[#D4A017] text-sm font-bold tracking-wide transition-all group/link cursor-pointer bg-transparent border-none p-0"
+        <span
+          className="inline-flex items-center text-[#b71c1c] group-hover:text-[#D4A017] text-sm font-bold tracking-wide transition-all group/link"
         >
           Read More
           <ArrowRight className="w-4 h-4 ml-1 group-hover/link:translate-x-1 transition-transform" />
-        </button>
+        </span>
       </div>
     </motion.article>
   );
@@ -171,7 +171,7 @@ const LatestArticlesSection = ({ tribeName }: LatestArticlesSectionProps) => {
       const filtered = globalArticles.filter(
         (article) => article.tribe.toLowerCase() === tribeName.toLowerCase()
       );
-      return filtered.length > 0 ? filtered : globalArticles.slice(0, 4);
+      return filtered;
     }
     return globalArticles;
   }, [tribeName, globalArticles]);

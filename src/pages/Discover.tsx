@@ -510,9 +510,9 @@ const Discover = () => {
                   </div>
 
                   <div className="px-6 pb-6 pt-2">
-                    <button className="w-full py-2.5 rounded-xl border border-gray-100 hover:border-brand-gold text-xs font-bold text-brand-dark hover:bg-brand-gold/5 transition-all duration-300 cursor-pointer">
+                    <span className="block text-center w-full py-2.5 rounded-xl border border-gray-100 group-hover:border-brand-gold text-xs font-bold text-brand-dark transition-all duration-300">
                       Read Full Story
-                    </button>
+                    </span>
                   </div>
                 </div>
               ))}

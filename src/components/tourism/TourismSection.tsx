@@ -118,12 +118,13 @@ const TourismSection = () => {
           {trips.map((trip, idx) => (
             <motion.div
               key={trip.id}
+              onClick={() => toggleExpand(trip.id)}
               layout
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="group flex flex-col bg-white rounded-[2.5rem] overflow-hidden shadow-[0_30px_70px_-15px_rgba(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_40px_90px_-15px_rgba(0,0,0,0.12)] transition-all duration-700"
+              className="group flex flex-col bg-white rounded-[2.5rem] overflow-hidden shadow-[0_30px_70px_-15px_rgba(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_40px_90px_-15px_rgba(0,0,0,0.12)] transition-all duration-700 cursor-pointer"
             >
               {/* Media Section - TOP IMAGE */}
               <div className="relative overflow-hidden aspect-[4/3] w-full">
@@ -241,9 +242,8 @@ const TourismSection = () => {
                 </div>
 
                 <div className="mt-8">
-                  <button
-                    onClick={() => toggleExpand(trip.id)}
-                    className="w-full h-14 rounded-xl border-2 border-brand-dark/5 bg-gray-50/50 text-brand-dark font-bold text-[11px] uppercase tracking-widest hover:bg-brand-dark hover:text-white transition-all duration-500 flex items-center justify-center gap-2 group/btn"
+                  <div
+                    className="w-full h-14 rounded-xl border-2 border-brand-dark/5 bg-gray-50/50 text-brand-dark font-bold text-[11px] uppercase tracking-widest group-hover:bg-brand-dark group-hover:text-white transition-all duration-500 flex items-center justify-center gap-2 group/btn"
                   >
                     {expandedId === trip.id ? (
                       <>
@@ -256,7 +256,7 @@ const TourismSection = () => {
                         <ChevronDown size={16} className="group-hover/btn:translate-y-0.5 transition-transform" />
                       </>
                     )}
-                  </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
