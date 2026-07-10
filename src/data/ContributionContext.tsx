@@ -64,7 +64,11 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         featured: false,
       };
       const updated = [newItem, ...prev];
-      localStorage.setItem('bihar_culture_submissions', JSON.stringify(updated));
+      try {
+        localStorage.setItem('bihar_culture_submissions', JSON.stringify(updated));
+      } catch (error) {
+        console.error('Failed to save culture submission to localStorage (quota exceeded?):', error);
+      }
       return updated;
     });
   }, []);
@@ -80,7 +84,11 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         uploadDate: new Date().toISOString().split('T')[0],
       };
       const updated = [newItem, ...prev];
-      localStorage.setItem('bihar_gallery_submissions', JSON.stringify(updated));
+      try {
+        localStorage.setItem('bihar_gallery_submissions', JSON.stringify(updated));
+      } catch (error) {
+        console.error('Failed to save gallery submission to localStorage (quota exceeded?):', error);
+      }
       return updated;
     });
   }, []);
@@ -92,7 +100,11 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         id: Date.now(),
       };
       const updated = [newItem, ...prev];
-      localStorage.setItem('bihar_personality_submissions', JSON.stringify(updated));
+      try {
+        localStorage.setItem('bihar_personality_submissions', JSON.stringify(updated));
+      } catch (error) {
+        console.error('Failed to save personality submission to localStorage (quota exceeded?):', error);
+      }
       return updated;
     });
   }, []);

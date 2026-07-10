@@ -1,20 +1,18 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { AnimatePresence } from "framer-motion";
-import type { GalleryItem } from "../../data/galleryData";
+import { AnimatePresence, motion } from "framer-motion";
+import { ImageOff, RotateCcw } from "lucide-react";
+import type { ExtendedGalleryItem } from "../../pages/Gallery";
 import GalleryCard from "./GalleryCard";
 import GallerySkeleton from "./GallerySkeleton";
-import type { ViewMode } from "./GalleryFilters";
-
 interface GalleryGridProps {
-  items: GalleryItem[];
-  viewMode: ViewMode;
-  onItemClick: (item: GalleryItem) => void;
+  items: ExtendedGalleryItem[];
+  onItemClick: (item: ExtendedGalleryItem) => void;
 }
 
 const INITIAL_COUNT = 15;
 const LOAD_MORE_COUNT = 10;
 
-const GalleryGrid = ({ items, viewMode, onItemClick }: GalleryGridProps) => {
+const GalleryGrid = ({ items, onItemClick }: GalleryGridProps) => {
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
   const [loading, setLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -57,52 +55,54 @@ const GalleryGrid = ({ items, viewMode, onItemClick }: GalleryGridProps) => {
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="w-20 h-20 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mb-5">
-          <span className="text-3xl">📷</span>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center py-32 px-4 text-center max-w-lg mx-auto"
+      >
+        <div className="relative w-24 h-24 mb-8 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gold/10 rounded-full animate-ping" style={{ animationDuration: '3s' }} />
+          <div className="absolute inset-2 bg-gold/20 rounded-full" />
+          <ImageOff size={40} className="text-gold relative z-10" />
         </div>
-        <h3 className="text-xl font-bold text-white mb-2">No results found</h3>
-        <p className="text-white/40 text-sm max-w-md">
-          We couldn't find any gallery items matching your filters. Try adjusting
-          your search criteria.
+        <h3 className="font-serif text-3xl font-bold text-white mb-3">No Media Found</h3>
+        <p className="text-white/50 text-sm leading-relaxed mb-8">
+          We couldn't find any photos or videos matching your current filters. 
+          Try adjusting your search criteria, selecting a different district, or exploring another category.
         </p>
-      </div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.05] border border-white/10 text-white hover:bg-white/[0.1] hover:border-white/20 transition-all font-semibold text-sm"
+        >
+          <RotateCcw size={16} />
+          Reset All Filters
+        </button>
+      </motion.div>
     );
   }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1400px] mx-auto">
-        <AnimatePresence mode="wait">
-          {viewMode === "masonry" ? (
-            /* Masonry Grid View */
-            <div key="masonry" className="gallery-masonry">
-              {visibleItems.map((item, i) => (
-                <GalleryCard
-                  key={item.id}
-                  item={item}
-                  index={i}
-                  onClick={() => onItemClick(item)}
-                />
-              ))}
-            </div>
-          ) : (
-            /* Feed View — single column centered */
-            <div
-              key="feed"
-              className="max-w-lg mx-auto flex flex-col gap-4"
-            >
-              {visibleItems.map((item, i) => (
-                <GalleryCard
-                  key={item.id}
-                  item={item}
-                  index={i}
-                  onClick={() => onItemClick(item)}
-                />
-              ))}
-            </div>
-          )}
-        </AnimatePresence>
+        {/* Dynamic Masonry Wrapper */}
+        <div 
+          className={`
+            ${visibleItems.length === 1 ? "columns-1 max-w-md mx-auto" : ""}
+            ${visibleItems.length === 2 ? "columns-1 sm:columns-2 max-w-3xl mx-auto gap-3 md:gap-4" : ""}
+            ${visibleItems.length === 3 ? "columns-1 sm:columns-2 md:columns-3 max-w-5xl mx-auto gap-3 md:gap-4" : ""}
+            ${visibleItems.length === 4 ? "columns-2 md:columns-3 xl:columns-4 max-w-6xl mx-auto gap-3 md:gap-4" : ""}
+            ${visibleItems.length >= 5 ? "columns-2 md:columns-3 xl:columns-5 gap-3 md:gap-[14px]" : ""}
+          `}
+        >
+          {visibleItems.map((item, i) => (
+            <GalleryCard
+              key={item.id}
+              item={item}
+              index={i}
+              onClick={() => onItemClick(item)}
+            />
+          ))}
+        </div>
 
         {/* Loading Skeleton */}
         {loading && (

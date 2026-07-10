@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Heart, Share2, Bookmark, Eye, Play, Image, Clock } from "lucide-react";
-import type { GalleryItem } from "../../data/galleryData";
+import { Heart, Share2, Bookmark, Eye, Play, Image, Clock, MapPin, MessageCircle, CheckCircle2, Users } from "lucide-react";
+import type { ExtendedGalleryItem } from "../../pages/Gallery";
 
 interface GalleryCardProps {
-  item: GalleryItem;
+  item: ExtendedGalleryItem;
   index: number;
   onClick: () => void;
 }
@@ -19,6 +19,11 @@ const formatCount = (n: number): string => {
   return n.toString();
 };
 
+const formatDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+};
+
 const GalleryCard = ({ item, index, onClick }: GalleryCardProps) => {
   return (
     <motion.div
@@ -30,103 +35,53 @@ const GalleryCard = ({ item, index, onClick }: GalleryCardProps) => {
         delay: (index % 10) * 0.06,
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
-      className="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#1a1f2a]"
+      className="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#1a1f2a] inline-block w-full mb-4 break-inside-avoid"
       onClick={onClick}
     >
       {/* Image Container */}
       <div className={`relative ${aspectHeights[item.aspectRatio]} overflow-hidden`}>
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-          loading="lazy"
-        />
-
-        {/* Default Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-
-        {/* Hover Dark Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3 z-10">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gold/90 text-[10px] font-bold uppercase tracking-wider text-black shadow-lg">
-            {item.category}
-          </span>
-        </div>
-
-        {/* Media Type Badge */}
-        <div className="absolute top-3 right-3 z-10">
-          {item.mediaType === "video" ? (
-            <div className="flex items-center gap-1.5">
-              {item.duration && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold">
-                  <Clock size={10} />
-                  {item.duration}
-                </span>
-              )}
-            </div>
-          ) : (
-            <div className="w-7 h-7 rounded-lg bg-black/40 backdrop-blur-sm flex items-center justify-center">
-              <Image size={12} className="text-white/70" />
-            </div>
-          )}
-        </div>
+        {item.mediaType === "video" ? (
+          <video
+            src={item.image}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            muted
+            playsInline
+            preload="metadata"
+          />
+        ) : (
+          <img
+            src={item.image}
+            alt={item.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+          />
+        )}
 
         {/* Video Play Button (center) */}
         {item.mediaType === "video" && (
           <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-            <div className="w-12 h-12 rounded-full bg-gold/90 flex items-center justify-center shadow-[0_0_30px_rgba(212,160,23,0.4)] group-hover:scale-110 transition-transform duration-500">
-              <Play size={20} fill="black" className="text-black ml-0.5" />
+            <div className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/20 transition-transform duration-500 group-hover:scale-110">
+              <Play size={20} fill="white" className="text-white ml-0.5" />
             </div>
           </div>
         )}
 
-        {/* Hover Actions */}
-        <div className="absolute inset-0 flex items-center justify-center gap-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
-          {[
-            { icon: Heart, label: "Like" },
-            { icon: Share2, label: "Share" },
-            { icon: Bookmark, label: "Save" },
-            { icon: Eye, label: "View" },
-          ].map((action) => (
-            <button
-              key={action.label}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-gold hover:border-gold hover:text-black transition-all duration-300"
-              title={action.label}
-            >
-              <action.icon size={14} />
-            </button>
-          ))}
-        </div>
-
-        {/* Bottom Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-          {/* Photographer */}
-          <div className="flex items-center gap-2 mb-1.5">
-            <div className="w-6 h-6 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-[9px] font-bold text-gold">
-              {item.photographer.charAt(0)}
+        {/* Community Contributor Name */}
+        {item.source !== "official" && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute bottom-0 left-0 right-0 p-4 z-10 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-[10px] font-bold text-white">
+                  {item.photographer.charAt(0)}
+                </div>
+                <span className="text-white text-xs font-medium truncate drop-shadow-md">
+                  {item.photographer}
+                </span>
+              </div>
             </div>
-            <span className="text-white text-[11px] font-semibold truncate">
-              {item.photographer}
-            </span>
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center gap-3 text-white/50 text-[10px] font-medium">
-            <span className="flex items-center gap-1">
-              <Heart size={10} />
-              {formatCount(item.likes)}
-            </span>
-            <span className="flex items-center gap-1">
-              <Eye size={10} />
-              {formatCount(item.views)}
-            </span>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </motion.div>
   );
