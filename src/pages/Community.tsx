@@ -57,6 +57,18 @@ const CommunityPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [selectedCommunity]);
 
+  // Synchronize state with URL search param "?id="
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (id) {
+      const found = communities.find((c) => c.id === id);
+      setSelectedCommunity(found || null);
+    } else {
+      setSelectedCommunity(null);
+    }
+  }, [location.search]);
+
   // Filter communities
   const filteredCommunities = useMemo(() => {
     let result = [...communities];
@@ -100,55 +112,53 @@ const CommunityPage = () => {
     setCustomDiscussions([post, ...customDiscussions]);
   };
 
-  // ── Detail View ────────────────────────────────────────────────────────────
-  if (selectedCommunity) {
-    return (
-      <div className="min-h-screen bg-[#F8F5EF] selection:bg-brand-gold selection:text-brand-dark font-sans">
-        <Navbar forceDarkText={true} />
+  return (
+    <div className="min-h-screen bg-[#F8F5EF] selection:bg-brand-gold selection:text-brand-dark font-sans relative overflow-hidden">
+      <AnimatePresence mode="wait">
+        {selectedCommunity ? (
+          <motion.div
+            key="detail-view"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="w-full min-h-screen flex flex-col justify-between"
+          >
+            <div>
+              <Navbar forceDarkText={true} />
+              <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+                <CommunityDetailHeader
+                  community={selectedCommunity}
+                  onBack={() => {
+                    setSelectedCommunity(null);
+                    navigate('/community');
+                  }}
+                  isJoined={joinedCommunityIds.includes(selectedCommunity.id)}
+                  onJoinClick={() => toggleJoinCommunity(selectedCommunity.id)}
+                />
 
-        <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-          {/* Header (Back link + Banner) */}
-          <CommunityDetailHeader
-            community={selectedCommunity}
-            onBack={() => setSelectedCommunity(null)}
-            isJoined={joinedCommunityIds.includes(selectedCommunity.id)}
-            onJoinClick={() => toggleJoinCommunity(selectedCommunity.id)}
-          />
-
-                {/* Tab bar */}
                 <div className="mt-4">
                   <CommunityDetailTabs active={activeTab} onChange={setActiveTab} />
                 </div>
 
-          {/* Main body: feed + sidebar */}
-          {activeTab === 'Discussions' && (
-            <div className="mt-4 grid grid-cols-1 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px] gap-5">
-              {/* Left: composer + feed */}
-              <div className="flex flex-col gap-4 min-w-0">
-                {joinedCommunityIds.includes(selectedCommunity.id) && (
-                  <DiscussionComposer onPost={handlePost} />
+                {activeTab === 'Discussions' && (
+                  <div className="mt-4 grid grid-cols-1 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px] gap-5">
+                    <div className="flex flex-col gap-4 min-w-0">
+                      {joinedCommunityIds.includes(selectedCommunity.id) && (
+                        <DiscussionComposer onPost={handlePost} />
+                      )}
+                      <DiscussionFeed discussions={communityDiscussions} />
+                    </div>
+
+                    <CommunitySidebar
+                      community={selectedCommunity}
+                      contributors={contributors}
+                      onViewGuidelines={() => setActiveTab('About')}
+                      isJoined={joinedCommunityIds.includes(selectedCommunity.id)}
+                      onJoinClick={() => toggleJoinCommunity(selectedCommunity.id)}
+                    />
+                  </div>
                 )}
-                <DiscussionFeed
-                  discussions={communityDiscussions}
-                />
-              </div>
-
-              {/* Right: sidebar */}
-              <CommunitySidebar
-                community={selectedCommunity}
-                contributors={contributors}
-                onViewGuidelines={() => setActiveTab('About')}
-                isJoined={joinedCommunityIds.includes(selectedCommunity.id)}
-                onJoinClick={() => toggleJoinCommunity(selectedCommunity.id)}
-              />
-            </div>
-          )}
-
-          {/* {activeTab === 'Members' && (
-            <div className="mt-4">
-              <TabMembers contributors={contributors} />
-            </div>
-          )} */}
 
                 {activeTab === 'Media' && (
                   <div className="mt-4">
@@ -164,61 +174,54 @@ const CommunityPage = () => {
               </main>
             </div>
             <Footer />
-          </motion.div >
+          </motion.div>
         ) : (
-  <motion.div
-    key="listing-view"
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -15 }}
-    transition={{ duration: 0.35, ease: "easeInOut" }}
-    className="w-full min-h-screen flex flex-col justify-between"
-  >
-    <div>
-      <Navbar />
-      {/* Hero + Search */}
-      <CommunityHero searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+          <motion.div
+            key="listing-view"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="w-full min-h-screen flex flex-col justify-between"
+          >
+            <div>
+              <Navbar />
+              <CommunityHero searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+              <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div className="flex items-end justify-between mb-2">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Explore Communities</h2>
+                    <p className="text-sm text-gray-500 mt-0.5">Join a community that matches your interest</p>
+                  </div>
+                </div>
 
-      {/* Explore Communities section */}
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Section header */}
-        <div className="flex items-end justify-between mb-2">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Explore Communities</h2>
-            <p className="text-sm text-gray-500 mt-0.5">Join a community that matches your interest</p>
-          </div>
-        </div>
+                <div className="mb-6 mt-4">
+                  <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
+                </div>
 
-        {/* Category filters */}
-        <div className="mb-6 mt-4">
-          <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
-        </div>
-
-        {/* Community grid */}
-        {filteredCommunities.length === 0 ? (
-          <div className="py-20 text-center text-gray-400 text-sm">
-            No communities found matching your search.
-          </div>
-        ) : (
-          <CommunityGrid
-            communities={filteredCommunities}
-            onSelect={(community) => {
-              navigate(`/community?id=${community.id}`);
-            }}
-          />
+                {filteredCommunities.length === 0 ? (
+                  <div className="py-20 text-center text-gray-400 text-sm">
+                    No communities found matching your search.
+                  </div>
+                ) : (
+                  <CommunityGrid
+                    communities={filteredCommunities}
+                    onSelect={(community) => {
+                      navigate(`/community?id=${community.id}`);
+                    }}
+                  />
+                )}
+              </main>
+            </div>
+            <Footer />
+          </motion.div>
         )}
-      </main>
-    </div>
-    <Footer />
-  </motion.div>
-)}
-      </AnimatePresence >
+      </AnimatePresence>
 
-  {/* Global Aesthetics Overlay */ }
-  < div className = "fixed inset-0 pointer-events-none z-0 opacity-[0.02] mix-blend-multiply" >
-    <div className="w-full h-full bg-[url('https://www.transparenttextures.com/patterns/handmade-paper.png')]" />
-      </div >
-    </div >
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.02] mix-blend-multiply">
+        <div className="w-full h-full bg-[url('https://www.transparenttextures.com/patterns/handmade-paper.png')]" />
+      </div>
+    </div>
   );
 };
 
