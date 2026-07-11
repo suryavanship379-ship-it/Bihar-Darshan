@@ -5,14 +5,9 @@ import type { ExtendedGalleryItem } from "../../pages/Gallery";
 interface GalleryCardProps {
   item: ExtendedGalleryItem;
   index: number;
+  spanClass?: string;
   onClick: () => void;
 }
-
-const aspectHeights: Record<string, string> = {
-  square: "aspect-square",
-  portrait: "aspect-[3/4]",
-  landscape: "aspect-[4/3]",
-};
 
 const formatCount = (n: number): string => {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
@@ -24,7 +19,7 @@ const formatDate = (dateStr: string): string => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 };
 
-const GalleryCard = ({ item, index, onClick }: GalleryCardProps) => {
+const GalleryCard = ({ item, index, spanClass, onClick }: GalleryCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -35,11 +30,11 @@ const GalleryCard = ({ item, index, onClick }: GalleryCardProps) => {
         delay: (index % 10) * 0.06,
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
-      className="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#1a1f2a] inline-block w-full mb-4 break-inside-avoid"
+      className={`group relative overflow-hidden rounded-2xl cursor-pointer bg-[#1a1f2a] w-full h-full ${spanClass || "col-span-1 row-span-1"}`}
       onClick={onClick}
     >
       {/* Image Container */}
-      <div className={`relative ${aspectHeights[item.aspectRatio]} overflow-hidden`}>
+      <div className="relative w-full h-full overflow-hidden">
         {item.mediaType === "video" ? (
           <video
             src={item.image}

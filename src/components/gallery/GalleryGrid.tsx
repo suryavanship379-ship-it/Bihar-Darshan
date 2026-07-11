@@ -84,24 +84,50 @@ const GalleryGrid = ({ items, onItemClick }: GalleryGridProps) => {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1400px] mx-auto">
-        {/* Dynamic Masonry Wrapper */}
+        {/* Dynamic Grid Wrapper */}
         <div 
-          className={`
-            ${visibleItems.length === 1 ? "columns-1 max-w-md mx-auto" : ""}
-            ${visibleItems.length === 2 ? "columns-1 sm:columns-2 max-w-3xl mx-auto gap-3 md:gap-4" : ""}
-            ${visibleItems.length === 3 ? "columns-1 sm:columns-2 md:columns-3 max-w-5xl mx-auto gap-3 md:gap-4" : ""}
-            ${visibleItems.length === 4 ? "columns-2 md:columns-3 xl:columns-4 max-w-6xl mx-auto gap-3 md:gap-4" : ""}
-            ${visibleItems.length >= 5 ? "columns-2 md:columns-3 xl:columns-5 gap-3 md:gap-[14px]" : ""}
+          className={`grid gap-4 grid-flow-dense
+            ${visibleItems.length === 1 ? "grid-cols-1 auto-rows-[400px]" : ""}
+            ${visibleItems.length === 2 ? "grid-cols-1 sm:grid-cols-2 auto-rows-[350px]" : ""}
+            ${visibleItems.length === 3 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 auto-rows-[300px]" : ""}
+            ${visibleItems.length >= 4 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 auto-rows-[250px]" : ""}
           `}
         >
-          {visibleItems.map((item, i) => (
-            <GalleryCard
-              key={item.id}
-              item={item}
-              index={i}
-              onClick={() => onItemClick(item)}
-            />
-          ))}
+          {visibleItems.map((item, i) => {
+            let spanClass = "";
+            const total = visibleItems.length;
+            
+            if (total === 1) {
+              spanClass = "col-span-1 row-span-1";
+            } else if (total === 2) {
+              spanClass = "col-span-1 row-span-1";
+            } else if (total === 3) {
+              if (i === 0) spanClass = "col-span-1 sm:col-span-2 md:col-span-2 row-span-2";
+              else spanClass = "col-span-1 row-span-1";
+            } else {
+              const pattern = [
+                "col-span-1 row-span-2", // tall
+                "col-span-1 sm:col-span-2 row-span-1", // wide
+                "col-span-1 row-span-1", // small
+                "col-span-1 row-span-1", // small
+                "col-span-1 sm:col-span-2 row-span-2", // large
+                "col-span-1 row-span-2", // tall
+                "col-span-1 row-span-1", // small
+                "col-span-1 sm:col-span-2 row-span-1", // wide
+              ];
+              spanClass = pattern[i % pattern.length];
+            }
+
+            return (
+              <GalleryCard
+                key={item.id}
+                item={item}
+                index={i}
+                spanClass={spanClass}
+                onClick={() => onItemClick(item)}
+              />
+            );
+          })}
         </div>
 
         {/* Loading Skeleton */}

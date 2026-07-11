@@ -7,15 +7,18 @@ import CommunitySection from "../components/communities/CommunitySection";
 import GallerySection from "../components/gallery/GallerySection";
 import ShareStorySection from "../components/cta/ShareStorySection";
 import Footer from "../components/layout/Footer";
+import { useAdminData } from "../data/AdminContext";
 
 const Home = () => {
+  const { siteSettings } = useAdminData();
+
   return (
     <main className="min-h-screen">
       {/* Navbar - Fixed, transparent over hero */}
       <Navbar />
 
       {/* 1. Hero Section */}
-      <HeroSection />
+      <HeroSection settings={siteSettings} />
 
       {/* 2. Popular Places */}
       <PopularPlaces />

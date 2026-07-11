@@ -9,13 +9,7 @@ import UploadBanner from "../components/gallery/UploadBanner";
 import { galleryData } from "../data/galleryData";
 import type { GalleryItem } from "../data/galleryData";
 import { useContributions } from "../data/ContributionContext";
-
-// Import other data sources
-import { allDistricts } from "../data/districtsData";
-import { featuredTrips } from "../data/tourismData";
-import { cultureData } from "../data/cultureData";
-import { tribalArticles } from "../data/tribalArticlesData";
-import { communities } from "../data/communityData";
+import { useAdminData } from "../data/AdminContext";
 import type {
   MediaFilter,
   SortOption,
@@ -28,6 +22,14 @@ export interface ExtendedGalleryItem extends GalleryItem {
 
 const Gallery = () => {
   const { gallerySubmissions } = useContributions();
+  const { 
+    gallery: galleryData, 
+    districts: allDistricts, 
+    tourism: featuredTrips, 
+    culture: cultureData, 
+    tribalArticles, 
+    communities 
+  } = useAdminData();
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
   const [searchQuery, setSearchQuery] = useState("");
@@ -128,8 +130,8 @@ const Gallery = () => {
 
     // Map Communities
     const communityTabItems: ExtendedGalleryItem[] = communities.filter(c => c.image).map(c => {
-      const memberCount = parseInt(c.members.replace(/[^0-9]/g, ''), 10) || 0;
-      const postCount = parseInt(c.posts.replace(/[^0-9]/g, ''), 10) || 0;
+      const memberCount = parseInt((c.members || '').toString().replace(/[^0-9]/g, ''), 10) || 0;
+      const postCount = parseInt((c.posts || '').toString().replace(/[^0-9]/g, ''), 10) || 0;
       return {
         id: baseId++,
         title: c.name,
@@ -157,7 +159,7 @@ const Gallery = () => {
       ...tribeItems,
       ...communityTabItems
     ];
-  }, [gallerySubmissions]);
+  }, [gallerySubmissions, galleryData, allDistricts, featuredTrips, cultureData, tribalArticles, communities]);
 
   // Filter + Sort logic
   const filteredItems = useMemo(() => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cultureData } from '../data/cultureData';
-import { personalities } from './Personalities';
+import { useAdminData } from '../data/AdminContext';
+
 import Container from '../components/layout/Container';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
@@ -37,6 +37,7 @@ interface DiscoverItem {
 
 const Discover = () => {
   const { cultureSubmissions } = useContributions();
+  const { culture: cultureData, personalities } = useAdminData();
   const location = useLocation();
   const [activeCategory, setActiveCategory] = useState(() => {
     const searchParams = new URLSearchParams(location.search);

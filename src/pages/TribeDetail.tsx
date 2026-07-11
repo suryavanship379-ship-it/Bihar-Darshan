@@ -9,6 +9,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { useAdminData } from '../data/AdminContext';
 
 const tribesData: Record<string, any> = {
   santhal: {
@@ -367,7 +368,8 @@ const tribesData: Record<string, any> = {
 
 const TribeDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const tribe = tribesData[id || ""];
+  const { tribes } = useAdminData();
+  const tribe = tribes.find(t => t.id === id) || tribesData[id || ""];
 
   useEffect(() => {
     window.scrollTo(0, 0);

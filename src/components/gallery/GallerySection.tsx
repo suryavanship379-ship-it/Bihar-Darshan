@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ZoomIn } from "lucide-react";
-import { galleryData } from "../../data/galleryData";
+import { useAdminData } from "../../data/AdminContext";
 import type { GalleryItem } from "../../data/galleryData";
 
 const GallerySection = () => {
+  const { gallery: galleryData } = useAdminData();
   const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
 
   // Take the first 9 items from the central gallery data

@@ -4,12 +4,15 @@ import {
   MapPin,
   Star,
   ChevronDown,
-  Quote
+  Quote,
+  X
 } from "lucide-react";
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Container from '../components/layout/Container';
+import { useAdminData } from '../data/AdminContext';
 import { useContributions } from '../data/ContributionContext';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export interface Personality {
   id: number;
@@ -18,6 +21,7 @@ export interface Personality {
   district: string;
   description: string;
   imageUrl: string;
+  fullBio?: string;
 }
 
 export const personalities: Personality[] = [
@@ -118,13 +122,16 @@ export const personalities: Personality[] = [
 ];
 
 export default function Personalities() {
+  const { personalities: allPersonalitiesBase } = useAdminData();
+  const { personalitySubmissions } = useContributions();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDist, setSelectedDist] = useState('All Districts');
-  const { personalitySubmissions } = useContributions();
+  const [selectedCat, setSelectedCat] = useState('All');
+  const [selectedBio, setSelectedBio] = useState<Personality | null>(null);
 
   const allPersonalities = useMemo(() => {
-    return [...personalitySubmissions, ...personalities];
-  }, [personalitySubmissions]);
+    return [...personalitySubmissions, ...allPersonalitiesBase];
+  }, [personalitySubmissions, allPersonalitiesBase]);
 
   const getUniqueDistricts = () => {
     const dists = allPersonalities.map(p => p.district);
@@ -139,8 +146,6 @@ export default function Personalities() {
     "Literature",
     "Sports",
   ];
-
-  const [selectedCat, setSelectedCat] = useState("All");
 
   const districts = getUniqueDistricts();
 
@@ -264,7 +269,10 @@ export default function Personalities() {
                   </div>
                   
                   <div className="pt-4 mt-auto border-t border-slate-50 flex items-center justify-between">
-                    <button className="text-xs font-black text-slate-400 group-hover:text-orange-500 flex items-center gap-1 uppercase tracking-widest transition-all">
+                    <button 
+                      onClick={() => setSelectedBio(person as unknown as Personality)}
+                      className="text-xs font-black text-slate-400 group-hover:text-orange-500 flex items-center gap-1 uppercase tracking-widest transition-all"
+                    >
                       Read Bio <ChevronDown size={14} className="-rotate-90" />
                     </button>
                     <Quote size={20} className="text-slate-100 group-hover:text-orange-100 transition-colors" />
@@ -281,6 +289,63 @@ export default function Personalities() {
           </div>
         )}
       </div>
+
+      {/* BIO MODAL */}
+      <AnimatePresence>
+        {selectedBio && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-12">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedBio(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+            >
+              <button 
+                onClick={() => setSelectedBio(null)}
+                className="absolute top-4 right-4 z-10 p-2 bg-black/10 hover:bg-black/20 text-slate-800 rounded-full transition-colors backdrop-blur-md"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="w-full md:w-2/5 h-64 md:h-auto relative bg-slate-100 shrink-0">
+                <img 
+                  src={selectedBio.imageUrl} 
+                  alt={selectedBio.name} 
+                  className="w-full h-full object-cover object-top"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x600?text=Profile+Coming+Soon"; }}
+                />
+                <div className="absolute top-4 left-4 flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tighter text-slate-900 shadow-md">
+                   <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span> {selectedBio.category}
+                </div>
+              </div>
+              
+              <div className="w-full md:w-3/5 p-8 md:p-12 overflow-y-auto no-scrollbar">
+                <span className="text-orange-600 text-[11px] font-black uppercase mb-2 flex items-center gap-1.5">
+                  <MapPin size={12} fill="currentColor" /> {selectedBio.district}, Bihar
+                </span>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">{selectedBio.name}</h2>
+                
+                <div className="prose prose-slate prose-lg max-w-none text-slate-600 leading-relaxed">
+                  {selectedBio.fullBio ? (
+                    selectedBio.fullBio.split('\\n').map((paragraph, idx) => (
+                      <p key={idx} className="mb-4">{paragraph}</p>
+                    ))
+                  ) : (
+                    <p>{selectedBio.description}</p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

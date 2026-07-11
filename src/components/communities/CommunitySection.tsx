@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import { communities } from "../../data/communityData";
+import { useAdminData } from "../../data/AdminContext";
 import CommunityCard from "./CommunityCard";
 import Carousel from "../common/Carousel";
 
-const featuredCommunities = communities.slice(0, 5);
-
 const CommunitySection = () => {
+  const { communities } = useAdminData();
+  const featuredCommunities = communities.slice(0, 5);
+
   return (
     <section id="community" className="py-16 sm:py-20 lg:py-24 overflow-hidden">
       <Carousel

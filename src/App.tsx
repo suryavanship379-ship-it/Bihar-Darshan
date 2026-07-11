@@ -19,6 +19,19 @@ import ProductDetails from './pages/ProductDetails';
 import CultureDetails from './pages/CultureDetails';
 import ShareStory from './pages/ShareStory';
 import Personalities from './pages/Personalities';
+import { AdminDataProvider } from './data/AdminContext';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminCulture from './pages/admin/AdminCulture';
+import AdminDistricts from './pages/admin/AdminDistricts';
+import AdminTourism from './pages/admin/AdminTourism';
+import AdminGallery from './pages/admin/AdminGallery';
+import AdminCommunity from './pages/admin/AdminCommunity';
+import AdminMarketplace from './pages/admin/AdminMarketplace';
+import AdminTribes from './pages/admin/AdminTribes';
+import AdminPersonalities from './pages/admin/AdminPersonalities';
+import AdminSettings from './pages/admin/AdminSettings';
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [isTranslating, setIsTranslating] = useState(false);
@@ -50,8 +63,9 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
+    <AdminDataProvider>
+      <Router>
+        <ScrollToTop />
 
       <PageTransition>
         <Routes>
@@ -77,10 +91,27 @@ function App() {
           <Route path="/marketplace/:id" element={<ProductDetails />} />
           <Route path="/share-story" element={<ShareStory />} />
         </Routes>
-      </PageTransition>
-    </Router>
+        </PageTransition>
+
+        {/* Admin Routes (outside PageTransition to avoid translation interference) */}
+        <Routes>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="districts" element={<AdminDistricts />} />
+            <Route path="culture" element={<AdminCulture />} />
+            <Route path="tourism" element={<AdminTourism />} />
+            <Route path="gallery" element={<AdminGallery />} />
+            <Route path="community" element={<AdminCommunity />} />
+            <Route path="marketplace" element={<AdminMarketplace />} />
+            <Route path="tribes" element={<AdminTribes />} />
+            <Route path="personalities" element={<AdminPersonalities />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AdminDataProvider>
   );
 }
 
 export default App;
-

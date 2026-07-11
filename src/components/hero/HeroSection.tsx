@@ -1,13 +1,18 @@
 import { motion } from "framer-motion";
-import { Landmark, Map, Utensils, Sparkles, MessageSquare } from "lucide-react";
+import { Landmark, Map, Utensils, Sparkles, MessageSquare, ArrowRight, Compass, Play } from "lucide-react";
 import heroImage from "../../assets/hero.png";
+import type { SiteSettings } from "../../data/AdminContext";
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  settings?: SiteSettings;
+}
+
+const HeroSection = ({ settings }: HeroSectionProps) => {
   return (
     <section id="home" className="relative min-h-screen lg:h-screen py-24 lg:py-0 overflow-hidden">
       {/* Hero Background */}
       <img
-        src={heroImage}
+        src={settings?.heroImage || heroImage}
         alt="Bihar Heritage Monument"
         className="absolute inset-0 w-full h-full object-cover"
         loading="eager"
@@ -24,9 +29,9 @@ const HeroSection = () => {
           transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl text-white leading-[1.1] tracking-tight">
-            Discover the
+            {settings ? settings.heroTitle : "Discover the"}
             <br />
-            Soul of <span className="text-gold italic inline-block" style={{ fontFamily: 'var(--font-signature)', fontSize: '1.15em', lineHeight: '0.8' }}>Bihar</span>
+            <span className="text-gold italic inline-block" style={{ fontFamily: 'var(--font-signature)', fontSize: '1.15em', lineHeight: '0.8' }}>{settings ? settings.heroSubtitle : "Bihar"}</span>
           </h1>
 
           <motion.div
@@ -36,8 +41,7 @@ const HeroSection = () => {
             className="mt-6 sm:mt-8"
           >
             <p className="text-white/80 text-sm sm:text-base md:text-lg max-w-3xl mx-auto font-light leading-relaxed">
-              Journey through ancient civilizations, sacred temples, breathtaking landscapes,
-              vibrant festivals, authentic cuisine, and modern stories waiting to be explored.
+              {settings ? settings.heroDescription : "Journey through ancient civilizations, sacred temples, breathtaking landscapes, vibrant festivals, authentic cuisine, and modern stories waiting to be explored."}
             </p>
           </motion.div>
 

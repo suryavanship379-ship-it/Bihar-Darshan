@@ -1,18 +1,20 @@
 import { useState, useMemo, useEffect } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import DistrictsPageMap from "../components/districts/DistrictsPageMap";
 import DistrictGridCard from "../components/districts/DistrictGridCard";
+import { useAdminData } from "../data/AdminContext";
 import {
-  allDistricts,
   geoNameToDisplayName,
   displayNameToGeoName,
 } from "../data/districtsData";
 import biharHeritage from "../assets/bihar-heritage.png";
 
 const Districts = () => {
+  const { districts: allDistricts } = useAdminData();
   const [hoveredCardDistrict, setHoveredCardDistrict] = useState<string | null>(
     null
   );

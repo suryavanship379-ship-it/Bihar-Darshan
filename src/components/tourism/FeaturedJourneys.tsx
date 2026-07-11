@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, CheckCircle2, ShieldCheck, Heart, Tag } from "lucide-react";
-import { featuredTrips } from "../../data/tourismData";
+import { useAdminData } from "../../data/AdminContext";
 import JourneyCard from "./JourneyCard";
 
 // ─── Feature Strip ──────────────────────────────────────────────────────────
@@ -57,6 +57,7 @@ const FeatureStrip = () => (
 
 // ─── Main Section ────────────────────────────────────────────────────────────
 const FeaturedJourneys = () => {
+  const { tourism: featuredTrips } = useAdminData();
   // Prepare 12 cards by repeating available featuredTrips if necessary
   const totalToShow = 12;
   const cards = Array.from({ length: totalToShow }).map((_, i) => featuredTrips[i % featuredTrips.length]);
