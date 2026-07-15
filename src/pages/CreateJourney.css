@@ -1,0 +1,380 @@
+.create-journey-wrapper {
+  background-color: #0b0806;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #f7ede2;
+  position: relative;
+  overflow-x: hidden;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.create-journey-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(11, 8, 6, 0.4) 0%, rgba(11, 8, 6, 0.85) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Faint background decorative elements */
+.bg-decor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  color: #D4A017;
+  opacity: 0.04;
+  transition: opacity 0.5s ease;
+}
+
+.bg-decor-left {
+  top: 10%;
+  left: -80px;
+  width: 400px;
+  height: 400px;
+}
+
+.bg-decor-right {
+  bottom: 10%;
+  right: -80px;
+  width: 380px;
+  height: 460px;
+}
+
+.create-journey-content {
+  flex-grow: 1;
+  padding: 120px 24px 80px 24px;
+  position: relative;
+  z-index: 5;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.create-journey-panel {
+  background: rgba(18, 14, 11, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 2rem;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  border: 1.5px solid rgba(212, 160, 23, 0.22);
+  padding: 56px 44px;
+  box-sizing: border-box;
+}
+
+/* Typography */
+.create-journey-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.create-journey-subtitle {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+/* Sections */
+.form-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1.5rem;
+  margin-bottom: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 160, 23, 0.15);
+  transition: all 0.3s ease;
+}
+
+.form-section-header {
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  user-select: none;
+  color: #ffffff;
+}
+
+.form-section-header h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-icon {
+  color: #D4A017;
+}
+
+.form-section-content {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Inputs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-control-dark {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  padding: 14px 18px;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.03);
+  color: #ffffff;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.form-control-dark::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 300;
+}
+
+.form-control-dark:focus {
+  outline: none;
+  border-color: #D4A017;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+textarea.form-control-dark {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Drag & Drop Upload Zone */
+.upload-zone {
+  border: 2px dashed rgba(212, 160, 23, 0.5);
+  border-radius: 1.25rem;
+  background-color: rgba(212, 160, 23, 0.02);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-zone:hover, .upload-zone.drag-active {
+  border-color: #D4A017;
+  background-color: rgba(212, 160, 23, 0.05);
+  transform: translateY(-2px);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1), 0 10px 24px rgba(212, 160, 23, 0.1);
+}
+
+.upload-icon {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(212, 160, 23, 0.35);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D4A017;
+  transition: all 0.3s ease;
+  z-index: 2;
+  margin-bottom: 16px;
+}
+
+.upload-zone:hover .upload-icon {
+  transform: scale(1.08);
+  border-color: #D4A017;
+  background-color: rgba(212, 160, 23, 0.1);
+}
+
+.upload-text {
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.upload-subtext {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.preview-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.remove-image-btn:hover {
+  background: rgba(217, 56, 56, 0.9);
+}
+
+/* Actions */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+  justify-content: flex-end;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #D4A017;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 14px 28px;
+  border-radius: 0.75rem;
+  border: 1.5px solid rgba(212, 160, 23, 0.4);
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(212, 160, 23, 0.05);
+  border-color: #D4A017;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #E6B52F 0%, #D4A017 100%);
+  color: #3b2412;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 14px 32px;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 16px rgba(212, 160, 23, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #F0C343 0%, #E6B52F 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 160, 23, 0.35);
+}
+
+/* Masonry / Grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: #1a1512;
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  cursor: grab;
+}
+
+.gallery-item:active {
+  cursor: grabbing;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Previews container */
+.live-preview-container {
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  border-radius: 1.5rem;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  margin-top: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.live-preview-label {
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  background: #D4A017;
+  color: #3b2412;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* Custom Overrides for dark theme in form elements */
+.gallery-item-row {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 160, 23, 0.15);
+}
+
+.activity-row {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.day-container {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 160, 23, 0.15);
+}

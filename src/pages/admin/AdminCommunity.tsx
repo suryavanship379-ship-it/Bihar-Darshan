@@ -82,9 +82,12 @@ const AdminCommunity = () => {
               </div>
             )
           },
-          { header: 'Community Name', accessor: 'name', className: 'font-semibold text-white' },
+          { header: 'Community', accessor: 'name', className: 'font-semibold text-white' },
           { header: 'Category', accessor: 'category' },
           { header: 'Members', accessor: 'members' },
+          { header: 'Posts', accessor: 'posts' },
+          { header: 'Status', accessor: () => 'Active' },
+          { header: 'Created By', accessor: () => 'Admin' },
         ]}
       />
 

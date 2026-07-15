@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useContributions } from "../../data/ContributionContext";
 import bodhGaya from "../../assets/bodh-gaya.png";
 import nalanda from "../../assets/nalanda.png";
 import patnaSahib from "../../assets/patna-sahib.png";
@@ -8,7 +10,7 @@ import vaishali from "../../assets/vaishali.png";
 import valmiki from "../../assets/W.jfif"; // Placeholder for wildlife
 import biharFood from "../../assets/bihar-food.png";
 
-const journeys = [
+const originalJourneys = [
   {
     id: "1",
     image: bodhGaya,
@@ -54,6 +56,15 @@ const journeys = [
 ];
 
 const FeaturedJourneys = () => {
+  const [showAll, setShowAll] = useState(false);
+  const { journeySubmissions } = useContributions();
+
+  // Prepend user-created journeys so the newest ones show up first
+  const combinedJourneys = [...journeySubmissions, ...originalJourneys];
+  
+  // Show only the first 3 by default, or all if showAll is true
+  const displayJourneys = showAll ? combinedJourneys : combinedJourneys.slice(0, 3);
+
   return (
     <section className="py-24 bg-[#F8F5EF]">
       <div className="container mx-auto px-6 max-w-[1200px]">
@@ -81,20 +92,31 @@ const FeaturedJourneys = () => {
               <div className="hidden md:block h-[2px] w-12 bg-[#c19a5b]" />
             </motion.h2>
           </div>
-          <button className="flex items-center gap-2 text-sm font-bold text-[#3e2723] hover:text-[#c19a5b] transition-colors border border-[#3e2723]/20 px-4 py-2 rounded-full hover:border-[#c19a5b]">
-            See all experiences <ArrowRight size={16} />
-          </button>
+          <div className="flex items-center gap-4">
+            <Link 
+              to="/tourism/create-journey" 
+              className="flex items-center gap-2 text-sm font-bold text-white bg-[#c19a5b] px-6 py-2 rounded-full hover:bg-[#a8864d] transition-colors shadow-sm"
+            >
+              Create
+            </Link>
+            <button 
+              onClick={() => setShowAll(!showAll)}
+              className="flex items-center gap-2 text-sm font-bold text-[#3e2723] hover:text-[#c19a5b] transition-colors border border-[#3e2723]/20 px-4 py-2 rounded-full hover:border-[#c19a5b]"
+            >
+              {showAll ? "Show Less" : "See all experiences"} <ArrowRight size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {journeys.map((trip, i) => (
+          {displayJourneys.map((trip, i) => (
             <motion.div
-              key={i}
+              key={trip.id + i.toString()}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.7, ease: "easeOut" }}
+              transition={{ delay: (i % 6) * 0.1, duration: 0.7, ease: "easeOut" }}
               className="h-full"
             >
               <Link 

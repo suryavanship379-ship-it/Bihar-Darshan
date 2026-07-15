@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Award, FileText, CheckCircle2, Clock, Edit3, X, Image as ImageIcon, LogOut } from 'lucide-react';
+import { Share2, Award, FileText, CheckCircle2, Clock, Edit3, X, LogOut, Users, Shield, Bell, Trophy, Megaphone, Eye, Trash2 } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
@@ -8,11 +8,16 @@ import Container from '../components/layout/Container';
 
 // Mock Posts Data
 const mockPosts = [
-  // ... (keeping mock data as is up to the component)
-  { id: 1, title: "Exploring the Ruins of Nalanda", date: "2023-10-15", status: "posted", image: "/images/culture/rajgir-mahotsav.png", excerpt: "A mesmerizing journey through the ancient university and its profound historical significance." },
-  { id: 2, title: "My experience at Sonepur Mela", date: "2023-11-20", status: "posted", image: "/images/culture/sonepur-mela.png", excerpt: "Witnessing the grandeur of Asia's largest cattle fair was an unforgettable cultural immersion." },
-  { id: 3, title: "The Art of Madhubani Painting", date: "2024-01-05", status: "under verification", image: "/images/culture/hero-artwork.png", excerpt: "Learning the intricate details and rich storytelling from local artisans in the Mithila region." },
-  { id: 4, title: "Tasting Authentic Litti Chokha", date: "2024-02-12", status: "under verification", image: "/images/culture/litti-chokha.png", excerpt: "A culinary adventure in the bustling streets of Patna, savoring the true taste of Bihar." }
+  { id: 1, title: "Exploring the Ruins of Nalanda", date: "Oct 15, 2023", views: "1.2K Views", category: "Heritage", status: "published", image: "/images/culture/rajgir-mahotsav.png" },
+  { id: 2, title: "My Experience at Sonepur Mela", date: "Oct 10, 2023", views: "956 Views", category: "Culture", status: "published", image: "/images/culture/sonepur-mela.png" },
+  { id: 3, title: "Ancient Temples of Bodh Gaya", date: "Oct 5, 2023", views: "1.8K Views", category: "Spirituality", status: "published", image: "/images/culture/hero-artwork.png" },
+];
+
+const mockNotifications = [
+  { id: 1, group: 'Today', type: 'approved', title: 'Post Approved', message: 'Your article "Exploring the Ruins of Nalanda" has been approved and published.', time: '2 hours ago', unread: true },
+  { id: 2, group: 'Yesterday', type: 'reward', title: 'Reward Points Earned', message: 'You earned 100 reward points for your contribution.', time: 'Yesterday, 10:30 AM', unread: true },
+  { id: 3, group: 'Yesterday', type: 'badge', title: 'Badge Earned', message: 'Congratulations! You earned the "Heritage Explorer" badge.', time: 'Yesterday, 09:15 AM', unread: true },
+  { id: 4, group: 'Older', type: 'announcement', title: 'Admin Announcement', message: 'New guidelines for content submission are now updated.', time: '2 days ago', unread: false },
 ];
 
 const PREDEFINED_AVATARS = [
@@ -35,7 +40,7 @@ const Profile = () => {
   // Check auth status synchronously before rendering 
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
-  const [activeTab, setActiveTab] = useState<'posted' | 'verification'>('posted');
+  const [activeTab, setActiveTab] = useState<'published' | 'pending' | 'notifications'>('published');
 
   // Profile State
   const [profile, setProfile] = useState(() => {
@@ -48,6 +53,9 @@ const Profile = () => {
       background: "/images/culture/hero-artwork.png",
       rewardPoints: 1250,
       totalPosts: 8,
+      communitiesJoined: 12,
+      pendingPosts: 2,
+      badgesEarned: 5,
     };
   });
 
@@ -107,171 +115,216 @@ const Profile = () => {
     setIsEditing(false);
   };
 
-  const filteredPosts = mockPosts.filter(p => activeTab === 'posted' ? p.status === 'posted' : p.status === 'under verification');
-
   return (
-    <div className="min-h-screen font-sans bg-[#FCEBD3]">
+    <div className="min-h-screen font-sans bg-[#FDFBF7]">
       <Navbar forceDarkText={true} />
-
-      <div className="pt-24 pb-12 bg-gradient-to-b from-white to-[#FCEBD3]">
+      
+      <div className="pt-24 pb-12">
         <Container>
-          {/* Profile Header Card */}
-          <div className="bg-[#FCEBD3] rounded-[2rem] shadow-xl p-8 md:p-12 border-2 border-[#F4A261] relative overflow-hidden">
-            {/* Background Pattern Overlay */}
-            <div
-              className="absolute inset-0 opacity-10 pointer-events-none transition-all duration-500"
-              style={{
-                backgroundImage: `url("${profile.background}")`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                filter: 'sepia(100%) hue-rotate(5deg) saturate(200%)'
-              }}>
-            </div>
-
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-              {/* Avatar */}
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white ring-4 ring-[#F4A261] shadow-xl overflow-hidden bg-[#FCEBD3] relative z-20 shrink-0">
-                <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
-              </div>
-
-              {/* User Info */}
-              <div className="flex-1 text-center md:text-left relative z-20">
-                <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                  <svg className="w-6 h-6 text-[#F4A261]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15 9H22L16 14L18 21L12 17L6 21L8 14L2 9H9L12 2Z" /></svg>
-                  <h1 className="font-display font-bold text-4xl md:text-5xl text-[#8B3E2F]">{profile.name}</h1>
-                  <svg className="w-6 h-6 text-[#F4A261]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15 9H22L16 14L18 21L12 17L6 21L8 14L2 9H9L12 2Z" /></svg>
+          {/* Top Banner */}
+          <div className="bg-[#FFF6E9] rounded-2xl p-8 border border-[#F4A261]/30 relative overflow-hidden mb-6">
+             {/* Background pattern overlay */}
+             <div 
+               className="absolute inset-0 opacity-15 pointer-events-none" 
+               style={{ 
+                 backgroundImage: `url("${profile.background}")`, 
+                 backgroundSize: 'cover', 
+                 backgroundPosition: 'center',
+                 filter: 'sepia(80%) hue-rotate(5deg) saturate(150%)'
+               }}
+             ></div>
+             
+             <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start gap-8">
+                {/* Avatar */}
+                <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden shrink-0 ring-2 ring-[#F4A261]/30 bg-white">
+                   <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
                 </div>
-                <p className="text-[#F4A261] uppercase tracking-[0.2em] font-bold text-sm mb-4">{profile.title}</p>
-                <p className="text-[#8B3E2F] text-sm mb-6 max-w-lg leading-relaxed font-medium">{profile.bio}</p>
-
-                <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                  <div className="flex items-center gap-2 bg-[#FCEBD3] border border-[#FCEBD3] px-4 py-2 rounded-xl shadow-sm">
-                    <FileText className="text-[#8B3E2F] w-5 h-5" />
-                    <span className="font-bold text-[#8B3E2F]">{profile.totalPosts} Posts</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#FCEBD3] border border-[#FCEBD3] px-4 py-2 rounded-xl shadow-sm">
-                    <Award className="text-[#F4A261] w-5 h-5" />
-                    <span className="font-bold text-[#8B3E2F]">{profile.rewardPoints} Reward Points</span>
-                  </div>
+                
+                {/* User Info */}
+                <div className="flex-1 text-center lg:text-left pt-2">
+                   <h1 className="font-display font-bold text-4xl lg:text-5xl text-[#8B3E2F] flex items-center justify-center lg:justify-start gap-3 mb-2">
+                     <span className="text-[#F4A261] text-3xl">★</span> {profile.name} <span className="text-[#F4A261] text-3xl">★</span>
+                   </h1>
+                   <p className="text-[#F4A261] uppercase tracking-[0.15em] font-bold text-sm mb-4">{profile.title}</p>
+                   <p className="text-gray-700 text-sm mb-6 max-w-xl">{profile.bio}</p>
+                   
+                   <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                      <div className="flex items-center gap-2 bg-white/70 border border-[#F4A261]/30 px-4 py-2 rounded-lg text-sm text-[#8B3E2F] font-bold shadow-sm">
+                        <FileText className="w-4 h-4 text-[#8B3E2F]" /> {profile.totalPosts} Posts
+                      </div>
+                      <div className="flex items-center gap-2 bg-white/70 border border-[#F4A261]/30 px-4 py-2 rounded-lg text-sm text-[#8B3E2F] font-bold shadow-sm">
+                        <Trophy className="w-4 h-4 text-[#F4A261]" /> {profile.rewardPoints} Reward Points
+                      </div>
+                   </div>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex flex-wrap justify-center gap-3 mt-4 lg:mt-0">
+                  <button onClick={openEditModal} className="px-5 py-2.5 bg-white border border-[#8B3E2F]/20 text-[#8B3E2F] rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-gray-50 transition shadow-sm">
+                    <Edit3 className="w-4 h-4" /> Edit Profile
+                  </button>
+                  <button onClick={handleShare} className="px-5 py-2.5 bg-[#8B3E2F] text-white rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-[#7a3528] transition shadow-sm">
+                    <Share2 className="w-4 h-4" /> Share Profile
+                  </button>
+                  <button onClick={handleLogout} className="px-5 py-2.5 bg-white border border-red-200 text-red-600 rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-red-50 transition shadow-sm">
+                    <LogOut className="w-4 h-4" /> Logout
+                  </button>
+                </div>
+             </div>
+          </div>
+          
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+            {[
+              { icon: <Users className="w-6 h-6 text-[#8B3E2F]" />, label: 'Communities Joined', value: profile.communitiesJoined, bg: 'bg-[#FFF3E5]' },
+              { icon: <FileText className="w-6 h-6 text-[#D97706]" />, label: 'Published Posts', value: profile.totalPosts, bg: 'bg-[#FEF3C7]' },
+              { icon: <Clock className="w-6 h-6 text-[#B45309]" />, label: 'Pending Posts', value: profile.pendingPosts, bg: 'bg-[#FFEDD5]' },
+              { icon: <Award className="w-6 h-6 text-[#EAB308]" />, label: 'Reward Points', value: profile.rewardPoints, bg: 'bg-[#FEF08A]/50' },
+              { icon: <Shield className="w-6 h-6 text-[#EA580C]" />, label: 'Badges Earned', value: profile.badgesEarned, bg: 'bg-[#FFEDD5]' },
+            ].map((stat, idx) => (
+              <div key={idx} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition">
+                <div className={`w-12 h-12 rounded-full ${stat.bg} flex items-center justify-center shrink-0`}>
+                  {stat.icon}
+                </div>
+                <div>
+                  <div className="font-bold text-2xl text-gray-800">{stat.value}</div>
+                  <div className="text-xs text-gray-500 font-semibold leading-tight mt-0.5">{stat.label.split(' ').map((w,i)=><span key={i} className="block">{w}</span>)}</div>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className="mt-6 md:mt-0 flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={openEditModal}
-                  className="bg-white border-2 border-[#8B3E2F] text-[#8B3E2F] hover:bg-[#FCEBD3] font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm group"
+            ))}
+          </div>
+          
+          {/* Main Content Area */}
+          <div className="max-w-5xl mx-auto mb-20">
+            <div className="space-y-6">
+              
+              {/* Tabs */}
+              <div className="flex flex-wrap border-b border-gray-200">
+                <button 
+                  onClick={() => setActiveTab('published')}
+                  className={`flex-1 min-w-[150px] py-4 flex justify-center items-center gap-2 font-bold text-sm transition ${activeTab === 'published' ? 'border-b-2 border-[#8B3E2F] text-[#8B3E2F]' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
-                  <Edit3 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span>Edit</span>
+                  <FileText className="w-4 h-4" /> Published Posts
                 </button>
-                <button
-                  onClick={handleShare}
-                  className="bg-[#8B3E2F] hover:bg-[#8B3E2F] text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group"
+                <button 
+                  onClick={() => setActiveTab('pending')}
+                  className={`flex-1 min-w-[150px] py-4 flex justify-center items-center gap-2 font-bold text-sm transition ${activeTab === 'pending' ? 'border-b-2 border-[#8B3E2F] text-[#8B3E2F]' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
-                  <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span>Share</span>
+                  <Clock className="w-4 h-4" /> Pending Review
                 </button>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500/10 hover:bg-red-500/20 text-red-700 border-2 border-red-500/30 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm group"
+                <button 
+                  onClick={() => setActiveTab('notifications')}
+                  className={`flex-1 min-w-[150px] py-4 flex justify-center items-center gap-2 font-bold text-sm transition ${activeTab === 'notifications' ? 'border-b-2 border-[#8B3E2F] text-[#8B3E2F]' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
-                  <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span>Logout</span>
+                  <Bell className="w-4 h-4" /> Notifications 
+                  <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none">12</span>
                 </button>
               </div>
+              
+              <h2 className="text-xl font-bold text-gray-800 pt-2">
+                {activeTab === 'published' && 'Published Posts'}
+                {activeTab === 'pending' && 'Pending Posts'}
+                {activeTab === 'notifications' && 'Notifications'}
+              </h2>
+              
+              {activeTab === 'published' && (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {mockPosts.map((post) => (
+                      <div key={post.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col group hover:shadow-md transition">
+                        <div className="h-44 relative overflow-hidden">
+                          <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                          <div className="absolute bottom-3 left-3 bg-[#FFF6E9] text-[#8B3E2F] text-[10px] font-bold px-2 py-1 rounded-md shadow-sm">
+                            {post.category}
+                          </div>
+                          <div className="absolute top-3 right-3 bg-green-50 text-green-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-green-200 shadow-sm">
+                            Published
+                          </div>
+                        </div>
+                        <div className="p-5 flex-1 flex flex-col">
+                          <h3 className="font-bold text-gray-900 text-[15px] mb-3 leading-snug">{post.title}</h3>
+                          <div className="flex items-center justify-between text-[11px] text-gray-500 mb-4 mt-auto font-medium">
+                            <span>{post.date}</span>
+                            <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> {post.views}</span>
+                          </div>
+                          <div className="flex justify-between border-t border-gray-100 pt-4">
+                            <button className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 text-xs font-bold transition"><Eye className="w-4 h-4" /> View</button>
+                            <button className="flex items-center gap-1.5 text-gray-500 hover:text-blue-600 text-xs font-bold transition"><Edit3 className="w-4 h-4" /> Edit</button>
+                            <button className="flex items-center gap-1.5 text-red-400 hover:text-red-600 text-xs font-bold transition"><Trash2 className="w-4 h-4" /> Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-center mt-8">
+                    <button className="px-6 py-2.5 border-2 border-[#8B3E2F]/20 text-[#8B3E2F] rounded-full font-bold text-sm hover:bg-[#8B3E2F] hover:text-white transition shadow-sm">
+                      View All Published Posts
+                    </button>
+                  </div>
+                </>
+              )}
+              
+              {activeTab === 'pending' && (
+                <div className="py-12 text-center">
+                  <p className="text-gray-500 font-medium">No pending posts found.</p>
+                </div>
+              )}
+              
+              {activeTab === 'notifications' && (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold text-gray-800">Your Notifications</h2>
+                    <button className="text-[11px] font-bold border border-red-200 text-red-500 px-3 py-1.5 rounded-full hover:bg-red-50 transition">Mark all as read</button>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    {['Today', 'Yesterday', 'Older'].map(group => {
+                      const groupNotifs = mockNotifications.filter(n => n.group === group);
+                      if (groupNotifs.length === 0) return null;
+                      
+                      return (
+                        <div key={group}>
+                          <h3 className="text-xs font-bold text-gray-800 mb-4">{group}</h3>
+                          <div className="space-y-5">
+                            {groupNotifs.map(notif => (
+                              <div key={notif.id} className="flex gap-3 relative">
+                                <div className="shrink-0 mt-0.5">
+                                  {notif.type === 'approved' && <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><CheckCircle2 className="w-4 h-4" /></div>}
+                                  {notif.type === 'reward' && <div className="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><Trophy className="w-4 h-4" /></div>}
+                                  {notif.type === 'badge' && <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center"><Award className="w-4 h-4" /></div>}
+                                  {notif.type === 'announcement' && <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><Megaphone className="w-4 h-4" /></div>}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-start gap-2">
+                                    <h4 className="font-bold text-[13px] text-gray-900 leading-tight">{notif.title}</h4>
+                                    {notif.unread && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 mt-1"></div>}
+                                  </div>
+                                  <p className="text-[12px] text-gray-600 mt-1 line-clamp-2 leading-relaxed">{notif.message}</p>
+                                  <p className="text-[10px] text-gray-400 mt-1.5 font-medium">{notif.time}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="flex justify-center mt-6 pt-6 border-t border-gray-100">
+                    <button className="px-6 py-2.5 border-2 border-[#8B3E2F]/20 text-[#8B3E2F] rounded-full text-sm font-bold hover:bg-[#8B3E2F] hover:text-white transition shadow-sm">
+                      View All Notifications
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </div>
+            
           </div>
         </Container>
       </div>
-
-      <Container>
-        {/* Ornate Divider */}
-        <div className="w-full pb-8 flex justify-center">
-          <img src="/images/culture/ornate-divider.png" alt="" className="h-4 opacity-50" onError={(e) => e.currentTarget.style.display = 'none'} />
-        </div>
-
-        {/* Tabs */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-[#FCEBD3] p-1.5 rounded-full shadow-md border-2 border-[#F4A261] inline-flex relative">
-            <button
-              onClick={() => setActiveTab('posted')}
-              className={`relative z-10 px-8 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-colors duration-300 ${activeTab === 'posted' ? 'text-white' : 'text-[#8B3E2F] hover:bg-white/50'}`}
-            >
-              {activeTab === 'posted' && (
-                <motion.div
-                  layoutId="activeTabIndicator"
-                  className="absolute inset-0 bg-[#8B3E2F] rounded-full shadow-md z-[-1]"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              Posted
-            </button>
-            <button
-              onClick={() => setActiveTab('verification')}
-              className={`relative z-10 px-8 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-colors duration-300 ${activeTab === 'verification' ? 'text-white' : 'text-[#8B3E2F] hover:bg-white/50'}`}
-            >
-              {activeTab === 'verification' && (
-                <motion.div
-                  layoutId="activeTabIndicator"
-                  className="absolute inset-0 bg-[#8B3E2F] rounded-full shadow-md z-[-1]"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              Under Verification
-            </button>
-          </div>
-        </div>
-
-        {/* Posts Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-20">
-          <AnimatePresence mode="popLayout">
-            {filteredPosts.map((post) => (
-              <motion.div
-                layout
-                key={post.id}
-                initial={{ opacity: 0, scale: 0.95, x: 50 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.95, x: -50 }}
-                transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
-                className="bg-white rounded-[2rem] overflow-hidden shadow-lg border border-[#FCEBD3] flex flex-col sm:flex-row group"
-              >
-                <div className="sm:w-2/5 h-48 sm:h-auto overflow-hidden relative">
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-sm">
-                    {post.status === 'posted'
-                      ? <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      : <Clock className="w-5 h-5 text-gold-dark" />
-                    }
-                  </div>
-                </div>
-                <div className="p-6 sm:w-3/5 flex flex-col justify-center">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full ${post.status === 'posted' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
-                      {post.status === 'posted' ? 'Published' : 'Pending'}
-                    </span>
-                    <span className="text-gray-400 text-xs">{post.date}</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-[#8B3E2F] font-serif mb-3 leading-tight">{post.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-3">{post.excerpt}</p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {filteredPosts.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="col-span-full py-12 text-center"
-            >
-              <p className="text-gray-500 text-lg">No posts found in this category.</p>
-            </motion.div>
-          )}
-        </motion.div>
-      </Container>
-
+      
       <Footer />
 
       {/* Edit Profile Modal Overlay */}

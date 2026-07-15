@@ -28,6 +28,15 @@ export interface Poll {
   options: PollOption[];
 }
 
+export interface Comment {
+  id: string;
+  author: string;
+  authorAvatar: string;
+  timeAgo: string;
+  content: string;
+  replies?: Comment[];
+}
+
 export interface Discussion {
   id: string;
   communityId: string;
@@ -43,6 +52,7 @@ export interface Discussion {
   mediaUrl?: string;
   mediaType?: 'image' | 'video';
   poll?: Poll;
+  comments?: Comment[];
 }
 
 export interface Contributor {

@@ -5,6 +5,7 @@ import Districts from './pages/Districts';
 import Discover from './pages/Discover';
 import Tourism from './pages/Tourism';
 import JourneyDetails from './pages/JourneyDetails';
+import CreateJourney from './pages/CreateJourney';
 import Tribals from './pages/Tribals';
 import TribeDetail from './pages/TribeDetail';
 import Gallery from './pages/Gallery';
@@ -82,6 +83,7 @@ function App() {
             <Route path="/marketplace" element={<MarketPlace />} />
             <Route path="/Marketplace" element={<MarketPlace />} />
             <Route path="/tourism" element={<Tourism />} />
+            <Route path="/tourism/create-journey" element={<CreateJourney />} />
             <Route path="/tourism/:id" element={<JourneyDetails />} />
             <Route path="/tribals" element={<Tribals />} />
             <Route path="/tribals/:id" element={<TribeDetail />} />

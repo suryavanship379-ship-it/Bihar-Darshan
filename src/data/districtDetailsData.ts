@@ -18,9 +18,9 @@ export interface SeasonRow {
     whyInTouristList: string[];
     topAttractions: {
   name: string;
-  district: string;
+  district?: string;
   image: string;
-  shortDescription: string;
+  shortDescription?: string;
   description: string;
   rating?: number;
   bestTime?: string;
