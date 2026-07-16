@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Globe, Menu, X } from "lucide-react";
+import { Globe, Menu, X, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/new-logo.png";
+import { onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
+import { auth } from "../../lib/firebase";
 
 type NavItem = {
   label: string;
@@ -37,17 +39,13 @@ const Navbar = ({ forceDarkText = false, forceWhiteText = false }: NavbarProps =
   const [lang, setLang] = useState(getInitialLang());
   const [langOpen, setLangOpen] = useState(false);
   const location = useLocation();
-
-  // Simple check for authentication mock
-  const isAuthenticated = typeof window !== 'undefined' && localStorage.getItem('isAuthenticated') === 'true';
-  const [userAvatar, setUserAvatar] = useState(localStorage.getItem('userAvatar') || "/images/culture/avatar-man1.png");
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
 
   useEffect(() => {
-    const handleAvatarChange = () => {
-      setUserAvatar(localStorage.getItem('userAvatar') || "/images/culture/avatar-man1.png");
-    };
-    window.addEventListener('userAvatarChanged', handleAvatarChange);
-    return () => window.removeEventListener('userAvatarChanged', handleAvatarChange);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleLanguageChange = (l: string) => {
@@ -172,12 +170,19 @@ const Navbar = ({ forceDarkText = false, forceWhiteText = false }: NavbarProps =
             )}
           </div>
 
-          {isAuthenticated ? (
+          {currentUser ? (
             <Link
               to="/profile"
-              className="hidden lg:block rounded-full border-2 border-transparent hover:border-brand-gold transition-all duration-300 overflow-hidden w-10 h-10 ring-2 ring-white/20"
+              className={`hidden lg:flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${scrolled || forceDarkText
+                ? "border-black/20 hover:border-black/40"
+                : "border-white/20 hover:border-white/40"
+                }`}
             >
-              <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
+              {currentUser.photoURL ? (
+                <img src={currentUser.photoURL} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User size={18} className={scrolled || forceDarkText ? "text-black" : "text-white"} />
+              )}
             </Link>
           ) : (
             <Link
@@ -215,26 +220,28 @@ const Navbar = ({ forceDarkText = false, forceWhiteText = false }: NavbarProps =
                 </Link>
               </div>
             ))}
-            {isAuthenticated ? (
-              <Link
-                to="/profile"
-                onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 text-lg font-bold transition-colors ${location.pathname === "/profile" ? "text-gold" : "text-black/80 dark:text-white/90"}`}
-              >
-                <div className="w-8 h-8 rounded-full overflow-hidden border border-black/10 dark:border-white/10 shrink-0">
-                  <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
-                </div>
-                Profile
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setMobileOpen(false)}
-                className={`text-lg font-bold transition-colors ${location.pathname === "/login" ? "text-gold" : "text-black/80 dark:text-white/90"}`}
-              >
-                Login
-              </Link>
-            )}
+              {currentUser ? (
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center gap-3 w-full py-3.5 rounded-xl bg-gradient-to-r from-gold to-[#b8860b] text-black font-bold uppercase tracking-wider text-sm mt-4 shadow-lg shadow-gold/20"
+                >
+                  {currentUser.photoURL ? (
+                    <img src={currentUser.photoURL} alt="Profile" className="w-6 h-6 rounded-full" />
+                  ) : (
+                    <User size={18} />
+                  )}
+                  My Profile
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-center w-full py-3.5 rounded-xl bg-gradient-to-r from-gold to-[#b8860b] text-black font-bold uppercase tracking-wider text-sm mt-4 shadow-lg shadow-gold/20"
+                >
+                  Login
+                </Link>
+              )}
 
             <Link
               to="/share-story"

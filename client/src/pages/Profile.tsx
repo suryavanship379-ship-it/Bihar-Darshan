@@ -5,6 +5,9 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Container from '../components/layout/Container';
+import { signOut, onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { useEffect } from 'react';
 
 // Mock Posts Data
 const mockPosts = [
@@ -37,8 +40,24 @@ const PREDEFINED_BACKGROUNDS = [
 
 const Profile = () => {
   const navigate = useNavigate();
-  // Check auth status synchronously before rendering 
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setAuthChecking(false);
+      if (user) {
+        setProfile(prev => ({
+          ...prev,
+          name: user.displayName || "User",
+          avatar: user.photoURL || prev.avatar
+        }));
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const [activeTab, setActiveTab] = useState<'published' | 'pending' | 'rejected'>('published');
 
@@ -65,9 +84,13 @@ const Profile = () => {
   const [customAvatarInput, setCustomAvatarInput] = useState("");
   const [isCustomAvatar, setIsCustomAvatar] = useState(false);
 
-  // If not authenticated, instantly redirect them to the login page without rendering the profile page
-  if (!isAuthenticated) {
+  // If not authenticated and check is done, instantly redirect them to the login page without rendering the profile page
+  if (!authChecking && !currentUser) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (authChecking) {
+    return <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">Loading...</div>;
   }
 
   const handleShare = async () => {
@@ -86,9 +109,14 @@ const Profile = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem('isAuthenticated');
-    navigate('/login');
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error("Logout Error", error);
+    }
   };
 
   const openEditModal = () => {

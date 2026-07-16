@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, MapPin, Palette, Plane, Image, Users, Store, Mountain, UserCircle, Settings, LogOut, Menu, X, ChevronRight, Shield
 } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
 
 const sidebarItems = [
   { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
@@ -23,9 +25,13 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('admin_auth');
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/admin/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   const isActive = (path: string) => {

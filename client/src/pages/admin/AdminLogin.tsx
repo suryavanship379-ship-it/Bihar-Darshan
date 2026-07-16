@@ -1,24 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, Shield } from 'lucide-react';
-
-const ADMIN_PASSWORD = 'admin123';
+import { Lock, Eye, EyeOff, Shield, Mail } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
 
 const AdminLogin = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isUnlocking, setIsUnlocking] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
+    try {
+      setError('');
       setIsUnlocking(true);
-      sessionStorage.setItem('admin_auth', 'true');
+      await signInWithEmailAndPassword(auth, email, password);
       setTimeout(() => navigate('/admin'), 600);
-    } else {
-      setError('Invalid password. Access denied.');
+    } catch (err: any) {
+      setIsUnlocking(false);
+      setError('Invalid credentials. Access denied.');
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -45,6 +48,22 @@ const AdminLogin = () => {
         {/* Login Card */}
         <form onSubmit={handleLogin} className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 shadow-2xl">
           <label className="block text-white/50 text-xs font-semibold uppercase tracking-wider mb-3">
+            Admin Email
+          </label>
+          <div className="relative mb-4">
+            <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter admin email"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-white placeholder-white/20 focus:outline-none focus:border-[#D4A017]/50 focus:ring-1 focus:ring-[#D4A017]/20 transition-all text-sm"
+              autoFocus
+              required
+            />
+          </div>
+
+          <label className="block text-white/50 text-xs font-semibold uppercase tracking-wider mb-3">
             Admin Password
           </label>
           <div className="relative mb-6">
@@ -55,7 +74,7 @@ const AdminLogin = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter admin password"
               className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-11 pr-12 py-3.5 text-white placeholder-white/20 focus:outline-none focus:border-[#F4A261]/50 focus:ring-1 focus:ring-[#F4A261]/20 transition-all text-sm"
-              autoFocus
+              required
             />
             <button
               type="button"

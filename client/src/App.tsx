@@ -35,6 +35,7 @@ import AdminMarketplace from './pages/admin/AdminMarketplace';
 import AdminTribes from './pages/admin/AdminTribes';
 import AdminPersonalities from './pages/admin/AdminPersonalities';
 import AdminSettings from './pages/admin/AdminSettings';
+import ProtectedRoute from './components/admin/ProtectedRoute';
 import FloatingSocials from './components/shared/FloatingSocials';
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -104,17 +105,19 @@ function App() {
         {/* Admin Routes (outside PageTransition to avoid translation interference) */}
         <Routes>
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="districts" element={<AdminDistricts />} />
-            <Route path="culture" element={<AdminCulture />} />
-            <Route path="tourism" element={<AdminTourism />} />
-            <Route path="gallery" element={<AdminGallery />} />
-            <Route path="community" element={<AdminCommunity />} />
-            <Route path="marketplace" element={<AdminMarketplace />} />
-            <Route path="tribes" element={<AdminTribes />} />
-            <Route path="personalities" element={<AdminPersonalities />} />
-            <Route path="settings" element={<AdminSettings />} />
+          <Route path="/admin" element={<ProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="districts" element={<AdminDistricts />} />
+              <Route path="culture" element={<AdminCulture />} />
+              <Route path="tourism" element={<AdminTourism />} />
+              <Route path="gallery" element={<AdminGallery />} />
+              <Route path="community" element={<AdminCommunity />} />
+              <Route path="marketplace" element={<AdminMarketplace />} />
+              <Route path="tribes" element={<AdminTribes />} />
+              <Route path="personalities" element={<AdminPersonalities />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
           </Route>
         </Routes>
       </Router>
