@@ -5,6 +5,7 @@ import { AdminModal } from '../../components/admin/AdminModal';
 import { AdminInput, AdminTextarea, AdminSelect, AdminImagePreview } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
 import type { CultureItem } from '../../data/cultureData';
+import { Plus, Trash2 } from 'lucide-react';
 
 const emptyForm: Partial<CultureItem> = {
   title: '',
@@ -12,12 +13,11 @@ const emptyForm: Partial<CultureItem> = {
   district: '',
   image: '',
   description: '',
-  longDescription: '',
-  videoUrl: '',
+  galleryImages: [],
 };
 
 const AdminCulture = () => {
-  const { culture, updateCulture } = useAdminData();
+  const { culture, updateCulture, districts } = useAdminData();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -39,7 +39,7 @@ const AdminCulture = () => {
 
   const handleEdit = (item: CultureItem) => {
     setEditingItem(item);
-    setFormData({ ...item });
+    setFormData(JSON.parse(JSON.stringify(item)));
     setIsModalOpen(true);
   };
 
@@ -62,6 +62,22 @@ const AdminCulture = () => {
       updateCulture([{ ...formData as CultureItem, id: Date.now() }, ...culture]);
     }
     setIsModalOpen(false);
+  };
+
+  const handleGalleryChange = (index: number, value: string) => {
+    const newGallery = [...(formData.galleryImages || [])];
+    newGallery[index] = value;
+    setFormData({ ...formData, galleryImages: newGallery });
+  };
+
+  const addGalleryImage = () => {
+    setFormData({ ...formData, galleryImages: [...(formData.galleryImages || []), ''] });
+  };
+
+  const removeGalleryImage = (index: number) => {
+    const newGallery = [...(formData.galleryImages || [])];
+    newGallery.splice(index, 1);
+    setFormData({ ...formData, galleryImages: newGallery });
   };
 
   return (
@@ -94,8 +110,10 @@ const AdminCulture = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingItem ? 'Edit Culture Item' : 'Add Culture Item'}
+        maxWidth="max-w-3xl"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ROW 1 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AdminInput
               label="Title"
@@ -110,47 +128,88 @@ const AdminCulture = () => {
             >
               <option value="Festival">Festival</option>
               <option value="Food">Food</option>
-              <option value="Art">Art</option>
+              <option value="Personalities">Personalities</option>
             </AdminSelect>
           </div>
 
+          {/* ROW 2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <AdminInput
+            <AdminSelect
               label="District"
               value={formData.district || ''}
               onChange={e => setFormData({ ...formData, district: e.target.value })}
               required
-            />
+            >
+              <option value="">Select a District</option>
+              {districts.map(d => (
+                <option key={d.name} value={d.name}>{d.name}</option>
+              ))}
+            </AdminSelect>
             <AdminInput
-              label="YouTube Video URL"
-              value={formData.videoUrl || ''}
-              onChange={e => setFormData({ ...formData, videoUrl: e.target.value })}
-              placeholder="e.g. https://www.youtube.com/embed/..."
+              label="Thumbnail Image URL"
+              value={formData.image || ''}
+              onChange={e => setFormData({ ...formData, image: e.target.value })}
+              required
             />
           </div>
 
-          <AdminInput
-            label="Image URL"
-            value={formData.image || ''}
-            onChange={e => setFormData({ ...formData, image: e.target.value })}
-            required
-          />
-          <AdminImagePreview url={formData.image || ''} />
+          {/* ROW 3 */}
+          <div>
+            <label className="block text-sm font-medium text-white/70 mb-2">Thumbnail Preview</label>
+            <AdminImagePreview url={formData.image || ''} />
+          </div>
 
+          {/* ROW 4 */}
           <AdminTextarea
-            label="Short Description"
+            label="Description"
             value={formData.description || ''}
             onChange={e => setFormData({ ...formData, description: e.target.value })}
             required
-            rows={3}
+            rows={6}
           />
 
-          <AdminTextarea
-            label="Long Description"
-            value={formData.longDescription || ''}
-            onChange={e => setFormData({ ...formData, longDescription: e.target.value })}
-            rows={5}
-          />
+          {/* ROW 5: Gallery */}
+          <div className="pt-2 border-t border-white/10">
+            <div className="flex justify-between items-center mb-4 mt-2">
+              <label className="block text-sm font-medium text-white/70">Gallery Image URLs</label>
+            </div>
+            
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+              {(formData.galleryImages || []).map((url, index) => (
+                <div key={index} className="p-4 bg-white/5 rounded-xl border border-white/10 relative group">
+                  <button 
+                    type="button" 
+                    onClick={() => removeGalleryImage(index)} 
+                    className="absolute top-3 right-3 text-white/40 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <AdminInput
+                        label={`Image URL ${index + 1}`}
+                        value={url}
+                        onChange={(e) => handleGalleryChange(index, e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/70 mb-2">Preview</label>
+                      <AdminImagePreview url={url} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              <button 
+                type="button" 
+                onClick={addGalleryImage}
+                className="mt-2 text-sm flex items-center gap-1 bg-white/10 px-4 py-2 rounded-lg text-white hover:bg-white/20 transition-colors"
+              >
+                <Plus size={16} /> Add Gallery Image
+              </button>
+            </div>
+          </div>
 
           <div className="pt-4 flex justify-end gap-3 border-t border-white/10">
             <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-white font-medium hover:bg-white/5 transition-colors">

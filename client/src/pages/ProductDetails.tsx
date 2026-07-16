@@ -4,21 +4,27 @@ import { motion } from "framer-motion";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import Container from "../components/layout/Container";
-import { product } from "../data/product";
+import { product as initialProducts } from "../data/product";
+import { useContributions } from "../data/ContributionContext";
 
 import { ArrowLeft, Phone, Mail, MapPin, Globe } from "lucide-react";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { productSubmissions } = useContributions();
 
   const productId = useMemo(() => {
     if (!id) return NaN;
     return Number(id);
   }, [id]);
 
+  const allProducts = useMemo(() => {
+    return [...productSubmissions, ...initialProducts];
+  }, [productSubmissions]);
+
   const selectedProduct = useMemo(
-    () => product.find((item) => item.id === productId),
-    [productId]
+    () => allProducts.find((item) => item.id === productId),
+    [productId, allProducts]
   );
 
   const [selectedImage, setSelectedImage] = useState<string>("");

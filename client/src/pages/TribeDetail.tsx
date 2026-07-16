@@ -510,7 +510,7 @@ const TribeDetail = () => {
 
           {/* Cultural Highlights */}
           <div className="w-full max-w-6xl mx-auto mt-20 mb-20 px-4 lg:px-0 relative z-20">
-            <TribeCulturalSections sections={getTribeCulturalSections(id || '', tribe.englishName)} />
+            <TribeCulturalSections sections={(tribe.cultureSections && tribe.cultureSections.length > 0) ? tribe.cultureSections : getTribeCulturalSections(id || '', tribe.englishName)} />
           </div>
 
           {/* Latest Articles Section */}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, Tag, FileText, Upload, Sparkles, Send, Edit2, ListChecks, Image as ImageIcon } from "lucide-react";
+import { Users, Tag, FileText, Upload, Sparkles, Send, Edit2, ListChecks, Image as ImageIcon, ArrowLeft } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { useContributions } from "../data/ContributionContext";
@@ -160,6 +160,13 @@ const CreateCommunity = () => {
 
       <main className="share-story-content-container">
         <div className="share-story-card-panel">
+          <button 
+            type="button" 
+            className="btn-secondary mr-auto flex items-center gap-2 mb-8" 
+            onClick={() => navigate('/community')}
+          >
+            <ArrowLeft size={16} /> Back
+          </button>
           <div className="share-story-form-section animate-slide-down">
             <div className="form-header-center">
               <div className="share-story-decor-badge">

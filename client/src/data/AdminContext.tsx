@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { CultureItem } from './cultureData';
+import type { CultureSection } from '../components/tribals/CulturalHighlightsGrid';
 import { cultureData } from './cultureData';
 import type { GalleryItem } from './galleryData';
 import { galleryData as defaultGalleryItems } from './galleryData';
@@ -30,6 +31,7 @@ export interface TribeItem {
   rightTitle?: string;
   rightDesc?: string;
   bottomDesc?: string;
+  cultureSections?: CultureSection[];
 }
 
 // ── Personality type ──
@@ -88,7 +90,7 @@ const defaultSiteSettings: SiteSettings = {
 
 // ── Storage keys ──
 const KEYS = {
-  districts: 'admin_districts',
+  districts: 'admin_districts_v2', // Updated key to flush out old schema data
   districtDetails: 'admin_district_details',
   culture: 'admin_culture',
   tourism: 'admin_tourism',

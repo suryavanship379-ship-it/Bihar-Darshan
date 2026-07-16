@@ -4,13 +4,17 @@ import { ArrowLeft } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Container from '../components/layout/Container';
+import { useAdminData } from '../data/AdminContext';
 import { getDistrictDetail } from '../data/districtDetailsData';
 
 const DistrictsDetails = () => {
   const { name } = useParams();
   const rawName = name ? name : 'Patna';
   const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-  const d = getDistrictDetail(formattedName);
+  const { districts } = useAdminData();
+  
+  // Find from context, fallback to static if somehow missing
+  const d = districts.find(dist => dist.name.toLowerCase() === formattedName.toLowerCase()) || getDistrictDetail(formattedName);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });

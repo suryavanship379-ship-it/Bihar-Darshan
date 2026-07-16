@@ -1,10 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated"
 }
 
@@ -12,120 +7,271 @@ datasource db {
   provider = "postgresql"
 }
 
+// ----------------------------------------
+// ENUMS
+// ----------------------------------------
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum DiscoverCategory {
+  FOOD
+  FESTIVAL
+  CRAFT
+  HERITAGE
+  WILDLIFE
+}
+
+enum NotificationType {
+  APPROVAL
+  REWARD
+  BADGE
+  ANNOUNCEMENT
+  ALERT
+}
+
+// ----------------------------------------
+// USER & CORE MODELS
+// ----------------------------------------
+
+model User {
+  id           String  @id @default(uuid())
+  firebaseUid  String  @unique
+  email        String? @unique
+  name         String
+  avatar       String?
+  title        String?
+  bio          String?
+  background   String?
+  rewardPoints Int     @default(0)
+  badges       Int     @default(0)
+  role         Role    @default(USER)
+
+  // Relationships
+  communityPosts CommunityPost[]
+  journeys       Journey[]
+  galleryItems   GalleryItem[]
+  notifications  Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id      String           @id @default(uuid())
+  type    NotificationType
+  title   String
+  message String
+  unread  Boolean          @default(true)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------------------
+// DESTINATIONS & DISTRICTS
+// ----------------------------------------
+
 model District {
-  id                   Int               @id @default(autoincrement())
-  name                 String            @unique
-  image                String
-  tagline              String?
-  introduction         String?
-  richHistory          String?
-  topTouristName       String?
-  topTouristDetails    String?
-  howToReachAir        String?
-  howToReachRail       String?
-  howToReachRoad       String?
-  whyInTouristList     String[]          // PostgreSQL supports native arrays
-  seasonalVisits       SeasonRow[]
-  topAttractions       TopAttraction[]
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  id                String   @id @default(uuid())
+  name              String   @unique
+  image             String
+  tagline           String?
+  introduction      String?
+  richHistory       String?
+  topTouristName    String?
+  topTouristDetails String?
+  howToReachAir     String?
+  howToReachRail    String?
+  howToReachRoad    String?
+  whyInTouristList  String[]
+
+  seasonalVisits SeasonRow[]
+  topAttractions TopAttraction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model SeasonRow {
-  id         Int      @id @default(autoincrement())
-  season     String
-  months     String
-  weather    String
-  whyVisit   String
-  districtId Int
+  id       String @id @default(uuid())
+  season   String
+  months   String
+  weather  String
+  whyVisit String
+
+  districtId String
   district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
 }
 
 model TopAttraction {
-  id               Int      @id @default(autoincrement())
+  id               String  @id @default(uuid())
   name             String
   image            String
   description      String
   shortDescription String?
   rating           Float?
   bestTime         String?
-  districtId       Int
-  district         District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+
+  districtId String
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
 }
 
-model CultureItem {
-  id          Int      @id @default(autoincrement())
+// ----------------------------------------
+// DISCOVER (Unified Categories)
+// ----------------------------------------
+
+model DiscoverItem {
+  id          String           @id @default(uuid())
   title       String
-  category    String
+  category    DiscoverCategory
   image       String
   description String
-  featured    Boolean  @default(false)
-  author      String?  @default("Admin")
-  createdAt   DateTime @default(now())
+  featured    Boolean          @default(false)
+  author      String?          @default("Admin")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model GalleryItem {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  image       String
-  category    String
-  likes       Int      @default(0)
-  views       Int      @default(0)
-  comments    Int      @default(0)
-  uploadDate  String?
-  author      String?  @default("Community")
-  createdAt   DateTime @default(now())
+model Tribe {
+  id              String  @id @default(uuid())
+  hindiName       String
+  englishName     String
+  shortDesc       String
+  image           String
+  leftTitle       String?
+  leftDesc        String?
+  rightTitle      String?
+  rightDesc       String?
+  bottomDesc      String?
+  cultureSections Json? // Rich JSON structure for Traditions, Personalities, Food, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model PersonalityItem {
-  id          Int      @id @default(autoincrement())
+model Personality {
+  id          String  @id @default(uuid())
   name        String
   category    String
   district    String
   description String
   imageUrl    String
   fullBio     String?
-  author      String?  @default("Admin")
-  createdAt   DateTime @default(now())
+  author      String? @default("Admin")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model JourneySubmission {
+model TribalArticle {
+  id            String   @id @default(uuid())
+  headline      String
+  description   String
+  image         String
+  images        String[]
+  author        String
+  tribe         String
+  publishedDate String?
+  readTime      Int?
+  tags          String[]
+  location      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------------------
+// COMMUNITY & USER SUBMISSIONS
+// ----------------------------------------
+
+model Community {
+  id           String  @id @default(uuid())
+  name         String  @unique
+  description  String
+  image        String
+  category     String?
+  membersCount Int     @default(0)
+
+  posts CommunityPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CommunityPost {
+  id      String @id @default(uuid())
+  title   String
+  content String
+  likes   Int    @default(0)
+  replies Int    @default(0)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  status ApprovalStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Journey {
   id          String   @id @default(uuid())
   title       String
   description String
-  author      String
   duration    String?
   budget      String?
   district    String?
   stops       String[]
-  createdAt   DateTime @default(now())
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  status ApprovalStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Community {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique
+model GalleryItem {
+  id          String @id @default(uuid())
+  title       String
   description String
   image       String
-  membersCount Int         @default(0)
-  discussions Discussion[]
-  createdAt   DateTime     @default(now())
+  category    String
+  likes       Int    @default(0)
+  views       Int    @default(0)
+
+  uploaderId String
+  uploader   User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  status ApprovalStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Discussion {
-  id          Int       @id @default(autoincrement())
-  title       String
-  content     String
-  author      String
-  likes       Int       @default(0)
-  repliesCode Int       @default(0)
-  communityId Int
-  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-}
+// ----------------------------------------
+// MARKETPLACE
+// ----------------------------------------
 
-model ProductItem {
-  id           Int      @id @default(autoincrement())
+model MarketplaceProduct {
+  id           String   @id @default(uuid())
   businessName String
   productName  String
   category     String
@@ -137,49 +283,27 @@ model ProductItem {
   mapLink      String?
   contact      String?
   email        String?
-  createdAt    DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model TribeItem {
-  id          Int      @id @default(autoincrement())
-  hindiName   String
-  englishName String
-  shortDesc   String
-  image       String
-  leftTitle   String?
-  leftDesc    String?
-  rightTitle  String?
-  rightDesc   String?
-  bottomDesc  String?
-  createdAt   DateTime @default(now())
-}
-
-model TribalArticle {
-  id            String   @id @default(uuid())
-  headline      String
-  description   String
-  image         String
-  images        String[]
-  author        String
-  tribe         String
-  publishedDate String
-  readTime      Int
-  tags          String[]
-  location      String
-  createdAt     DateTime @default(now())
-}
+// ----------------------------------------
+// CONFIGURATION
+// ----------------------------------------
 
 model SiteSettings {
-  id                 Int      @id @default(1)
-  heroTitle          String   @default("Discover the Soul of")
-  heroSubtitle       String   @default("Bihar")
-  heroDescription    String   @default("Ancient ruins, sacred temples, breathtaking landscapes, living festivals, authentic cuisines and stories waiting to be explored through immersive storytelling.")
-  heroImage          String   @default("")
-  statPlaces         String   @default("500+")
-  statDistricts      String   @default("38")
-  statCulturalSites  String   @default("100+")
-  statFestivals      String   @default("50+")
-  statTourists       String   @default("1000+")
-  footerAbout        String   @default("Bihar Darshan is a digital platform to explore the rich cultural heritage, historical landmarks, and vibrant communities of Bihar.")
-}
+  id                Int    @id @default(1)
+  heroTitle         String @default("Discover the Soul of")
+  heroSubtitle      String @default("Bihar")
+  heroDescription   String @default("Ancient ruins, sacred temples, breathtaking landscapes, living festivals, authentic cuisines and stories waiting to be explored through immersive storytelling.")
+  heroImage         String @default("")
+  statPlaces        String @default("500+")
+  statDistricts     String @default("38")
+  statCulturalSites String @default("100+")
+  statFestivals     String @default("50+")
+  statTourists      String @default("1000+")
+  footerAbout       String @default("Bihar Darshan is a digital platform to explore the rich cultural heritage, historical landmarks, and vibrant communities of Bihar.")
 
+  updatedAt DateTime @updatedAt
+}

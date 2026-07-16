@@ -6,9 +6,9 @@ interface ProductCardProps {
   image: string;
   businessName: string;
   productName: string;
-  contact: string;
-  email: string;
-  mapLink: string;
+  contact?: string;
+  email?: string;
+  mapLink?: string;
   onMoreInfo: (id: number) => void;
 }
 
