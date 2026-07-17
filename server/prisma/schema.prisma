@@ -22,6 +22,17 @@ enum ApprovalStatus {
   REJECTED
 }
 
+enum CommunityRole {
+  OWNER
+  MODERATOR
+  MEMBER
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
 enum DiscoverCategory {
   FOOD
   FESTIVAL
@@ -60,6 +71,8 @@ model User {
   journeys       Journey[]
   galleryItems   GalleryItem[]
   notifications  Notification[]
+  communitiesCreated   Community[]       @relation("CommunityCreator")
+  communityMemberships CommunityMember[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -198,17 +211,41 @@ model TribalArticle {
 // ----------------------------------------
 
 model Community {
-  id           String  @id @default(uuid())
-  name         String  @unique
-  description  String
-  image        String
-  category     String?
-  membersCount Int     @default(0)
+  id               String  @id @default(uuid())
+  slug             String  @unique @default(uuid())
+  name             String  @unique
+  shortDescription String  @default("")
+  description      String
+  bannerImageUrl   String
+  logoImageUrl     String  @default("")
+  category         String?
+  rules            String[]
+  postsCount       Int     @default(0)
+  membersCount     Int     @default(0)
+  isActive         Boolean @default(true)
+  isFeatured       Boolean @default(false)
 
-  posts CommunityPost[]
+  createdBy        String?
+  creator          User?   @relation("CommunityCreator", fields: [createdBy], references: [id])
+
+  posts            CommunityPost[]
+  members          CommunityMember[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CommunityMember {
+  id          String        @id @default(uuid())
+  communityId String
+  community   Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        CommunityRole @default(MEMBER)
+  
+  joinedAt    DateTime      @default(now())
+
+  @@unique([communityId, userId])
 }
 
 model CommunityPost {
@@ -217,6 +254,10 @@ model CommunityPost {
   content String
   likes   Int    @default(0)
   replies Int    @default(0)
+
+  mediaUrl   String?
+  mediaType  MediaType?
+  pollData   Json?
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)

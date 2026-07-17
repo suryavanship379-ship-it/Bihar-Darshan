@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import { Eye, EyeOff } from 'lucide-react';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
 const LoginPage: React.FC = () => {
@@ -23,26 +23,59 @@ const LoginPage: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLogin && formData.newPassword !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    // Simulate setting authentication token for email/password for now
-    localStorage.setItem('isAuthenticated', 'true');
-    navigate('/profile');
+    try {
+      let userCredential;
+      if (isLogin) {
+        userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.newPassword);
+      } else {
+        userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.newPassword);
+        const displayName = `${formData.firstName} ${formData.lastName}`.trim();
+        if (displayName) {
+          await updateProfile(userCredential.user, { displayName });
+        }
+      }
+      
+      const token = await userCredential.user.getIdToken();
+      const res = await fetch('http://localhost:5000/api/v1/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      if (!res.ok) throw new Error('Backend sync failed');
+
+      localStorage.setItem('isAuthenticated', 'true');
+      navigate('/profile');
+    } catch (error: any) {
+      console.error("Auth error", error);
+      alert(error.message || "Failed to authenticate");
+    }
   };
 
   const handleGoogleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const userCredential = await signInWithPopup(auth, provider);
+      
+      const token = await userCredential.user.getIdToken();
+      const res = await fetch('http://localhost:5000/api/v1/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      if (!res.ok) throw new Error('Backend sync failed');
+
+      localStorage.setItem('isAuthenticated', 'true');
       navigate('/profile');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing in with Google", error);
-      alert("Failed to sign in with Google. Please try again.");
+      alert(error.message || "Failed to sign in with Google. Please try again.");
     }
   };
 

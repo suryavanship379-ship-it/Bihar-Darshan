@@ -2,19 +2,26 @@
 
 export interface Community {
   id: string;
+  slug?: string;
   name: string;
-  subtitle: string;
+  subtitle?: string; // mapped to shortDescription
+  shortDescription?: string;
   description: string;
-  image: string;
-  icon: string;        // emoji icon
-  iconBg: string;      // tailwind bg color class
-  members: string;
-  posts: string;
-  online: number;
-  category: string;
+  bannerImageUrl?: string;
+  logoImageUrl?: string;
+  image?: string;      // deprecated
+  icon?: string;       // deprecated
+  iconBg?: string;     // deprecated
+  members: string | number;
+  posts: string | number;
+  online?: number;
+  category: string | null;
   verified?: boolean;
   createdOn?: string;
   aboutText?: string;
+  rules?: string[];
+  isActive?: boolean;
+  isFeatured?: boolean;
 }
 
 export interface PollOption {
