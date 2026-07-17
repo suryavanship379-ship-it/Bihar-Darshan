@@ -1,0 +1,350 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------
+// ENUMS
+// ----------------------------------------
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CommunityRole {
+  OWNER
+  MODERATOR
+  MEMBER
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum DiscoverCategory {
+  FOOD
+  FESTIVAL
+  CRAFT
+  HERITAGE
+  WILDLIFE
+}
+
+enum NotificationType {
+  APPROVAL
+  REWARD
+  BADGE
+  ANNOUNCEMENT
+  ALERT
+}
+
+// ----------------------------------------
+// USER & CORE MODELS
+// ----------------------------------------
+
+model User {
+  id           String  @id @default(uuid())
+  firebaseUid  String  @unique
+  email        String? @unique
+  name         String
+  avatar       String?
+  title        String?
+  bio          String?
+  background   String?
+  rewardPoints Int     @default(0)
+  badges       Int     @default(0)
+  role         Role    @default(USER)
+
+  // Relationships
+  communityPosts       CommunityPost[]
+  journeys             Journey[]
+  galleryItems         GalleryItem[]
+  notifications        Notification[]
+  communitiesCreated   Community[]       @relation("CommunityCreator")
+  communityMemberships CommunityMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id      String           @id @default(uuid())
+  type    NotificationType
+  title   String
+  message String
+  unread  Boolean          @default(true)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------------------
+// DESTINATIONS & DISTRICTS
+// ----------------------------------------
+
+model District {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  image             String
+  tagline           String?
+  introduction      String?
+  richHistory       String?
+  topTouristName    String?
+  topTouristDetails String?
+  howToReachAir     String?
+  howToReachRail    String?
+  howToReachRoad    String?
+  whyInTouristList  String[]
+
+  seasonalVisits SeasonRow[]
+  topAttractions TopAttraction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SeasonRow {
+  id       String @id @default(uuid())
+  season   String
+  months   String
+  weather  String
+  whyVisit String
+
+  districtId String
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+}
+
+model TopAttraction {
+  id               String  @id @default(uuid())
+  name             String
+  image            String
+  description      String
+  shortDescription String?
+  rating           Float?
+  bestTime         String?
+
+  districtId String
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------------------
+// DISCOVER (Unified Categories)
+// ----------------------------------------
+
+model DiscoverItem {
+  id          String           @id @default(uuid())
+  title       String
+  category    DiscoverCategory
+  image       String
+  description String
+  featured    Boolean          @default(false)
+  author      String?          @default("Admin")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tribe {
+  id              String  @id @default(uuid())
+  hindiName       String
+  englishName     String
+  shortDesc       String
+  image           String
+  leftTitle       String?
+  leftDesc        String?
+  rightTitle      String?
+  rightDesc       String?
+  bottomDesc      String?
+  cultureSections Json? // Rich JSON structure for Traditions, Personalities, Food, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Personality {
+  id          String  @id @default(uuid())
+  name        String
+  category    String
+  district    String
+  description String
+  imageUrl    String
+  fullBio     String?
+  author      String? @default("Admin")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TribalArticle {
+  id            String   @id @default(uuid())
+  headline      String
+  description   String
+  image         String
+  images        String[]
+  author        String
+  tribe         String
+  publishedDate String?
+  readTime      Int?
+  tags          String[]
+  location      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------------------
+// COMMUNITY & USER SUBMISSIONS
+// ----------------------------------------
+
+model Community {
+  id               String   @id @default(uuid())
+  slug             String   @unique @default(uuid())
+  name             String   @unique
+  shortDescription String   @default("")
+  description      String
+  bannerImageUrl   String
+  logoImageUrl     String   @default("")
+  category         String?
+  rules            String[]
+  postsCount       Int      @default(0)
+  membersCount     Int      @default(0)
+  isActive         Boolean  @default(true)
+  isFeatured       Boolean  @default(false)
+
+  createdBy String?
+  creator   User?   @relation("CommunityCreator", fields: [createdBy], references: [id])
+
+  posts   CommunityPost[]
+  members CommunityMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CommunityMember {
+  id          String        @id @default(uuid())
+  communityId String
+  community   Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        CommunityRole @default(MEMBER)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([communityId, userId])
+}
+
+model CommunityPost {
+  id      String @id @default(uuid())
+  title   String
+  content String
+  likes   Int    @default(0)
+  replies Int    @default(0)
+
+  mediaUrl  String?
+  mediaType MediaType?
+  pollData  Json?
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  status ApprovalStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Journey {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  duration    String?
+  budget      String?
+  district    String?
+  stops       String[]
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  status ApprovalStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GalleryItem {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  image       String
+  category    String
+  likes       Int    @default(0)
+  views       Int    @default(0)
+
+  uploaderId String
+  uploader   User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  status ApprovalStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------------------
+// MARKETPLACE
+// ----------------------------------------
+
+model MarketplaceProduct {
+  id           String   @id @default(uuid())
+  businessName String
+  productName  String
+  category     String
+  image        String
+  images       String[]
+  description  String
+  address      String?
+  website      String?
+  mapLink      String?
+  contact      String?
+  email        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------------------
+// CONFIGURATION
+// ----------------------------------------
+
+model SiteSettings {
+  id                Int    @id @default(1)
+  heroTitle         String @default("Discover the Soul of")
+  heroSubtitle      String @default("Bihar")
+  heroDescription   String @default("Ancient ruins, sacred temples, breathtaking landscapes, living festivals, authentic cuisines and stories waiting to be explored through immersive storytelling.")
+  heroImage         String @default("")
+  statPlaces        String @default("500+")
+  statDistricts     String @default("38")
+  statCulturalSites String @default("100+")
+  statFestivals     String @default("50+")
+  statTourists      String @default("1000+")
+  footerAbout       String @default("Bihar Darshan is a digital platform to explore the rich cultural heritage, historical landmarks, and vibrant communities of Bihar.")
+
+  updatedAt DateTime @updatedAt
+}

@@ -12,7 +12,7 @@ const CommunityListCard = ({ community, onSelect }: CommunityListCardProps) => {
       {/* Cover image */}
       <div className="relative h-44 overflow-hidden">
         <img
-          src={community.image}
+          src={community.bannerImageUrl || community.image}
           alt={community.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
@@ -33,7 +33,7 @@ const CommunityListCard = ({ community, onSelect }: CommunityListCardProps) => {
 
         {/* Description */}
         <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 flex-1 mb-4">
-          {community.description}
+          {community.shortDescription || community.description}
         </p>
 
         {/* CTA row */}

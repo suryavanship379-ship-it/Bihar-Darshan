@@ -94,8 +94,7 @@ const CreateCommunity = () => {
 
     if (!name.trim()) newErrors.name = "Community Name is required";
     if (!description.trim() || description.length < 10) newErrors.description = "Short Description is required (min 10 chars)";
-    if (!bannerFile) newErrors.banner = "Cover Banner is required";
-    if (!logoFile) newErrors.logo = "Community Logo is required";
+    // Banner and logo are optional in the form; defaults will be provided on submit.
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -111,18 +110,18 @@ const CreateCommunity = () => {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
         const rulesList = rules.split('\n').filter(r => r.trim() !== '');
         
-        addCommunitySubmission({
+        await addCommunitySubmission({
           name,
           category,
-          subtitle: `A new community about ${category.toLowerCase()}`,
+          shortDescription: description.length > 100 ? description.substring(0, 100) + '...' : description,
           description,
-          image: bannerFile || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
-          icon: logoFile || "🌟",
-          iconBg: "bg-brand-gold",
+          bannerImageUrl: bannerFile || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+          logoImageUrl: logoFile || "https://api.dicebear.com/7.x/initials/svg?seed=" + name,
+          rules: rulesList,
           aboutText: description + "\n\n" + (rulesList.length > 0 ? "Guidelines:\n" + rulesList.join('\n') : ""),
         });
 

@@ -1,5 +1,6 @@
-import { Facebook, Instagram, Youtube, ArrowUp } from "lucide-react";
+import { Facebook, Instagram, Youtube } from "lucide-react";
 import logo from "../../assets/new-logo.png";
+import templeBg from "../../assets/bihar-temple.png";
 
 const quickLinks = [
   { label: "Home", href: "#home" },
@@ -22,24 +23,45 @@ const socialLinks = [
 ];
 
 const Footer = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
-    <footer className="bg-bg-dark text-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+    <footer className="relative bg-[#1A1814] text-[#C4B59D] overflow-hidden border-b-[5px] border-[#5b7a66]">
+      {/* Faint Background Image */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none"
+        style={{
+          backgroundImage: `url(${templeBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+
+      {/* Top Tribal Pattern Border */}
+      <div 
+        className="h-[22px] w-full relative z-10" 
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='22' viewBox='0 0 80 22' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='80' height='22' fill='%2317130D' /%3E%3Cpath d='M0 6 L10 0 L20 6 L30 0 L40 6 L50 0 L60 6 L70 0 L80 6' fill='none' stroke='%23D4A017' stroke-width='0.5' opacity='0.7'/%3E%3Cpath d='M0 22 L20 6 L40 22 L60 6 L80 22' fill='none' stroke='%23D4A017' stroke-width='1.2' opacity='0.7'/%3E%3Cpath d='M10 22 L20 13 L30 22 M50 22 L60 13 L70 22' fill='none' stroke='%23D4A017' stroke-width='0.6' opacity='0.5'/%3E%3Ccircle cx='20' cy='17' r='1.5' fill='%23D4A017' opacity='0.8'/%3E%3Ccircle cx='60' cy='17' r='1.5' fill='%23D4A017' opacity='0.8'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat-x',
+          backgroundColor: '#17130D',
+          borderBottom: '1px solid rgba(212, 160, 23, 0.15)'
+        }} 
+      />
+
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-8 pt-16 pb-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16">
           {/* Logo & Description */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="col-span-1 md:col-span-1 flex flex-col items-start">
+            <div className="mb-5">
               <img
                 src={logo}
                 alt="Bihar Darshan"
-                className="h-16 w-auto object-contain brightness-0 invert"
+                className="h-[60px] w-auto object-contain"
+                style={{
+                  filter: "brightness(0) saturate(100%) invert(81%) sepia(19%) saturate(452%) hue-rotate(352deg) brightness(91%) contrast(87%)"
+                }}
               />
             </div>
-            <p className="text-white/45 text-sm leading-relaxed max-w-xs">
+            <p className="text-[#AFA28F] text-[14px] leading-[1.7] max-w-[280px]">
               Your gateway to explore, experience
               and contribute to the rich heritage
               and culture of Bihar.
@@ -47,16 +69,16 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-serif font-bold text-sm tracking-wide mb-5">
+          <div className="md:ml-4">
+            <h3 className="text-[#E8DCC4] font-serif font-bold text-[16px] tracking-wide mb-6">
               Quick Links
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-4">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-white/45 hover:text-gold text-sm transition-colors duration-300"
+                    className="text-[#AFA28F] hover:text-[#E8DCC4] text-[15px] transition-colors duration-300"
                   >
                     {link.label}
                   </a>
@@ -67,15 +89,15 @@ const Footer = () => {
 
           {/* Connect */}
           <div>
-            <h3 className="text-white font-serif font-bold text-sm tracking-wide mb-5">
+            <h3 className="text-[#E8DCC4] font-serif font-bold text-[16px] tracking-wide mb-6">
               Connect
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-4">
               {connectLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-white/45 hover:text-gold text-sm transition-colors duration-300"
+                    className="text-[#AFA28F] hover:text-[#E8DCC4] text-[15px] transition-colors duration-300"
                   >
                     {link.label}
                   </a>
@@ -86,18 +108,18 @@ const Footer = () => {
 
           {/* Social */}
           <div>
-            <h3 className="text-white font-serif font-bold text-sm tracking-wide mb-5">
+            <h3 className="text-[#E8DCC4] font-serif font-bold text-[16px] tracking-wide mb-6">
               Follow Us
             </h3>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-full bg-white/8 border border-white/10 flex items-center justify-center text-white/50 hover:bg-gold hover:border-gold hover:text-black transition-all duration-300"
+                  className="w-[42px] h-[42px] rounded-full border border-[#8C7A60] border-opacity-50 flex items-center justify-center text-[#E8DCC4] hover:bg-[#D4A017] hover:border-[#D4A017] hover:text-[#1A1814] transition-all duration-300"
                 >
-                  <social.icon size={17} />
+                  <social.icon size={17} strokeWidth={1.5} />
                 </a>
               ))}
             </div>
@@ -106,21 +128,11 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-white/8">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="hidden sm:block flex-1" />
-          <p className="text-center text-white/30 text-sm order-2 sm:order-2">
+      <div className="border-t border-[#312B22] relative z-10">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-8 py-5 flex items-center justify-center">
+          <p className="text-center text-[#978C79] text-[13px]">
             © 2026 Bihar Darshan. All Rights Reserved.
           </p>
-          <div className="flex-1 flex justify-center sm:justify-end order-1 sm:order-3">
-            <button
-              onClick={scrollToTop}
-              className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center text-white/40 hover:text-white hover:border-white/50 transition-all duration-300 cursor-pointer"
-              aria-label="Scroll to top"
-            >
-              <ArrowUp size={16} />
-            </button>
-          </div>
         </div>
       </div>
     </footer>

@@ -18,6 +18,7 @@ export interface JourneySubmissionItem extends TourTrip {
 }
 
 import type { Community } from './communityData';
+import { auth } from '../lib/firebase';
 
 export interface ProductItem {
   id: number;
@@ -92,8 +93,21 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
 
       const storedProducts = localStorage.getItem('bihar_product_submissions');
       if (storedProducts) setProductSubmissions(JSON.parse(storedProducts));
+
+      // Clear old local storage to prevent conflicts with the new API
+      localStorage.removeItem('bihar_community_submissions');
+
+      // Fetch communities from backend
+      fetch('http://localhost:5000/api/v1/community')
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data && result.data.communities) {
+            setCommunitySubmissions(result.data.communities);
+          }
+        })
+        .catch(err => console.error('Failed to fetch communities:', err));
     } catch (error) {
-      console.error('Failed to load contributions from localStorage:', error);
+      console.error('Failed to load contributions:', error);
     }
   }, []);
 
@@ -167,25 +181,35 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  const addCommunitySubmission = useCallback((submission: Omit<Community, 'id' | 'members' | 'posts' | 'online' | 'verified' | 'createdOn'>) => {
-    setCommunitySubmissions((prev) => {
-      const newItem: Community = {
-        ...submission,
-        id: `comm_${Date.now()}`,
-        members: '1',
-        posts: '0',
-        online: 1,
-        verified: false,
-        createdOn: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-      };
-      const updated = [newItem, ...prev];
-      try {
-        localStorage.setItem('bihar_community_submissions', JSON.stringify(updated));
-      } catch (error) {
-        console.error('Failed to save:', error);
+  const addCommunitySubmission = useCallback(async (submission: Omit<Community, 'id' | 'members' | 'posts' | 'online' | 'verified' | 'createdOn'>) => {
+    try {
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : '';
+      const response = await fetch('http://localhost:5000/api/v1/community', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: submission.name,
+          category: submission.category,
+          shortDescription: submission.shortDescription,
+          description: submission.description,
+          bannerImageUrl: submission.bannerImageUrl,
+          logoImageUrl: submission.logoImageUrl,
+          rules: submission.rules
+        })
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to create community: ${await response.text()}`);
       }
-      return updated;
-    });
+      const result = await response.json();
+      setCommunitySubmissions((prev) => [result.data.community, ...prev]);
+    } catch (error) {
+      console.error('Failed to save to backend:', error);
+      throw error;
+    }
   }, []);
 
   const addProductSubmission = useCallback((submission: Omit<ProductItem, 'id'>) => {

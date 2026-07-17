@@ -14,6 +14,8 @@ interface CommunitySidebarProps {
 const medalColors = ['text-yellow-500', 'text-gray-400', 'text-accent-brown'];
 
 const CommunitySidebar = ({ community, contributors, onCreatePost, isJoined, onJoinClick, onViewGuidelines }: CommunitySidebarProps) => {
+  const rules = community.rules && community.rules.length > 0 ? community.rules : communityGuidelines;
+
   return (
     <aside className="flex flex-col gap-4">
       {/* Action Button */}
@@ -62,14 +64,14 @@ const CommunitySidebar = ({ community, contributors, onCreatePost, isJoined, onJ
               <Users size={14} className="text-gray-400" />
               Total Members
             </div>
-            <span className="font-bold text-sm text-gray-900">{community.members}</span>
+            <span className="font-bold text-sm text-gray-900">{community.members || '1'}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <FileText size={14} className="text-gray-400" />
               Total Posts
             </div>
-            <span className="font-bold text-sm text-gray-900">{community.posts}</span>
+            <span className="font-bold text-sm text-gray-900">{community.posts || '0'}</span>
           </div>
         </div>
       </div>
@@ -79,7 +81,7 @@ const CommunitySidebar = ({ community, contributors, onCreatePost, isJoined, onJ
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
         <h3 className="font-bold text-gray-800 text-sm mb-3">Community Guidelines</h3>
         <ul className="space-y-2">
-          {communityGuidelines.map((guideline) => (
+          {rules.map((guideline) => (
             <li key={guideline} className="flex items-start gap-2 text-xs text-gray-600">
               <CheckCircle size={13} className="text-emerald-500 shrink-0 mt-0.5" />
               {guideline}
