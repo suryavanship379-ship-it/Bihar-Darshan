@@ -9,7 +9,11 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user);
+      if (user && user.email === 'bihardarshanofficial@gmail.com') {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
     });
     return () => unsubscribe();
   }, []);

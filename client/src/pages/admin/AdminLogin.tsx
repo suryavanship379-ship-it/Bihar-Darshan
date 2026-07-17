@@ -14,6 +14,12 @@ const AdminLogin = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (email.toLowerCase() !== 'bihardarshanofficial@gmail.com') {
+      setError('Access denied: Unauthorized email address.');
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
+    
     try {
       setError('');
       setIsUnlocking(true);
