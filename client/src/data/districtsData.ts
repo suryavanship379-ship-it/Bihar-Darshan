@@ -17,8 +17,10 @@ import patnaMonumentImg from "../assets/bihar-monument.png";
 import biharHeritageImg from "../assets/bihar-heritage.png";
 import biharTempleImg from "../assets/bihar-temple.png";
 
-export interface District {
-  name: string;
+import { getDistrictDetail } from './districtDetailsData';
+import type { DistrictDetail } from './districtDetailsData';
+
+export interface District extends DistrictDetail {
   image: string;
 }
 
@@ -108,5 +110,10 @@ let fallbackIdx = 0;
 export const allDistricts: District[] = districtNames.map((name) => {
   const baseName = name.includes("(") ? name.split(" (")[0] : name;
   const image = dedicatedImages[baseName] ?? getFallback(fallbackIdx++);
-  return { name, image };
+  const details = getDistrictDetail(baseName);
+  return { 
+    ...details,
+    name, 
+    image 
+  };
 });

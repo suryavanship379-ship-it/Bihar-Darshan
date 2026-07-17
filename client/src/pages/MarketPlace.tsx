@@ -8,18 +8,21 @@ import Footer from "../components/layout/Footer";
 import ShareStorySection from "../components/cta/ShareStorySection";
 import Container from "../components/layout/Container";
 import ProductCard from "../components/marketplace/ProductCard";
-import { product } from "../data/product";
-
-const categories = ["All", ...Array.from(new Set(product.map((p) => p.category)))];
+import { product as initialProducts } from "../data/product";
+import { useContributions } from "../data/ContributionContext";
 
 const MarketPlace = () => {
   const navigate = useNavigate();
+  const { productSubmissions } = useContributions();
   const [activeCategory, setActiveCategory] = useState("All");
+
+  const allProducts = [...productSubmissions, ...initialProducts];
+  const categories = ["All", ...Array.from(new Set(allProducts.map((p) => p.category)))];
 
   const filteredProducts =
     activeCategory === "All"
-      ? product
-      : product.filter((p) => p.category === activeCategory);
+      ? allProducts
+      : allProducts.filter((p) => p.category === activeCategory);
 
   return (
     <div className="min-h-screen bg-brand-gray">
@@ -84,7 +87,7 @@ const MarketPlace = () => {
 
           {/* Add Your Product Button */}
           <button
-            onClick={() => navigate("/share-story")}
+            onClick={() => navigate('/marketplace/add')}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gold text-brand-dark font-bold text-xs uppercase tracking-wider shadow-md hover:brightness-105 transition-all cursor-pointer shrink-0"
           >
             <Plus size={16} strokeWidth={3} />

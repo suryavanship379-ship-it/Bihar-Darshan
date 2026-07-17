@@ -40,10 +40,22 @@ const Navbar = ({ forceDarkText = false, forceWhiteText = false }: NavbarProps =
   const [langOpen, setLangOpen] = useState(false);
   const location = useLocation();
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [userAvatar, setUserAvatar] = useState<string | null>(localStorage.getItem('userAvatar'));
+
+  useEffect(() => {
+    const handleAvatarChange = () => {
+      setUserAvatar(localStorage.getItem('userAvatar'));
+    };
+    window.addEventListener('userAvatarChanged', handleAvatarChange);
+    return () => window.removeEventListener('userAvatarChanged', handleAvatarChange);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      if (user && !localStorage.getItem('userAvatar') && user.photoURL) {
+        setUserAvatar(user.photoURL);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -178,8 +190,8 @@ const Navbar = ({ forceDarkText = false, forceWhiteText = false }: NavbarProps =
                 : "border-white/20 hover:border-white/40"
                 }`}
             >
-              {currentUser.photoURL ? (
-                <img src={currentUser.photoURL} alt="Profile" className="w-full h-full object-cover" />
+              {userAvatar || currentUser.photoURL ? (
+                <img src={(userAvatar || currentUser.photoURL)!} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <User size={18} className={scrolled || forceDarkText ? "text-black" : "text-white"} />
               )}
@@ -226,8 +238,8 @@ const Navbar = ({ forceDarkText = false, forceWhiteText = false }: NavbarProps =
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center justify-center gap-3 w-full py-3.5 rounded-xl bg-gradient-to-r from-gold to-[#b8860b] text-black font-bold uppercase tracking-wider text-sm mt-4 shadow-lg shadow-gold/20"
                 >
-                  {currentUser.photoURL ? (
-                    <img src={currentUser.photoURL} alt="Profile" className="w-6 h-6 rounded-full" />
+                  {userAvatar || currentUser.photoURL ? (
+                    <img src={(userAvatar || currentUser.photoURL)!} alt="Profile" className="w-6 h-6 rounded-full" />
                   ) : (
                     <User size={18} />
                   )}

@@ -1,6 +1,6 @@
 export interface CultureItem {
   id: number;
-  type: "Festival" | "Food" | "Art";
+  type: "Festival" | "Food" | "Personalities";
   district: string;
   image: string;
   title: string;

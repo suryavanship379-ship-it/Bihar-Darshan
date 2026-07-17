@@ -5,13 +5,17 @@ import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
 import { AdminInput, AdminTextarea, AdminImagePreview } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
+import { AdminCultureSectionsEditor } from '../../components/admin/AdminCultureSectionsEditor';
+import type { CultureSection } from '../../components/tribals/CulturalHighlightsGrid';
 
 const emptyForm: Partial<TribeItem> = {
   id: '',
   hindiName: 'आदिवासी',
   englishName: '',
   shortDesc: '',
+  shortDesc: '',
   image: '',
+  cultureSections: [],
 };
 
 const AdminTribes = () => {
@@ -167,7 +171,14 @@ const AdminTribes = () => {
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-white/10">
+          <div className="pt-6 border-t border-white/10 mt-6">
+            <AdminCultureSectionsEditor
+              sections={formData.cultureSections || []}
+              onChange={(sections: CultureSection[]) => setFormData({ ...formData, cultureSections: sections })}
+            />
+          </div>
+
+          <div className="pt-4 flex justify-end gap-3 border-t border-white/10 mt-6">
             <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-white font-medium hover:bg-white/5 transition-colors">
               Cancel
             </button>

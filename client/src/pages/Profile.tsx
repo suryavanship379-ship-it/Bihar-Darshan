@@ -5,7 +5,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Container from '../components/layout/Container';
-import { signOut, onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import { signOut, onAuthStateChanged, updateProfile, type User as FirebaseUser } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useEffect } from 'react';
 
@@ -52,7 +52,7 @@ const Profile = () => {
         setProfile(prev => ({
           ...prev,
           name: user.displayName || "User",
-          avatar: user.photoURL || prev.avatar
+          avatar: localStorage.getItem('userAvatar') || user.photoURL || prev.avatar
         }));
       }
     });
@@ -141,6 +141,10 @@ const Profile = () => {
       background: editForm.background
     });
     setIsEditing(false);
+
+    if (currentUser) {
+      updateProfile(currentUser, { displayName: editForm.name, photoURL: finalAvatar }).catch(console.error);
+    }
   };
 
   return (

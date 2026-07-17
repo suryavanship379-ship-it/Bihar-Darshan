@@ -19,17 +19,34 @@ export interface JourneySubmissionItem extends TourTrip {
 
 import type { Community } from './communityData';
 
+export interface ProductItem {
+  id: number;
+  businessName: string;
+  productName: string;
+  category: string;
+  image: string;
+  images: string[];
+  description: string;
+  address?: string;
+  website?: string;
+  mapLink?: string;
+  contact?: string;
+  email?: string;
+}
+
 interface ContributionContextValue {
   cultureSubmissions: CultureItem[];
   gallerySubmissions: GalleryItem[];
   personalitySubmissions: PersonalityItem[];
   journeySubmissions: JourneySubmissionItem[];
   communitySubmissions: Community[];
+  productSubmissions: ProductItem[];
   addCultureSubmission: (submission: Omit<CultureItem, 'id' | 'featured'>) => void;
   addGallerySubmission: (submission: Omit<GalleryItem, 'id' | 'likes' | 'views' | 'comments' | 'uploadDate'>) => void;
   addPersonalitySubmission: (submission: Omit<PersonalityItem, 'id'>) => void;
   addJourneySubmission: (submission: Omit<JourneySubmissionItem, 'id'>) => void;
   addCommunitySubmission: (submission: Omit<Community, 'id' | 'members' | 'posts' | 'online' | 'verified' | 'createdOn'>) => void;
+  addProductSubmission: (submission: Omit<ProductItem, 'id'>) => void;
 }
 
 const ContributionContext = createContext<ContributionContextValue>({
@@ -38,11 +55,13 @@ const ContributionContext = createContext<ContributionContextValue>({
   personalitySubmissions: [],
   journeySubmissions: [],
   communitySubmissions: [],
+  productSubmissions: [],
   addCultureSubmission: () => { },
   addGallerySubmission: () => { },
   addPersonalitySubmission: () => { },
   addJourneySubmission: () => { },
   addCommunitySubmission: () => { },
+  addProductSubmission: () => { },
 });
 
 export const ContributionProvider = ({ children }: { children: React.ReactNode }) => {
@@ -51,6 +70,7 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
   const [personalitySubmissions, setPersonalitySubmissions] = useState<PersonalityItem[]>([]);
   const [journeySubmissions, setJourneySubmissions] = useState<JourneySubmissionItem[]>([]);
   const [communitySubmissions, setCommunitySubmissions] = useState<Community[]>([]);
+  const [productSubmissions, setProductSubmissions] = useState<ProductItem[]>([]);
 
   // Load submissions from localStorage on mount
   useEffect(() => {
@@ -69,6 +89,9 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
 
       const storedCommunities = localStorage.getItem('bihar_community_submissions');
       if (storedCommunities) setCommunitySubmissions(JSON.parse(storedCommunities));
+
+      const storedProducts = localStorage.getItem('bihar_product_submissions');
+      if (storedProducts) setProductSubmissions(JSON.parse(storedProducts));
     } catch (error) {
       console.error('Failed to load contributions from localStorage:', error);
     }
@@ -165,6 +188,22 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     });
   }, []);
 
+  const addProductSubmission = useCallback((submission: Omit<ProductItem, 'id'>) => {
+    setProductSubmissions((prev) => {
+      const newItem: ProductItem = {
+        ...submission,
+        id: Date.now(),
+      };
+      const updated = [newItem, ...prev];
+      try {
+        localStorage.setItem('bihar_product_submissions', JSON.stringify(updated));
+      } catch (error) {
+        console.error('Failed to save:', error);
+      }
+      return updated;
+    });
+  }, []);
+
   return (
     <ContributionContext.Provider
       value={{
@@ -173,11 +212,13 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         personalitySubmissions,
         journeySubmissions,
         communitySubmissions,
+        productSubmissions,
         addCultureSubmission,
         addGallerySubmission,
         addPersonalitySubmission,
         addJourneySubmission,
         addCommunitySubmission,
+        addProductSubmission,
       }}
     >
       {children}
