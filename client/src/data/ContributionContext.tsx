@@ -15,6 +15,7 @@ export interface PersonalityItem {
 
 export interface JourneySubmissionItem extends TourTrip {
   desc: string;
+  authorId?: string;
 }
 
 import type { Community } from './communityData';
@@ -46,8 +47,10 @@ interface ContributionContextValue {
   addGallerySubmission: (submission: Omit<GalleryItem, 'id' | 'likes' | 'views' | 'comments' | 'uploadDate'>) => void;
   addPersonalitySubmission: (submission: Omit<PersonalityItem, 'id'>) => void;
   addJourneySubmission: (submission: Omit<JourneySubmissionItem, 'id'>) => void;
+  updateJourneySubmission: (id: string, submission: Omit<JourneySubmissionItem, 'id'>) => Promise<void>;
   addCommunitySubmission: (submission: Omit<Community, 'id' | 'members' | 'posts' | 'online' | 'verified' | 'createdOn'>) => void;
   addProductSubmission: (submission: Omit<ProductItem, 'id'>) => void;
+  refreshJourneys: () => Promise<void>;
 }
 
 const ContributionContext = createContext<ContributionContextValue>({
@@ -61,8 +64,10 @@ const ContributionContext = createContext<ContributionContextValue>({
   addGallerySubmission: () => { },
   addPersonalitySubmission: () => { },
   addJourneySubmission: () => { },
+  updateJourneySubmission: async () => { },
   addCommunitySubmission: () => { },
   addProductSubmission: () => { },
+  refreshJourneys: async () => { },
 });
 
 export const ContributionProvider = ({ children }: { children: React.ReactNode }) => {
@@ -72,6 +77,82 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
   const [journeySubmissions, setJourneySubmissions] = useState<JourneySubmissionItem[]>([]);
   const [communitySubmissions, setCommunitySubmissions] = useState<Community[]>([]);
   const [productSubmissions, setProductSubmissions] = useState<ProductItem[]>([]);
+
+  const fetchApprovedJourneys = useCallback(async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/journeys');
+      const result = await res.json();
+      if (result.success && result.data && result.data.journeys) {
+        const dbJourneys = result.data.journeys.map((j: any) => {
+          let description = j.description || '';
+          let image = j.image || "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?q=80&w=2000&auto=format&fit=crop";
+          let guide = {
+            name: "Ramesh Kumar",
+            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=500&auto=format&fit=crop",
+            experience: "10+ Years",
+            languages: ["English", "Hindi"],
+            intro: "Verified Expert Guide for this custom trip.",
+            phone: "+919876543210",
+            email: "guide@example.com",
+            whatsapp: "+919876543210"
+          };
+          let timeline: any[] = [];
+          let galleryImages: string[] = [];
+
+          if (j.description && j.description.startsWith('{"__isImmersivePackage"')) {
+            try {
+              const parsed = JSON.parse(j.description);
+              if (parsed.__isImmersivePackage) {
+                description = parsed.realDescription || '';
+                if (parsed.image) image = parsed.image;
+                if (parsed.guide) guide = parsed.guide;
+                if (parsed.timeline) timeline = parsed.timeline;
+                if (parsed.galleryImages) galleryImages = parsed.galleryImages;
+              }
+            } catch (e) {
+              console.error("Failed to parse immersive package description JSON:", e);
+            }
+          }
+
+          return {
+            id: j.id,
+            title: j.title,
+            desc: description.slice(0, 100) + '...',
+            description,
+            image,
+            duration: j.duration || "1 Day Trip",
+            authorId: j.authorId,
+            overviewText: description,
+            provider: "Community Contributor",
+            providerLogo: "https://cdn-icons-png.flaticon.com/512/3233/3233481.png",
+            departureCity: j.district || "Patna",
+            places: j.stops || [],
+            price: j.budget || "Flexible",
+            phone: j.phone || "+919876543210",
+            whatsapp: j.whatsapp || "+919876543210",
+            difficulty: "Easy" as const,
+            bestTime: "October to March",
+            groupSize: "Flexible",
+            transportation: "Custom Arranged",
+            startPoint: "Patna",
+            endPoint: "Patna",
+            emergencyContact: "+919876543210",
+            email: "contributor@example.com",
+            guide,
+            placesCoveredDetails: [],
+            timeline,
+            galleryImages,
+            videos: [],
+            mapMarkers: [],
+            reviews: []
+          };
+        });
+        setJourneySubmissions(dbJourneys);
+      }
+    } catch (err) {
+      console.error('Failed to fetch journeys:', err);
+    }
+  }, []);
 
   // Load submissions from localStorage on mount
   useEffect(() => {
@@ -85,8 +166,8 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
       const storedPersonality = localStorage.getItem('bihar_personality_submissions');
       if (storedPersonality) setPersonalitySubmissions(JSON.parse(storedPersonality));
 
-      const storedJourneys = localStorage.getItem('bihar_journey_submissions');
-      if (storedJourneys) setJourneySubmissions(JSON.parse(storedJourneys));
+      localStorage.removeItem('bihar_journey_submissions');
+      fetchApprovedJourneys();
 
       const storedCommunities = localStorage.getItem('bihar_community_submissions');
       if (storedCommunities) setCommunitySubmissions(JSON.parse(storedCommunities));
@@ -165,20 +246,77 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  const addJourneySubmission = useCallback((submission: Omit<JourneySubmissionItem, 'id'>) => {
-    setJourneySubmissions((prev) => {
-      const newItem: JourneySubmissionItem = {
-        ...submission,
-        id: Date.now().toString(),
-      };
-      const updated = [newItem, ...prev];
-      try {
-        localStorage.setItem('bihar_journey_submissions', JSON.stringify(updated));
-      } catch (error) {
-        console.error('Failed to save:', error);
+  const addJourneySubmission = useCallback(async (submission: Omit<JourneySubmissionItem, 'id'>) => {
+    try {
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : '';
+      const descriptionPayload = JSON.stringify({
+        __isImmersivePackage: true,
+        realDescription: submission.description,
+        image: submission.image,
+        guide: submission.guide,
+        timeline: submission.timeline,
+        galleryImages: submission.galleryImages
+      });
+      const response = await fetch('http://localhost:5000/api/v1/journeys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: submission.title,
+          description: descriptionPayload,
+          duration: submission.duration,
+          budget: submission.price,
+          district: submission.departureCity,
+          stops: submission.places
+        })
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to submit journey: ${await response.text()}`);
       }
-      return updated;
-    });
+    } catch (error) {
+      console.error('Failed to submit journey:', error);
+      throw error;
+    }
+  }, []);
+
+  const updateJourneySubmission = useCallback(async (id: string, submission: Omit<JourneySubmissionItem, 'id'>) => {
+    try {
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : '';
+      const descriptionPayload = JSON.stringify({
+        __isImmersivePackage: true,
+        realDescription: submission.description,
+        image: submission.image,
+        guide: submission.guide,
+        timeline: submission.timeline,
+        galleryImages: submission.galleryImages
+      });
+      const response = await fetch(`http://localhost:5000/api/v1/journeys/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: submission.title,
+          description: descriptionPayload,
+          duration: submission.duration,
+          budget: submission.price,
+          district: submission.departureCity,
+          stops: submission.places
+        })
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to update journey: ${await response.text()}`);
+      }
+      setJourneySubmissions(prev => prev.filter(j => j.id !== id));
+    } catch (error) {
+      console.error('Failed to update journey on backend:', error);
+      throw error;
+    }
   }, []);
 
   const addCommunitySubmission = useCallback(async (submission: Omit<Community, 'id' | 'members' | 'posts' | 'online' | 'verified' | 'createdOn'>) => {
@@ -241,8 +379,10 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         addGallerySubmission,
         addPersonalitySubmission,
         addJourneySubmission,
+        updateJourneySubmission,
         addCommunitySubmission,
         addProductSubmission,
+        refreshJourneys: fetchApprovedJourneys,
       }}
     >
       {children}

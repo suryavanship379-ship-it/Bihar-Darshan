@@ -42,3 +42,36 @@ export const updateJourneyStatus = async (id: string, status: ApprovalStatus) =>
     data: { status }
   });
 };
+
+export const getAllJourneys = async () => {
+  return db.journey.findMany({
+    include: {
+      author: { select: { id: true, name: true, avatar: true } }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+};
+
+export const updateJourney = async (id: string, authorId: string, data: any) => {
+  const journey = await db.journey.findUnique({ where: { id } });
+  if (!journey) throw new AppError('Journey not found', 404);
+
+  // Skip author verification check if request is by an admin
+  const user = await db.user.findUnique({ where: { id: authorId } });
+  if (journey.authorId !== authorId && user?.role !== 'ADMIN') {
+    throw new AppError('Access denied: You are not the author of this journey', 403);
+  }
+
+  return db.journey.update({
+    where: { id },
+    data: {
+      title: data.title,
+      description: data.description,
+      duration: data.duration,
+      budget: data.budget,
+      district: data.district,
+      stops: data.stops,
+      status: 'PENDING'
+    }
+  });
+};

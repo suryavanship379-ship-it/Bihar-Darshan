@@ -19,7 +19,16 @@ const CommunityListCard = ({ community, onSelect }: CommunityListCardProps) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-
+        {community.status && community.status !== 'APPROVED' && (
+          <div className="absolute top-3 left-3 z-10">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider shadow-md border ${community.status === 'PENDING'
+                ? 'bg-amber-500 text-white border-amber-400'
+                : 'bg-red-500 text-white border-red-400'
+              }`}>
+              {community.status === 'PENDING' ? 'Pending Approval' : 'Rejected'}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Body */}

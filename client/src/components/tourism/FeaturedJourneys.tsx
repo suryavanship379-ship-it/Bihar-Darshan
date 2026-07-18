@@ -1,67 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowRight, Edit3 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useContributions } from "../../data/ContributionContext";
-import bodhGaya from "../../assets/bodh-gaya.png";
-import nalanda from "../../assets/nalanda.png";
-import patnaSahib from "../../assets/patna-sahib.png";
-import vaishali from "../../assets/vaishali.png";
-import valmiki from "../../assets/W.jfif"; // Placeholder for wildlife
-import biharFood from "../../assets/bihar-food.png";
-
-const originalJourneys = [
-  {
-    id: "1",
-    image: bodhGaya,
-    title: "Mahabodhi Trail",
-    desc: "Walk the path of Buddha in Bodh Gaya.",
-    duration: "2 Nights / 3 Days",
-  },
-  {
-    id: "2",
-    image: nalanda,
-    title: "Nalanda Heritage Walk",
-    desc: "Explore the glory of the ancient Nalanda University.",
-    duration: "1 Day Trip",
-  },
-  {
-    id: "3",
-    image: patnaSahib,
-    title: "Patna River Cruise",
-    desc: "Enjoy a serene cruise on the Ganga.",
-    duration: "2 Hours",
-  },
-  {
-    id: "4",
-    image: vaishali,
-    title: "Vaishali Legacy Tour",
-    desc: "Discover the republic city and its timeless stories.",
-    duration: "1 Day Trip",
-  },
-  {
-    id: "1", // Fallback to id 1 as there are only 4 in data
-    image: valmiki,
-    title: "Valmiki Wildlife Safari",
-    desc: "Experience nature at its purest.",
-    duration: "2 Nights / 3 Days",
-  },
-  {
-    id: "2", // Fallback to id 2
-    image: biharFood,
-    title: "Bihar Food Trail",
-    desc: "A journey through local flavours and traditions.",
-    duration: "1 Day Trip",
-  }
-];
+import { auth } from "../../lib/firebase";
 
 const FeaturedJourneys = () => {
   const [showAll, setShowAll] = useState(false);
-  const { journeySubmissions } = useContributions();
+  const { journeySubmissions, refreshJourneys } = useContributions();
+  const navigate = useNavigate();
+  const currentUser = auth.currentUser;
 
-  // Prepend user-created journeys so the newest ones show up first
-  const combinedJourneys = [...journeySubmissions, ...originalJourneys];
-  
+  useEffect(() => {
+    refreshJourneys();
+  }, [refreshJourneys]);
+
+  // Show only database journeys (static packages removed)
+  const combinedJourneys = journeySubmissions;
+
   // Show only the first 3 by default, or all if showAll is true
   const displayJourneys = showAll ? combinedJourneys : combinedJourneys.slice(0, 3);
 
@@ -77,8 +33,8 @@ const FeaturedJourneys = () => {
               viewport={{ once: true }}
               className="flex items-center gap-4 mb-3"
             >
-              <span className="text-[#c19a5b] text-[11px] font-bold uppercase tracking-[0.2em]">
-                HANDPICKED EXPERIENCES
+              <span className="text-[#c19a5b] text-[11px] font-bold uppercase tracking-[0.2em] font-sans">
+                COMMUNITY CONTRIBS
               </span>
             </motion.div>
             <motion.h2
@@ -93,70 +49,107 @@ const FeaturedJourneys = () => {
             </motion.h2>
           </div>
           <div className="flex items-center gap-4">
-            <Link 
-              to="/tourism/create-journey" 
-              className="flex items-center gap-2 text-sm font-bold text-white bg-[#c19a5b] px-6 py-2 rounded-full hover:bg-[#a8864d] transition-colors shadow-sm"
+            <Link
+              to="/tourism/create-journey"
+              className="flex items-center gap-2 text-sm font-bold text-white bg-[#c19a5b] px-6 py-2 rounded-full hover:bg-[#a8864d] transition-colors shadow-sm font-sans"
             >
               Create
             </Link>
-            <button 
-              onClick={() => setShowAll(!showAll)}
-              className="flex items-center gap-2 text-sm font-bold text-[#3e2723] hover:text-[#c19a5b] transition-colors border border-[#3e2723]/20 px-4 py-2 rounded-full hover:border-[#c19a5b]"
-            >
-              {showAll ? "Show Less" : "See all experiences"} <ArrowRight size={16} />
-            </button>
+            {combinedJourneys.length > 3 && (
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="flex items-center gap-2 text-sm font-bold text-[#3e2723] hover:text-[#c19a5b] transition-colors border border-[#3e2723]/20 px-4 py-2 rounded-full hover:border-[#c19a5b] font-sans"
+              >
+                {showAll ? "Show Less" : "See all experiences"} <ArrowRight size={16} />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayJourneys.map((trip, i) => (
-            <motion.div
-              key={trip.id + i.toString()}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: (i % 6) * 0.1, duration: 0.7, ease: "easeOut" }}
-              className="h-full"
+        {displayJourneys.length === 0 ? (
+          <div className="text-center py-24 bg-white/40 border border-dashed border-[#c19a5b]/40 rounded-3xl backdrop-blur-sm max-w-2xl mx-auto">
+            <div className="w-16 h-16 bg-[#c19a5b]/10 rounded-full flex items-center justify-center mx-auto mb-6 text-[#c19a5b]">
+              <ArrowRight size={24} className="rotate-45" />
+            </div>
+            <h4 className="text-xl font-serif text-[#3e2723] mb-2">No Published Journeys Yet</h4>
+            <p className="text-[#3e2723]/60 mb-8 max-w-md mx-auto text-sm font-sans">
+              All community-submitted itineraries require administrative review before becoming public. Share your unique Bihar travel experience now!
+            </p>
+            <Link
+              to="/tourism/create-journey"
+              className="inline-flex items-center gap-2 text-sm font-bold text-white bg-[#c19a5b] px-8 py-3 rounded-full hover:bg-[#a8864d] transition-all duration-300 shadow-md font-sans hover:scale-105"
             >
-              <Link 
-                to={`/tourism/${trip.id}`}
-                className="bg-white rounded-2xl shadow-sm border border-[#e8dfcf]/50 overflow-hidden flex flex-col h-full group hover:shadow-[0_20px_40px_-15px_rgba(62,39,35,0.15)] hover:-translate-y-2 transition-all duration-500 relative"
-              >
-                {/* Image */}
-                <div className="relative h-64 overflow-hidden shrink-0">
-                  <img
-                    src={trip.image}
-                    alt={trip.title}
-                    className="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-1000 ease-out"
-                    onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300?text=Bihar+Tourism'; }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#2c1e16]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
+              Share Your Journey
+            </Link>
+          </div>
+        ) : (
+          /* Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayJourneys.map((trip, i) => {
+              const isAuthor = currentUser && (trip as any).authorId === currentUser.uid;
+              return (
+                <motion.div
+                  key={trip.id + i.toString()}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: (i % 6) * 0.1, duration: 0.7, ease: "easeOut" }}
+                  className="h-full"
+                >
+                  <Link
+                    to={`/tourism/${trip.id}`}
+                    className="bg-white rounded-2xl shadow-sm border border-[#e8dfcf]/50 overflow-hidden flex flex-col h-full group hover:shadow-[0_20px_40px_-15px_rgba(62,39,35,0.15)] hover:-translate-y-2 transition-all duration-500 relative"
+                  >
+                    {/* Image */}
+                    <div className="relative h-64 overflow-hidden shrink-0">
+                      <img
+                        src={trip.image}
+                        alt={trip.title}
+                        className="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-1000 ease-out"
+                        onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300?text=Bihar+Tourism'; }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#2c1e16]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                {/* Content */}
-                <div className="p-8 flex-1 flex flex-col justify-center items-center text-center relative bg-[url('https://www.transparenttextures.com/patterns/handmade-paper.png')]">
-                  <h3 className="text-2xl font-serif font-bold text-[#3e2723] group-hover:text-[#8b5a2b] transition-colors duration-300">{trip.title}</h3>
-                  
-                  <div className="mt-6 overflow-hidden">
-                    <div className="flex items-center justify-center gap-2 text-[#8b5a2b] font-bold text-xs uppercase tracking-widest translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
-                      View Details 
-                      <motion.div
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                      >
-                        <ArrowRight size={14} />
-                      </motion.div>
+                      {isAuthor && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            navigate(`/tourism/create-journey?editId=${trip.id}`);
+                          }}
+                          className="absolute top-4 right-4 z-20 bg-[#F4A261] hover:bg-[#E5914F] text-black w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 font-sans"
+                          title="Edit Experience"
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Animated Bottom Border */}
-                  <div className="absolute bottom-0 left-0 h-1 w-0 bg-[#c19a5b] group-hover:w-full transition-all duration-700 ease-in-out" />
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+                    {/* Content */}
+                    <div className="p-8 flex-1 flex flex-col justify-center items-center text-center relative bg-[url('https://www.transparenttextures.com/patterns/handmade-paper.png')]">
+                      <h3 className="text-2xl font-serif font-bold text-[#3e2723] group-hover:text-[#8b5a2b] transition-colors duration-300">{trip.title}</h3>
+
+                      <div className="mt-6 overflow-hidden">
+                        <div className="flex items-center justify-center gap-2 text-[#8b5a2b] font-bold text-xs uppercase tracking-widest translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                          View Details
+                          <motion.div
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                          >
+                            <ArrowRight size={14} />
+                          </motion.div>
+                        </div>
+                      </div>
+
+                      {/* Animated Bottom Border */}
+                      <div className="absolute bottom-0 left-0 h-1 w-0 bg-[#c19a5b] group-hover:w-full transition-all duration-700 ease-in-out" />
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

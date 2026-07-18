@@ -29,3 +29,13 @@ export const rejectJourney = catchAsync(async (req: Request, res: Response, next
   const journey = await journeyService.updateJourneyStatus(req.params.id as string, 'REJECTED');
   sendSuccess(res, 200, 'Journey rejected successfully', { journey });
 });
+
+export const getAllJourneys = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const journeys = await journeyService.getAllJourneys();
+  sendSuccess(res, 200, 'All journeys fetched successfully', { journeys });
+});
+
+export const updateJourney = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const journey = await journeyService.updateJourney(req.params.id as string, req.user!.id, req.body);
+  sendSuccess(res, 200, 'Journey updated successfully', { journey });
+});

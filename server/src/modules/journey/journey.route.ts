@@ -4,17 +4,18 @@ import { authenticate, restrictTo } from '../../middlewares/auth.middleware';
 
 const router = Router();
 
+// Admin routes (Defined first to prevent shadowing by /:id wildcard)
+router.get('/admin/all', authenticate, restrictTo('ADMIN'), journeyController.getAllJourneys);
+router.patch('/:id/approve', authenticate, restrictTo('ADMIN'), journeyController.approveJourney);
+router.patch('/:id/reject', authenticate, restrictTo('ADMIN'), journeyController.rejectJourney);
+
 // Public routes
 router.get('/', journeyController.getApprovedJourneys);
 router.get('/:id', journeyController.getJourneyById);
 
-// Authenticated routes
+// Authenticated user routes
 router.use(authenticate);
 router.post('/', journeyController.createJourney);
-
-// Admin routes
-router.use(restrictTo('ADMIN'));
-router.patch('/:id/approve', journeyController.approveJourney);
-router.patch('/:id/reject', journeyController.rejectJourney);
+router.put('/:id', journeyController.updateJourney);
 
 export const journeyRoutes = router;

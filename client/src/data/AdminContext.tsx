@@ -163,9 +163,19 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
       const headers: any = {};
 
       if (user) {
-        const token = await user.getIdToken();
-        url = 'http://localhost:5000/api/v1/community/admin/all';
-        headers['Authorization'] = `Bearer ${token}`;
+        try {
+          const token = await user.getIdToken();
+          const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const profileResult = await profileRes.json();
+          if (profileResult.success && profileResult.data?.user?.role === 'ADMIN') {
+            url = 'http://localhost:5000/api/v1/community/admin/all';
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+        } catch (err) {
+          console.error('AdminContext: Failed to check user role:', err);
+        }
       }
 
       fetch(url, { headers })
@@ -191,6 +201,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
               shortDescription: c.shortDescription,
               description: c.description,
               status: c.status || 'PENDING',
+              createdBy: c.createdBy,
             }));
             setCommunitiesState(prev => {
               const combined = [...dbCommunities, ...prev];

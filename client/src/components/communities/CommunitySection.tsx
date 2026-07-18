@@ -18,9 +18,9 @@ const CommunitySection = () => {
         {featuredCommunities.map((community, index) => (
           <Link key={community.id} to={`/community?id=${community.id}`} className="block">
             <CommunityCard
-              image={community.image}
+              image={community.image || community.bannerImageUrl || ''}
               name={community.name}
-              subtitle={community.subtitle}
+              subtitle={community.subtitle || community.shortDescription || ''}
               index={index}
             />
           </Link>

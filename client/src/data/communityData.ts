@@ -25,6 +25,7 @@ export interface Community {
   membersCount?: number;
   postsCount?: number;
   status?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  createdBy?: string;
 }
 
 export interface PollOption {

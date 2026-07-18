@@ -7,6 +7,8 @@ export const verifyAndSyncUser = async (firebaseUid: string, email?: string, nam
   });
 
   if (!user) {
+    const isSystemAdmin = email?.toLowerCase() === 'bihardarshanofficial@gmail.com';
+    const targetRole = isSystemAdmin ? 'ADMIN' : 'USER';
     // Create new user
     user = await db.user.create({
       data: {
@@ -14,12 +16,17 @@ export const verifyAndSyncUser = async (firebaseUid: string, email?: string, nam
         email,
         name: name || 'User',
         avatar,
+        role: targetRole,
       },
     });
   } else {
-    // Optionally update email/name/avatar if they changed, 
-    // but usually we rely on profile updates. 
-    // We'll just update last login or something if we had a field for it.
+    const isSystemAdmin = email?.toLowerCase() === 'bihardarshanofficial@gmail.com';
+    if (isSystemAdmin && user.role !== 'ADMIN') {
+      user = await db.user.update({
+        where: { id: user.id },
+        data: { role: 'ADMIN' },
+      });
+    }
   }
 
   return user;

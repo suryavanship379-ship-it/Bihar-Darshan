@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageSquare, Eye, ArrowBigUp, ArrowBigDown, Share2, Image as ImageIcon, Video, Send } from 'lucide-react';
 import type { Discussion, Comment } from '../../data/communityData';
 import { auth } from '../../lib/firebase';
@@ -25,6 +25,15 @@ const avatarColorMap: Record<string, string> = {
   YOU: 'bg-brand-gold',
 };
 
+const mapBackendComment = (c: any): Comment => ({
+  id: c.id,
+  author: c.author?.name || 'Anonymous',
+  authorAvatar: c.author?.avatar || c.author?.name?.substring(0, 2).toUpperCase() || 'A',
+  timeAgo: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Just now',
+  content: c.content,
+  replies: c.children ? c.children.map(mapBackendComment) : [],
+});
+
 const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
   const tagStyle = tagStyleMap[discussion.tag] ?? 'bg-gray-100 text-gray-600';
   const avatarColor = avatarColorMap[discussion.authorAvatar] ?? 'bg-gray-400';
@@ -34,9 +43,128 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
   const [newCommentText, setNewCommentText] = useState('');
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [voteCountAdjustment, setVoteCountAdjustment] = useState(0);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [pollVotesOffset, setPollVotesOffset] = useState<Record<string, number>>({});
+  const [localViews, setLocalViews] = useState(
+    parseInt(String(discussion.views || '0').replace(/[^0-9]/g, ''), 10) || 0
+  );
+
+  // Fetch comments when comments section is shown
+  useEffect(() => {
+    if (!showComments) return;
+    if (String(discussion.id).startsWith('d') || String(discussion.id).startsWith('local_')) {
+      return;
+    }
+
+    const fetchComments = async () => {
+      setLoadingComments(true);
+      try {
+        const response = await fetch(`http://localhost:5000/api/v1/community/posts/${discussion.id}/comments`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data && result.data.comments) {
+            const mapped = result.data.comments.map(mapBackendComment);
+            setLocalComments(mapped);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch comments:", err);
+      } finally {
+        setLoadingComments(false);
+      }
+    };
+
+    fetchComments();
+  }, [showComments, discussion.id]);
+
+  // Increment views on mount
+  useEffect(() => {
+    if (String(discussion.id).startsWith('d') || String(discussion.id).startsWith('local_')) {
+      return;
+    }
+
+    const incrementView = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/v1/community/posts/${discussion.id}/view`, {
+          method: 'PATCH'
+        });
+        if (response.ok) {
+          setLocalViews(prev => prev + 1);
+        }
+      } catch (err) {
+        console.error("Failed to increment views:", err);
+      }
+    };
+
+    const timer = setTimeout(incrementView, 1200);
+    return () => clearTimeout(timer);
+  }, [discussion.id]);
+
+  const getOptionVotes = (optId: string) => {
+    const baseVal = discussion.poll?.options.find(o => o.id === optId)?.votes || 0;
+    const offset = pollVotesOffset[optId] || 0;
+    return Math.max(0, baseVal + offset);
+  };
 
   // Calculate total votes for poll
-  const totalVotes = discussion.poll?.options.reduce((sum, o) => sum + o.votes, 0) ?? 0;
+  const totalVotes = discussion.poll?.options.reduce((sum, o) => sum + getOptionVotes(o.id), 0) ?? 0;
+
+  const handleVotePoll = async (optionId: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login to vote in polls.");
+      return;
+    }
+
+    if (selectedOption === optionId) return;
+
+    const previousOptionId = selectedOption;
+
+    setSelectedOption(optionId);
+    setPollVotesOffset(prev => {
+      const next = { ...prev };
+      if (previousOptionId) {
+        next[previousOptionId] = (next[previousOptionId] || 0) - 1;
+      }
+      next[optionId] = (next[optionId] || 0) + 1;
+      return next;
+    });
+
+    if (String(discussion.id).startsWith('d') || String(discussion.id).startsWith('local_')) {
+      return;
+    }
+
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch(`http://localhost:5000/api/v1/community/posts/${discussion.id}/vote`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          optionId,
+          previousOptionId: previousOptionId || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit poll vote');
+      }
+    } catch (err) {
+      console.error(err);
+      setSelectedOption(previousOptionId);
+      setPollVotesOffset(prev => {
+        const next = { ...prev };
+        if (previousOptionId) {
+          next[previousOptionId] = (next[previousOptionId] || 0) + 1;
+        }
+        next[optionId] = (next[optionId] || 0) - 1;
+        return next;
+      });
+    }
+  };
 
   const baseLikes = discussion.likes !== undefined ? discussion.likes : (discussion.replies || 0);
   const currentLikes = baseLikes + voteCountAdjustment;
@@ -85,33 +213,75 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
     }
   };
 
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     if (!newCommentText.trim()) return;
 
-    const newComment: Comment = {
-      id: `c_${Date.now()}`,
-      author: 'You',
-      authorAvatar: 'YOU',
-      timeAgo: 'Just now',
-      content: newCommentText.trim(),
-      replies: []
-    };
-
-    if (replyingToId) {
-      // Find the comment and add reply
-      const updatedComments = localComments.map(c => {
-        if (c.id === replyingToId) {
-          return { ...c, replies: [...(c.replies || []), newComment] };
-        }
-        return c;
-      });
-      setLocalComments(updatedComments);
-    } else {
-      setLocalComments([...localComments, newComment]);
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login to comment.");
+      return;
     }
 
+    const val = newCommentText.trim();
     setNewCommentText('');
-    setReplyingToId(null);
+
+    if (String(discussion.id).startsWith('d') || String(discussion.id).startsWith('local_')) {
+      // Fallback for local mock data
+      const newComment: Comment = {
+        id: `c_${Date.now()}`,
+        author: user.displayName || 'You',
+        authorAvatar: user.photoURL || 'YOU',
+        timeAgo: 'Just now',
+        content: val,
+        replies: []
+      };
+      if (replyingToId) {
+        setLocalComments(prev => prev.map(c =>
+          c.id === replyingToId ? { ...c, replies: [...(c.replies || []), newComment] } : c
+        ));
+      } else {
+        setLocalComments(prev => [...prev, newComment]);
+      }
+      setReplyingToId(null);
+      return;
+    }
+
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch(`http://localhost:5000/api/v1/community/posts/${discussion.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: val,
+          parentId: replyingToId || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data && result.data.comment) {
+          const freshComment = mapBackendComment(result.data.comment);
+
+          if (replyingToId) {
+            setLocalComments(prev => prev.map(c => {
+              if (c.id === replyingToId) {
+                return { ...c, replies: [...(c.replies || []), freshComment] };
+              }
+              return c;
+            }));
+          } else {
+            setLocalComments(prev => [...prev, freshComment]);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to add comment:", e);
+    } finally {
+      setReplyingToId(null);
+    }
   };
 
   return (
@@ -171,16 +341,23 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
             <p className="text-sm font-semibold text-gray-800 mb-3">{discussion.poll.question}</p>
             <div className="space-y-2">
               {discussion.poll.options.map((option) => {
-                const pct = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
+                const votes = getOptionVotes(option.id);
+                const pct = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
                 return (
                   <div key={option.id} className="relative">
                     <div
-                      className="absolute inset-0 rounded-lg bg-amber-100/60"
+                      className="absolute inset-0 rounded-lg bg-amber-100/60 transition-all duration-500"
                       style={{ width: `${pct}%` }}
                     />
-                    <div className="relative flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white/60 hover:border-amber-300 transition-colors">
-                      <span className="text-xs font-medium text-gray-700">{option.text}</span>
-                      <span className="text-xs font-bold text-gray-500 ml-2 shrink-0">{pct}%</span>
+                    <div
+                      onClick={() => handleVotePoll(option.id)}
+                      className={`relative flex items-center justify-between px-3 py-2 rounded-lg border bg-white/60 transition-colors cursor-pointer ${selectedOption === option.id
+                          ? 'border-brand-gold bg-amber-50/70 font-semibold shadow-sm animate-pulse'
+                          : 'border-gray-200 hover:border-amber-300'
+                        }`}
+                    >
+                      <span className="text-xs font-medium text-gray-700 z-10">{option.text}</span>
+                      <span className="text-xs font-bold text-gray-500 ml-2 shrink-0 z-10">{pct}%</span>
                     </div>
                   </div>
                 );
@@ -234,7 +411,7 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
           {/* Views */}
           <span className="flex items-center gap-1 text-xs text-gray-400 ml-auto">
             <Eye size={13} />
-            {discussion.views}
+            {localViews} views
           </span>
         </div>
 
@@ -249,9 +426,17 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
                 localComments.map((comment) => (
                   <div key={comment.id} className="bg-gray-50/50 border border-gray-100 rounded-xl p-3.5">
                     <div className="flex items-center gap-2.5 mb-2">
-                      <div className={`w-7 h-7 rounded-full ${avatarColorMap[comment.authorAvatar] || 'bg-gray-400'} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
-                        {comment.authorAvatar}
-                      </div>
+                      {comment.authorAvatar && (comment.authorAvatar.startsWith('http') || comment.authorAvatar.startsWith('/')) ? (
+                        <img
+                          src={comment.authorAvatar}
+                          alt={comment.author}
+                          className="w-7 h-7 rounded-full object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className={`w-7 h-7 rounded-full ${avatarColorMap[comment.authorAvatar] || 'bg-brand-gold'} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
+                          {comment.authorAvatar}
+                        </div>
+                      )}
                       <div>
                         <div className="text-[13px] font-semibold text-gray-800 leading-none">{comment.author}</div>
                         <div className="text-[11px] text-gray-400 mt-0.5">{comment.timeAgo}</div>
@@ -280,9 +465,17 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
                         {comment.replies.map(reply => (
                           <div key={reply.id} className="bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <div className={`w-5 h-5 rounded-full ${avatarColorMap[reply.authorAvatar] || 'bg-gray-400'} flex items-center justify-center text-white text-[8px] font-bold shrink-0`}>
-                                {reply.authorAvatar}
-                              </div>
+                              {reply.authorAvatar && (reply.authorAvatar.startsWith('http') || reply.authorAvatar.startsWith('/')) ? (
+                                <img
+                                  src={reply.authorAvatar}
+                                  alt={reply.author}
+                                  className="w-5 h-5 rounded-full object-cover shrink-0"
+                                />
+                              ) : (
+                                <div className={`w-5 h-5 rounded-full ${avatarColorMap[reply.authorAvatar] || 'bg-brand-gold'} flex items-center justify-center text-white text-[8px] font-bold shrink-0`}>
+                                  {reply.authorAvatar}
+                                </div>
+                              )}
                               <span className="text-[12px] font-semibold text-gray-800">{reply.author}</span>
                               <span className="text-[11px] text-gray-400">· {reply.timeAgo}</span>
                             </div>

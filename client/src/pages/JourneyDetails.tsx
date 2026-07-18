@@ -28,6 +28,7 @@ import PremiumFooter from "../components/tourism/PremiumFooter";
 import JourneyCard from "../components/tourism/JourneyCard";
 import { featuredTrips } from "../data/tourismData";
 import { useContributions } from "../data/ContributionContext";
+import { auth } from "../lib/firebase";
 
 // Amenities mapping
 const AMENITIES = [
@@ -41,8 +42,11 @@ const AMENITIES = [
 
 const JourneyDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const { journeySubmissions } = useContributions();
+  const { journeySubmissions, refreshJourneys } = useContributions();
+  const [isLoading, setIsLoading] = useState(true);
   const foundTrip = featuredTrips.find((t) => t.id === id) || journeySubmissions.find((t) => t.id === id);
+  const currentUser = auth.currentUser;
+  const isAuthor = currentUser && foundTrip && (foundTrip as any).authorId === currentUser.uid;
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const { scrollY } = useScroll();
@@ -50,7 +54,16 @@ const JourneyDetails = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id]);
+    refreshJourneys().finally(() => setIsLoading(false));
+  }, [id, refreshJourneys]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FCEBD3] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#0F3D2E]/20 border-t-[#0F3D2E] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!foundTrip) {
     return <Navigate to="/tourism" replace />;
@@ -93,7 +106,7 @@ const JourneyDetails = () => {
       ]
   };
 
-  const relatedTrips = featuredTrips.filter((t) => t.id !== id).slice(0, 3);
+  const relatedTrips = journeySubmissions.filter((t) => t.id !== id).slice(0, 3);
 
   // Gallery Memories (using actual gallery or fallbacks)
   const memories = currentTrip.galleryImages.map((url, idx) => ({
@@ -137,8 +150,8 @@ const JourneyDetails = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E] via-[#0F3D2E]/40 to-transparent" />
         </motion.div>
 
-        {/* Back Navigation */}
-        <div className="absolute top-28 left-6 md:left-12 z-20">
+        {/* Back & Action Buttons */}
+        <div className="absolute top-28 left-6 md:left-12 z-20 flex justify-between items-center w-[calc(100%-3rem)] md:w-[calc(100%-6rem)]">
           <Link
             to="/tourism"
             className="inline-flex items-center gap-2 text-white/80 hover:text-white font-bold uppercase tracking-widest text-xs transition-colors"
@@ -146,6 +159,14 @@ const JourneyDetails = () => {
             <ArrowLeft className="w-4 h-4" />
             Back to Experiences
           </Link>
+          {isAuthor && (
+            <Link
+              to={`/tourism/create-journey?editId=${currentTrip.id}`}
+              className="inline-flex items-center gap-2 bg-[#F4A261] hover:bg-[#E5914F] text-black font-semibold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-lg hover:scale-105 font-sans"
+            >
+              Edit Experience
+            </Link>
+          )}
         </div>
 
         {/* Hero Content */}

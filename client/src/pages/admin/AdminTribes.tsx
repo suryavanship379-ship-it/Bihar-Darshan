@@ -13,7 +13,6 @@ const emptyForm: Partial<TribeItem> = {
   hindiName: 'आदिवासी',
   englishName: '',
   shortDesc: '',
-  shortDesc: '',
   image: '',
   cultureSections: [],
 };
@@ -27,7 +26,7 @@ const AdminTribes = () => {
   const [formData, setFormData] = useState<Partial<TribeItem>>(emptyForm);
   const [itemToDelete, setItemToDelete] = useState<TribeItem | null>(null);
 
-  const filteredData = tribes.filter(item => 
+  const filteredData = tribes.filter(item =>
     item.englishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.hindiName.includes(searchTerm)
   );
@@ -88,8 +87,8 @@ const AdminTribes = () => {
           },
           { header: 'English Name', accessor: 'englishName', className: 'font-semibold text-white' },
           { header: 'Hindi Name', accessor: 'hindiName' },
-          { 
-            header: 'Description', 
+          {
+            header: 'Description',
             accessor: (item) => <span className="truncate max-w-xs block">{item.shortDesc}</span>
           },
         ]}
@@ -124,7 +123,7 @@ const AdminTribes = () => {
             placeholder="/images/tribals/..."
           />
           <div className="p-4 bg-white/5 rounded-xl border border-white/10 w-fit">
-             <AdminImagePreview url={formData.image || ''} />
+            <AdminImagePreview url={formData.image || ''} />
           </div>
 
           <AdminTextarea

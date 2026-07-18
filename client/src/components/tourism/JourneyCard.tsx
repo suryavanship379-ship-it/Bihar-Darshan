@@ -1,12 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { TourTrip } from "../../data/tourismData";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Edit3 } from "lucide-react";
+import { auth } from "../../lib/firebase";
 
 interface JourneyCardProps {
   trip: TourTrip;
 }
 
 const JourneyCard = ({ trip }: JourneyCardProps) => {
+  const navigate = useNavigate();
+  const currentUser = auth.currentUser;
+  const isAuthor = currentUser && (trip as any).authorId === currentUser.uid;
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/tourism/create-journey?editId=${trip.id}`);
+  };
+
   return (
     <Link
       to={`/tourism/${trip.id}`}
@@ -20,6 +31,15 @@ const JourneyCard = ({ trip }: JourneyCardProps) => {
             alt={trip.title}
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
           />
+          {isAuthor && (
+            <button
+              onClick={handleEditClick}
+              className="absolute top-4 right-4 z-20 bg-[#F4A261] hover:bg-[#E5914F] text-black w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 font-sans"
+              title="Edit Experience"
+            >
+              <Edit3 size={16} />
+            </button>
+          )}
         </div>
 
         {/* Bottom: Minimal Content Section */}

@@ -26,12 +26,20 @@ export const authenticate = catchAsync(async (req: Request, res: Response, next:
     const firebaseUid = decodedToken.uid;
 
     // Fetch user from DB
-    const currentUser = await db.user.findUnique({
+    let currentUser = await db.user.findUnique({
       where: { firebaseUid },
     });
 
     if (!currentUser) {
       return next(new AppError('The user belonging to this token no longer exists.', 401));
+    }
+
+    // Auto-promote system admin email if database role is not ADMIN
+    if (currentUser.email?.toLowerCase() === 'bihardarshanofficial@gmail.com' && currentUser.role !== 'ADMIN') {
+      currentUser = await db.user.update({
+        where: { id: currentUser.id },
+        data: { role: 'ADMIN' },
+      });
     }
 
     req.user = currentUser;

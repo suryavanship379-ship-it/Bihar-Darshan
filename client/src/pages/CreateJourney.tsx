@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Image as ImageIcon, Upload, X, MapPin, Quote, Camera, Plus, Trash2, GripVertical, CheckCircle, Phone, MessageSquare, Globe, Star, Clock, Maximize2, ArrowLeft } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
@@ -31,7 +31,10 @@ interface TimelineDay {
 
 const CreateJourney = () => {
   const navigate = useNavigate();
-  const { addJourneySubmission } = useContributions();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('editId');
+  const { journeySubmissions, addJourneySubmission, updateJourneySubmission } = useContributions();
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
 
   // Section states (collapsible)
   const [openSections, setOpenSections] = useState({
@@ -45,6 +48,43 @@ const CreateJourney = () => {
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
+
+  // Load database journey to edit if editId exists
+  useEffect(() => {
+    if (editId && journeySubmissions.length > 0) {
+      const trip = journeySubmissions.find(t => t.id === editId);
+      if (trip) {
+        setTitle(trip.title || "");
+        setShortDesc(trip.desc || "");
+        setDescription(trip.description || "");
+        setHeroImage(trip.image || null);
+        if (trip.guide) {
+          setGuideName(trip.guide.name || "");
+          setGuidePhoto(trip.guide.image || null);
+          setExperience(trip.guide.experience || "");
+          setLanguages(trip.guide.languages?.join(", ") || "");
+          setCallNumber(trip.phone || trip.guide.phone || "");
+          setWhatsapp(trip.whatsapp || trip.guide.whatsapp || "");
+        }
+        if (trip.galleryImages) {
+          setGallery(trip.galleryImages.map((url, idx) => ({ id: String(idx), url, title: `Gallery ${idx}` })));
+        }
+        if (trip.timeline && trip.timeline.length > 0) {
+          setTimeline(trip.timeline.map((day, dIdx) => ({
+            id: String(dIdx),
+            day: day.day,
+            title: day.title,
+            activities: day.activities.map((act, aIdx) => ({
+              id: String(aIdx),
+              time: act.time || "Flexible",
+              title: act.activity || "Sightseeing",
+              description: act.description || "Explore and enjoy details of this site."
+            }))
+          })));
+        }
+      }
+    }
+  }, [editId, journeySubmissions]);
 
   // --- Form States ---
 
@@ -177,14 +217,14 @@ const CreateJourney = () => {
     alert("Draft saved successfully!");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!title || !shortDesc) {
       alert("Please fill out the Hero Section details.");
       return;
     }
 
     const durationDays = timeline.length;
-    addJourneySubmission({
+    const submissionData = {
       title: title,
       desc: shortDesc,
       description: description || shortDesc,
@@ -220,7 +260,7 @@ const CreateJourney = () => {
       price: "Flexible",
       phone: callNumber || "+919876543210",
       whatsapp: whatsapp || "+919876543210",
-      difficulty: "Easy",
+      difficulty: "Easy" as "Easy" | "Moderate" | "Challenging",
       bestTime: "October to March",
       groupSize: "Flexible",
       transportation: "Custom Arranged",
@@ -231,10 +271,18 @@ const CreateJourney = () => {
       placesCoveredDetails: [],
       videos: [],
       mapMarkers: []
-    });
+    };
 
-    alert("Featured Journey created successfully!");
-    navigate('/tourism');
+    try {
+      if (editId) {
+        await updateJourneySubmission(editId, submissionData);
+      } else {
+        await addJourneySubmission(submissionData);
+      }
+      setShowSuccessCard(true);
+    } catch (e: any) {
+      alert("Failed to submit journey. Please try again.");
+    }
   };
 
   return (
@@ -728,6 +776,36 @@ const CreateJourney = () => {
       <div className="relative z-10">
         <PremiumFooter />
       </div>
+
+      {showSuccessCard && (
+        <div className="fixed inset-0 bg-[#0F3D2E]/80 backdrop-blur-md flex items-center justify-center z-[9999] p-4 animate-fade-in font-sans">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-[#1A3A2F] border border-[#F4A261]/35 rounded-3xl p-8 max-w-md w-full shadow-2xl relative text-center text-white"
+          >
+            <div className="w-20 h-20 bg-[#F4A261]/10 rounded-full border border-[#F4A261]/30 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="text-[#F4A261] w-10 h-10 animate-bounce" />
+            </div>
+
+            <h3 className="font-display font-medium text-2xl mb-3 text-white">Journey Submitted!</h3>
+
+            <p className="text-white/80 text-sm leading-relaxed mb-8 font-sans">
+              Your custom journey itinerary has been successfully created. To ensure platform safety, it is currently in a <span className="text-yellow-400 font-bold">Pending</span> status and will be visible to everyone on the website once approved by an administrator.
+            </p>
+
+            <button
+              onClick={() => {
+                setShowSuccessCard(false);
+                navigate('/tourism');
+              }}
+              className="w-full bg-[#F4A261] hover:bg-[#E5914F] text-black font-bold py-3 px-6 rounded-xl transition-all duration-300 font-sans shadow-lg shadow-[#F4A261]/25 hover:shadow-xl"
+            >
+              Continue to Tourism Page
+            </button>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

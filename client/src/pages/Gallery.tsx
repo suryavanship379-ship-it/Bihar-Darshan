@@ -24,12 +24,12 @@ export interface ExtendedGalleryItem extends GalleryItem {
 const Gallery = () => {
   const { gallerySubmissions } = useContributions();
   const {
-    gallery: galleryData, 
-    districts: allDistricts, 
-    tourism: featuredTrips, 
-    culture: cultureData, 
-    tribalArticles, 
-    communities 
+    gallery: galleryData,
+    districts: allDistricts,
+    tourism: featuredTrips,
+    culture: cultureData,
+    tribalArticles,
+    communities
   } = useAdminData();
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
@@ -136,7 +136,7 @@ const Gallery = () => {
       return {
         id: baseId++,
         title: c.name,
-        image: c.image,
+        image: c.image || "",
         mediaType: "photo" as const,
         category: "Community" as const,
         photographer: "Official Bihar Darshan",

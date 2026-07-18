@@ -30,6 +30,7 @@ import type { Community, Discussion } from '../data/communityData';
 import { useContributions } from '../data/ContributionContext';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { X, Sparkles } from 'lucide-react';
 
 
 const CommunityPage = () => {
@@ -53,13 +54,26 @@ const CommunityPage = () => {
   const [dbPosts, setDbPosts] = useState<Discussion[]>([]);
   const [joinedCommunityIds, setJoinedCommunityIds] = useState<string[]>([]);
   const [memberCountAdjustments, setMemberCountAdjustments] = useState<Record<string, number>>({});
+  const [dbUserId, setDbUserId] = useState<string | null>(null);
 
-  // Sync user joined community IDs from backend
+  // Sync user joined community IDs and get DB user ID from backend
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
           const token = await user.getIdToken();
+
+          // Get user profile first to get DB user ID
+          const profResponse = await fetch('http://localhost:5000/api/v1/users/profile', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const profResult = await profResponse.json();
+          if (profResult && profResult.success && profResult.data?.user) {
+            setDbUserId(profResult.data.user.id);
+          }
+
           const response = await fetch('http://localhost:5000/api/v1/community/joined/me', {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -72,10 +86,11 @@ const CommunityPage = () => {
             }
           }
         } catch (err) {
-          console.error("Failed to fetch user joined communities:", err);
+          console.error("Failed to fetch user joined communities or profile:", err);
         }
       } else {
         setJoinedCommunityIds([]);
+        setDbUserId(null);
       }
     });
 
@@ -176,7 +191,7 @@ const CommunityPage = () => {
             author: p.author?.name || 'Anonymous',
             authorAvatar: (p.author?.name || 'A').slice(0, 2).toUpperCase(),
             timeAgo: new Date(p.createdAt).toLocaleDateString(),
-            views: '0 views',
+            views: String(p.views ?? 0),
             replies: p.replies ?? 0,
             tag: 'Destinations' as const,
             tagColor: 'bg-blue-100 text-blue-700',
@@ -209,6 +224,13 @@ const CommunityPage = () => {
   const filteredCommunities = useMemo(() => {
     let result = [...communitySubmissions, ...communities];
 
+    // Filter by approval status: only show APPROVED or those pending approval created by current user
+    result = result.filter((c) => {
+      if (!c.status || c.status === 'APPROVED') return true;
+      if (c.status === 'PENDING' && dbUserId && c.createdBy === dbUserId) return true;
+      return false;
+    });
+
     if (activeCategory !== 'All Categories') {
       result = result.filter((c) => c.category === activeCategory);
     }
@@ -224,7 +246,7 @@ const CommunityPage = () => {
     }
 
     return result;
-  }, [activeCategory, searchQuery, communitySubmissions]);
+  }, [activeCategory, searchQuery, communitySubmissions, dbUserId]);
 
   // Discussions for the selected community — DB posts take priority, mock data only as fallback
   const communityDiscussions = useMemo(() => {
@@ -254,7 +276,7 @@ const CommunityPage = () => {
           author: p.author?.name || 'Anonymous',
           authorAvatar: (p.author?.name || 'A').slice(0, 2).toUpperCase(),
           timeAgo: new Date(p.createdAt).toLocaleDateString(),
-          views: '0 views',
+          views: String(p.views ?? 0),
           replies: p.replies ?? 0,
           tag: 'Destinations' as const,
           tagColor: 'bg-blue-100 text-blue-700',
@@ -399,6 +421,27 @@ const CommunityPage = () => {
               <Navbar />
               <CommunityHero searchQuery={searchQuery} onSearchChange={setSearchQuery} />
               <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {pendingApprovalBanner && (
+                  <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-amber-50 border border-brand-gold/30 text-amber-900 shadow-sm relative overflow-hidden animate-slide-in">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-brand-gold/15 rounded-xl text-brand-gold shrink-0">
+                        <Sparkles size={20} className="stroke-[2.5]" />
+                      </div>
+                      <div className="flex-1 pr-6">
+                        <h4 className="font-bold text-sm text-gray-900 leading-snug">Community Submission Received!</h4>
+                        <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                          Your community has been created and sent to our administrators for verification. Once approved, it will be published and visible to the public. Thank you for contributing to Bihar Darshan!
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setPendingApprovalBanner(false)}
+                        className="absolute top-4 right-4 p-1.5 hover:bg-black/5 rounded-lg text-gray-400 hover:text-gray-600 transition"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-end justify-between mb-2">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">Explore Communities</h2>
