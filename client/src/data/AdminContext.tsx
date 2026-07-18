@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { auth } from '../lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import type { CultureItem } from './cultureData';
 import type { CultureSection } from '../components/tribals/CulturalHighlightsGrid';
 import { cultureData } from './cultureData';
@@ -18,6 +20,7 @@ import type { DistrictDetail } from './districtDetailsData';
 
 import { personalities as defaultPersonalities } from '../pages/Personalities';
 import { tribesList } from '../pages/Tribals';
+import { type SiteSettings, defaultSiteSettings } from './siteSettingsDefaults';
 
 // ── Tribe type (extracted from Tribals.tsx inline data) ──
 export interface TribeItem {
@@ -61,32 +64,8 @@ export interface ProductItem {
   email: string;
 }
 
-// ── Site Settings ──
-export interface SiteSettings {
-  heroTitle: string;
-  heroSubtitle: string;
-  heroDescription: string;
-  heroImage: string;
-  statPlaces: string;
-  statDistricts: string;
-  statCulturalSites: string;
-  statFestivals: string;
-  statTourists: string;
-  footerAbout: string;
-}
-
-const defaultSiteSettings: SiteSettings = {
-  heroTitle: "Discover the Soul of",
-  heroSubtitle: "Bihar",
-  heroDescription: "Ancient ruins, sacred temples, breathtaking landscapes, living festivals, authentic cuisines and stories waiting to be explored through immersive storytelling.",
-  heroImage: "",
-  statPlaces: "500+",
-  statDistricts: "38",
-  statCulturalSites: "100+",
-  statFestivals: "50+",
-  statTourists: "1000+",
-  footerAbout: "Bihar Darshan is a digital platform to explore the rich cultural heritage, historical landmarks, and vibrant communities of Bihar.",
-};
+// ── Site Settings (imported from siteSettingsDefaults.ts) ──
+export type { SiteSettings };
 
 // ── Storage keys ──
 const KEYS = {
@@ -165,13 +144,73 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
   const [culture, setCulture] = useState<CultureItem[]>(() => loadFromStorage(KEYS.culture, cultureData));
   const [tourism, setTourism] = useState<TourTrip[]>(() => loadFromStorage(KEYS.tourism, featuredTrips));
   const [gallery, setGallery] = useState<GalleryItem[]>(() => loadFromStorage(KEYS.gallery, defaultGalleryItems));
-  const [communitiesState, setCommunitiesState] = useState<Community[]>(() => loadFromStorage(KEYS.communities, defaultCommunities));
+  const [communitiesState, setCommunitiesState] = useState<Community[]>(() => {
+    const loaded = loadFromStorage(KEYS.communities, defaultCommunities);
+    const mockIds = ['bihar-travel', 'bihar-culture', 'bihari-food', 'bihar-festivals', 'bihar-photography', 'bihar-history', 'bihar-tribes', 'students-bihar', 'bihar-agriculture'];
+    return loaded.filter(c => !mockIds.includes(c.id));
+  });
   const [discussionsState, setDiscussionsState] = useState<Discussion[]>(() => loadFromStorage(KEYS.discussions, defaultDiscussions));
   const [products, setProducts] = useState<ProductItem[]>(() => loadFromStorage(KEYS.products, defaultProducts as ProductItem[]));
   const [tribes, setTribes] = useState<TribeItem[]>(() => loadFromStorage(KEYS.tribes, tribesList));
   const [tribalArticlesState, setTribalArticlesState] = useState<TribalArticle[]>(() => loadFromStorage(KEYS.tribalArticles, tribalArticles));
   const [personalities, setPersonalities] = useState<PersonalityItem[]>(() => loadFromStorage(KEYS.personalities, defaultPersonalities as unknown as PersonalityItem[]));
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => loadFromStorage(KEYS.siteSettings, defaultSiteSettings));
+
+  // Fetch communities from backend database on mount matching auth status
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      let url = 'http://localhost:5000/api/v1/community';
+      const headers: any = {};
+
+      if (user) {
+        const token = await user.getIdToken();
+        url = 'http://localhost:5000/api/v1/community/admin/all';
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      fetch(url, { headers })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data && result.data.communities) {
+            const dbCommunities = result.data.communities.map((c: any) => ({
+              id: c.id,
+              name: c.name,
+              subtitle: c.shortDescription || c.description || '',
+              image: c.bannerImageUrl || c.logoImageUrl || '/images/culture/hero-artwork.png',
+              icon: c.logoImageUrl || '🌟',
+              iconBg: 'bg-brand-gold',
+              members: c.membersCount !== undefined ? c.membersCount : 1,
+              posts: c.postsCount !== undefined ? c.postsCount : 0,
+              verified: true,
+              category: c.category || 'All Categories',
+              aboutText: c.description || c.shortDescription || '',
+              membersCount: c.membersCount || 0,
+              postsCount: c.postsCount || 0,
+              bannerImageUrl: c.bannerImageUrl,
+              logoImageUrl: c.logoImageUrl,
+              shortDescription: c.shortDescription,
+              description: c.description,
+              status: c.status || 'PENDING',
+            }));
+            setCommunitiesState(prev => {
+              const combined = [...dbCommunities, ...prev];
+              const seen = new Set();
+              const mockIds = ['bihar-travel', 'bihar-culture', 'bihari-food', 'bihar-festivals', 'bihar-photography', 'bihar-history', 'bihar-tribes', 'students-bihar', 'bihar-agriculture'];
+              return combined.filter(c => {
+                if (mockIds.includes(c.id)) return false;
+                const val = c.name || c.id;
+                const duplicate = seen.has(val);
+                seen.add(val);
+                return !duplicate;
+              });
+            });
+          }
+        })
+        .catch(err => console.error('AdminContext: Failed to fetch communities:', err));
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Auto-save on change
   const createUpdater = <T,>(key: string, setter: React.Dispatch<React.SetStateAction<T>>) =>
@@ -253,4 +292,4 @@ export const useAdminData = () => {
   return ctx;
 };
 
-export { defaultSiteSettings };
+export { defaultSiteSettings } from './siteSettingsDefaults';

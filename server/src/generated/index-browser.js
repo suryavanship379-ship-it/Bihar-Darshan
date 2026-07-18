@@ -255,6 +255,7 @@ exports.Prisma.CommunityScalarFieldEnum = {
   membersCount: 'membersCount',
   isActive: 'isActive',
   isFeatured: 'isFeatured',
+  status: 'status',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -274,12 +275,23 @@ exports.Prisma.CommunityPostScalarFieldEnum = {
   content: 'content',
   likes: 'likes',
   replies: 'replies',
+  views: 'views',
   mediaUrl: 'mediaUrl',
   mediaType: 'mediaType',
   pollData: 'pollData',
   authorId: 'authorId',
   communityId: 'communityId',
   status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PostCommentScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  postId: 'postId',
+  authorId: 'authorId',
+  parentId: 'parentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -390,6 +402,12 @@ exports.DiscoverCategory = exports.$Enums.DiscoverCategory = {
   WILDLIFE: 'WILDLIFE'
 };
 
+exports.ApprovalStatus = exports.$Enums.ApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
 exports.CommunityRole = exports.$Enums.CommunityRole = {
   OWNER: 'OWNER',
   MODERATOR: 'MODERATOR',
@@ -399,12 +417,6 @@ exports.CommunityRole = exports.$Enums.CommunityRole = {
 exports.MediaType = exports.$Enums.MediaType = {
   IMAGE: 'IMAGE',
   VIDEO: 'VIDEO'
-};
-
-exports.ApprovalStatus = exports.$Enums.ApprovalStatus = {
-  PENDING: 'PENDING',
-  APPROVED: 'APPROVED',
-  REJECTED: 'REJECTED'
 };
 
 exports.Prisma.ModelName = {
@@ -420,6 +432,7 @@ exports.Prisma.ModelName = {
   Community: 'Community',
   CommunityMember: 'CommunityMember',
   CommunityPost: 'CommunityPost',
+  PostComment: 'PostComment',
   Journey: 'Journey',
   GalleryItem: 'GalleryItem',
   MarketplaceProduct: 'MarketplaceProduct',

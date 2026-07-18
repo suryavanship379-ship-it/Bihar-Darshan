@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MessageSquare, Eye, ArrowBigUp, ArrowBigDown, Share2, Image as ImageIcon, Video, Send } from 'lucide-react';
 import type { Discussion, Comment } from '../../data/communityData';
+import { auth } from '../../lib/firebase';
 
 interface DiscussionItemProps {
   discussion: Discussion;
@@ -8,8 +9,8 @@ interface DiscussionItemProps {
 
 const tagStyleMap: Record<string, string> = {
   Destinations: 'bg-blue-100 text-blue-700',
-  Tips:         'bg-green-100 text-green-700',
-  Itinerary:    'bg-yellow-100 text-yellow-700',
+  Tips: 'bg-green-100 text-green-700',
+  Itinerary: 'bg-yellow-100 text-yellow-700',
 };
 
 const avatarColorMap: Record<string, string> = {
@@ -32,9 +33,57 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
   const [localComments, setLocalComments] = useState<Comment[]>(discussion.comments || []);
   const [newCommentText, setNewCommentText] = useState('');
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
+  const [voteCountAdjustment, setVoteCountAdjustment] = useState(0);
 
   // Calculate total votes for poll
   const totalVotes = discussion.poll?.options.reduce((sum, o) => sum + o.votes, 0) ?? 0;
+
+  const baseLikes = discussion.likes !== undefined ? discussion.likes : (discussion.replies || 0);
+  const currentLikes = baseLikes + voteCountAdjustment;
+
+  const handleVote = async (newVote: 'up' | 'down' | null) => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login to vote on posts.");
+      return;
+    }
+
+    const previousVote = voted;
+    const prevVal = previousVote === 'up' ? 1 : previousVote === 'down' ? -1 : 0;
+    const newVal = newVote === 'up' ? 1 : newVote === 'down' ? -1 : 0;
+    const diff = newVal - prevVal;
+
+    // Fast local update
+    setVoted(newVote);
+    setVoteCountAdjustment(prev => prev + diff);
+
+    if (String(discussion.id).startsWith('d') || String(discussion.id).startsWith('local_')) {
+      return;
+    }
+
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch(`http://localhost:5000/api/v1/community/posts/${discussion.id}/like`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          voteType: newVote ? newVote.toUpperCase() : 'NONE',
+          previousVote: previousVote ? previousVote.toUpperCase() : 'NONE'
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update vote on server');
+      }
+    } catch (err) {
+      console.error(err);
+      // Rollback
+      setVoted(previousVote);
+      setVoteCountAdjustment(prev => prev - diff);
+    }
+  };
 
   const handleAddComment = () => {
     if (!newCommentText.trim()) return;
@@ -60,7 +109,7 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
     } else {
       setLocalComments([...localComments, newComment]);
     }
-    
+
     setNewCommentText('');
     setReplyingToId(null);
   };
@@ -99,15 +148,15 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
         {discussion.mediaUrl && (
           <div className="mt-2 mb-2 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 max-h-[350px]">
             {discussion.mediaType === 'video' ? (
-              <video 
-                src={discussion.mediaUrl} 
-                controls 
+              <video
+                src={discussion.mediaUrl}
+                controls
                 className="w-full max-h-[350px] object-cover"
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <img 
-                src={discussion.mediaUrl} 
+              <img
+                src={discussion.mediaUrl}
                 alt={discussion.title}
                 className="w-full max-h-[350px] object-cover"
                 loading="lazy"
@@ -125,7 +174,7 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
                 const pct = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
                 return (
                   <div key={option.id} className="relative">
-                    <div 
+                    <div
                       className="absolute inset-0 rounded-lg bg-amber-100/60"
                       style={{ width: `${pct}%` }}
                     />
@@ -145,17 +194,17 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
         <div className="flex items-center gap-1 mt-2 -ml-1">
           {/* Upvote/Downvote */}
           <div className="flex items-center bg-gray-100/80 rounded-full">
-            <button 
-              onClick={(e) => { e.stopPropagation(); setVoted(voted === 'up' ? null : 'up'); }}
+            <button
+              onClick={(e) => { e.stopPropagation(); handleVote(voted === 'up' ? null : 'up'); }}
               className={`p-1.5 rounded-l-full hover:bg-gray-200 transition-colors ${voted === 'up' ? 'text-gold-dark' : 'text-gray-500'}`}
             >
               <ArrowBigUp size={18} fill={voted === 'up' ? 'currentColor' : 'none'} />
             </button>
             <span className="text-xs font-bold text-gray-700 px-1 min-w-[20px] text-center">
-              {discussion.replies}
+              {currentLikes}
             </span>
-            <button 
-              onClick={(e) => { e.stopPropagation(); setVoted(voted === 'down' ? null : 'down'); }}
+            <button
+              onClick={(e) => { e.stopPropagation(); handleVote(voted === 'down' ? null : 'down'); }}
               className={`p-1.5 rounded-r-full hover:bg-gray-200 transition-colors ${voted === 'down' ? 'text-blue-500' : 'text-gray-500'}`}
             >
               <ArrowBigDown size={18} fill={voted === 'down' ? 'currentColor' : 'none'} />
@@ -165,7 +214,7 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
 
 
           {/* Share */}
-          <button 
+          <button
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
           >
@@ -174,7 +223,7 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
           </button>
 
           {/* Comment */}
-          <button 
+          <button
             onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${showComments ? 'bg-amber-50 text-amber-700' : 'text-gray-500 hover:bg-gray-100'}`}
           >
@@ -210,9 +259,9 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
                     </div>
                     <p className="text-[14px] text-gray-700 ml-[38px] mb-2 leading-relaxed">{comment.content}</p>
                     <div className="ml-[38px] flex items-center gap-3">
-                      <button 
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setReplyingToId(replyingToId === comment.id ? null : comment.id);
                           if (replyingToId !== comment.id) {
                             setNewCommentText('');
@@ -224,7 +273,7 @@ const DiscussionItem = ({ discussion }: DiscussionItemProps) => {
                         Reply
                       </button>
                     </div>
-                    
+
                     {/* Replies */}
                     {comment.replies && comment.replies.length > 0 && (
                       <div className="ml-[38px] mt-3 space-y-3 border-l-2 border-gray-100 pl-3">

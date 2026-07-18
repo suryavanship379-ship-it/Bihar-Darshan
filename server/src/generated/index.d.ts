@@ -74,6 +74,11 @@ export type CommunityMember = $Result.DefaultSelection<Prisma.$CommunityMemberPa
  */
 export type CommunityPost = $Result.DefaultSelection<Prisma.$CommunityPostPayload>
 /**
+ * Model PostComment
+ * 
+ */
+export type PostComment = $Result.DefaultSelection<Prisma.$PostCommentPayload>
+/**
  * Model Journey
  * 
  */
@@ -419,6 +424,16 @@ export class PrismaClient<
     * ```
     */
   get communityPost(): Prisma.CommunityPostDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.postComment`: Exposes CRUD operations for the **PostComment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PostComments
+    * const postComments = await prisma.postComment.findMany()
+    * ```
+    */
+  get postComment(): Prisma.PostCommentDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.journey`: Exposes CRUD operations for the **Journey** model.
@@ -905,6 +920,7 @@ export namespace Prisma {
     Community: 'Community',
     CommunityMember: 'CommunityMember',
     CommunityPost: 'CommunityPost',
+    PostComment: 'PostComment',
     Journey: 'Journey',
     GalleryItem: 'GalleryItem',
     MarketplaceProduct: 'MarketplaceProduct',
@@ -924,7 +940,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "notification" | "district" | "seasonRow" | "topAttraction" | "discoverItem" | "tribe" | "personality" | "tribalArticle" | "community" | "communityMember" | "communityPost" | "journey" | "galleryItem" | "marketplaceProduct" | "siteSettings"
+      modelProps: "user" | "notification" | "district" | "seasonRow" | "topAttraction" | "discoverItem" | "tribe" | "personality" | "tribalArticle" | "community" | "communityMember" | "communityPost" | "postComment" | "journey" | "galleryItem" | "marketplaceProduct" | "siteSettings"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1816,6 +1832,80 @@ export namespace Prisma {
           }
         }
       }
+      PostComment: {
+        payload: Prisma.$PostCommentPayload<ExtArgs>
+        fields: Prisma.PostCommentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PostCommentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PostCommentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>
+          }
+          findFirst: {
+            args: Prisma.PostCommentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PostCommentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>
+          }
+          findMany: {
+            args: Prisma.PostCommentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>[]
+          }
+          create: {
+            args: Prisma.PostCommentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>
+          }
+          createMany: {
+            args: Prisma.PostCommentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PostCommentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>[]
+          }
+          delete: {
+            args: Prisma.PostCommentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>
+          }
+          update: {
+            args: Prisma.PostCommentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>
+          }
+          deleteMany: {
+            args: Prisma.PostCommentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PostCommentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PostCommentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>[]
+          }
+          upsert: {
+            args: Prisma.PostCommentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostCommentPayload>
+          }
+          aggregate: {
+            args: Prisma.PostCommentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePostComment>
+          }
+          groupBy: {
+            args: Prisma.PostCommentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PostCommentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PostCommentCountArgs<ExtArgs>
+            result: $Utils.Optional<PostCommentCountAggregateOutputType> | number
+          }
+        }
+      }
       Journey: {
         payload: Prisma.$JourneyPayload<ExtArgs>
         fields: Prisma.JourneyFieldRefs
@@ -2232,6 +2322,7 @@ export namespace Prisma {
     community?: CommunityOmit
     communityMember?: CommunityMemberOmit
     communityPost?: CommunityPostOmit
+    postComment?: PostCommentOmit
     journey?: JourneyOmit
     galleryItem?: GalleryItemOmit
     marketplaceProduct?: MarketplaceProductOmit
@@ -2317,6 +2408,7 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     communityPosts: number
+    postComments: number
     journeys: number
     galleryItems: number
     notifications: number
@@ -2326,6 +2418,7 @@ export namespace Prisma {
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     communityPosts?: boolean | UserCountOutputTypeCountCommunityPostsArgs
+    postComments?: boolean | UserCountOutputTypeCountPostCommentsArgs
     journeys?: boolean | UserCountOutputTypeCountJourneysArgs
     galleryItems?: boolean | UserCountOutputTypeCountGalleryItemsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
@@ -2349,6 +2442,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountCommunityPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CommunityPostWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPostCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostCommentWhereInput
   }
 
   /**
@@ -2464,6 +2564,68 @@ export namespace Prisma {
    */
   export type CommunityCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CommunityMemberWhereInput
+  }
+
+
+  /**
+   * Count Type CommunityPostCountOutputType
+   */
+
+  export type CommunityPostCountOutputType = {
+    comments: number
+  }
+
+  export type CommunityPostCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    comments?: boolean | CommunityPostCountOutputTypeCountCommentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CommunityPostCountOutputType without action
+   */
+  export type CommunityPostCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityPostCountOutputType
+     */
+    select?: CommunityPostCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CommunityPostCountOutputType without action
+   */
+  export type CommunityPostCountOutputTypeCountCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostCommentWhereInput
+  }
+
+
+  /**
+   * Count Type PostCommentCountOutputType
+   */
+
+  export type PostCommentCountOutputType = {
+    children: number
+  }
+
+  export type PostCommentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    children?: boolean | PostCommentCountOutputTypeCountChildrenArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PostCommentCountOutputType without action
+   */
+  export type PostCommentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostCommentCountOutputType
+     */
+    select?: PostCommentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PostCommentCountOutputType without action
+   */
+  export type PostCommentCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostCommentWhereInput
   }
 
 
@@ -2738,6 +2900,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     communityPosts?: boolean | User$communityPostsArgs<ExtArgs>
+    postComments?: boolean | User$postCommentsArgs<ExtArgs>
     journeys?: boolean | User$journeysArgs<ExtArgs>
     galleryItems?: boolean | User$galleryItemsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
@@ -2797,6 +2960,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firebaseUid" | "email" | "name" | "avatar" | "title" | "bio" | "background" | "rewardPoints" | "badges" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     communityPosts?: boolean | User$communityPostsArgs<ExtArgs>
+    postComments?: boolean | User$postCommentsArgs<ExtArgs>
     journeys?: boolean | User$journeysArgs<ExtArgs>
     galleryItems?: boolean | User$galleryItemsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
@@ -2811,6 +2975,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       communityPosts: Prisma.$CommunityPostPayload<ExtArgs>[]
+      postComments: Prisma.$PostCommentPayload<ExtArgs>[]
       journeys: Prisma.$JourneyPayload<ExtArgs>[]
       galleryItems: Prisma.$GalleryItemPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
@@ -3226,6 +3391,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     communityPosts<T extends User$communityPostsArgs<ExtArgs> = {}>(args?: Subset<T, User$communityPostsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    postComments<T extends User$postCommentsArgs<ExtArgs> = {}>(args?: Subset<T, User$postCommentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     journeys<T extends User$journeysArgs<ExtArgs> = {}>(args?: Subset<T, User$journeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     galleryItems<T extends User$galleryItemsArgs<ExtArgs> = {}>(args?: Subset<T, User$galleryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GalleryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3687,6 +3853,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CommunityPostScalarFieldEnum | CommunityPostScalarFieldEnum[]
+  }
+
+  /**
+   * User.postComments
+   */
+  export type User$postCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    where?: PostCommentWhereInput
+    orderBy?: PostCommentOrderByWithRelationInput | PostCommentOrderByWithRelationInput[]
+    cursor?: PostCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostCommentScalarFieldEnum | PostCommentScalarFieldEnum[]
   }
 
   /**
@@ -12740,6 +12930,7 @@ export namespace Prisma {
     membersCount: number | null
     isActive: boolean | null
     isFeatured: boolean | null
+    status: $Enums.ApprovalStatus | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -12758,6 +12949,7 @@ export namespace Prisma {
     membersCount: number | null
     isActive: boolean | null
     isFeatured: boolean | null
+    status: $Enums.ApprovalStatus | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -12777,6 +12969,7 @@ export namespace Prisma {
     membersCount: number
     isActive: number
     isFeatured: number
+    status: number
     createdBy: number
     createdAt: number
     updatedAt: number
@@ -12807,6 +13000,7 @@ export namespace Prisma {
     membersCount?: true
     isActive?: true
     isFeatured?: true
+    status?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -12825,6 +13019,7 @@ export namespace Prisma {
     membersCount?: true
     isActive?: true
     isFeatured?: true
+    status?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -12844,6 +13039,7 @@ export namespace Prisma {
     membersCount?: true
     isActive?: true
     isFeatured?: true
+    status?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -12950,6 +13146,7 @@ export namespace Prisma {
     membersCount: number
     isActive: boolean
     isFeatured: boolean
+    status: $Enums.ApprovalStatus
     createdBy: string | null
     createdAt: Date
     updatedAt: Date
@@ -12988,6 +13185,7 @@ export namespace Prisma {
     membersCount?: boolean
     isActive?: boolean
     isFeatured?: boolean
+    status?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -13011,6 +13209,7 @@ export namespace Prisma {
     membersCount?: boolean
     isActive?: boolean
     isFeatured?: boolean
+    status?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -13031,6 +13230,7 @@ export namespace Prisma {
     membersCount?: boolean
     isActive?: boolean
     isFeatured?: boolean
+    status?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -13051,12 +13251,13 @@ export namespace Prisma {
     membersCount?: boolean
     isActive?: boolean
     isFeatured?: boolean
+    status?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CommunityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "shortDescription" | "description" | "bannerImageUrl" | "logoImageUrl" | "category" | "rules" | "postsCount" | "membersCount" | "isActive" | "isFeatured" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["community"]>
+  export type CommunityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "shortDescription" | "description" | "bannerImageUrl" | "logoImageUrl" | "category" | "rules" | "postsCount" | "membersCount" | "isActive" | "isFeatured" | "status" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["community"]>
   export type CommunityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     creator?: boolean | Community$creatorArgs<ExtArgs>
     posts?: boolean | Community$postsArgs<ExtArgs>
@@ -13091,6 +13292,7 @@ export namespace Prisma {
       membersCount: number
       isActive: boolean
       isFeatured: boolean
+      status: $Enums.ApprovalStatus
       createdBy: string | null
       createdAt: Date
       updatedAt: Date
@@ -13533,6 +13735,7 @@ export namespace Prisma {
     readonly membersCount: FieldRef<"Community", 'Int'>
     readonly isActive: FieldRef<"Community", 'Boolean'>
     readonly isFeatured: FieldRef<"Community", 'Boolean'>
+    readonly status: FieldRef<"Community", 'ApprovalStatus'>
     readonly createdBy: FieldRef<"Community", 'String'>
     readonly createdAt: FieldRef<"Community", 'DateTime'>
     readonly updatedAt: FieldRef<"Community", 'DateTime'>
@@ -15108,11 +15311,13 @@ export namespace Prisma {
   export type CommunityPostAvgAggregateOutputType = {
     likes: number | null
     replies: number | null
+    views: number | null
   }
 
   export type CommunityPostSumAggregateOutputType = {
     likes: number | null
     replies: number | null
+    views: number | null
   }
 
   export type CommunityPostMinAggregateOutputType = {
@@ -15121,6 +15326,7 @@ export namespace Prisma {
     content: string | null
     likes: number | null
     replies: number | null
+    views: number | null
     mediaUrl: string | null
     mediaType: $Enums.MediaType | null
     authorId: string | null
@@ -15136,6 +15342,7 @@ export namespace Prisma {
     content: string | null
     likes: number | null
     replies: number | null
+    views: number | null
     mediaUrl: string | null
     mediaType: $Enums.MediaType | null
     authorId: string | null
@@ -15151,6 +15358,7 @@ export namespace Prisma {
     content: number
     likes: number
     replies: number
+    views: number
     mediaUrl: number
     mediaType: number
     pollData: number
@@ -15166,11 +15374,13 @@ export namespace Prisma {
   export type CommunityPostAvgAggregateInputType = {
     likes?: true
     replies?: true
+    views?: true
   }
 
   export type CommunityPostSumAggregateInputType = {
     likes?: true
     replies?: true
+    views?: true
   }
 
   export type CommunityPostMinAggregateInputType = {
@@ -15179,6 +15389,7 @@ export namespace Prisma {
     content?: true
     likes?: true
     replies?: true
+    views?: true
     mediaUrl?: true
     mediaType?: true
     authorId?: true
@@ -15194,6 +15405,7 @@ export namespace Prisma {
     content?: true
     likes?: true
     replies?: true
+    views?: true
     mediaUrl?: true
     mediaType?: true
     authorId?: true
@@ -15209,6 +15421,7 @@ export namespace Prisma {
     content?: true
     likes?: true
     replies?: true
+    views?: true
     mediaUrl?: true
     mediaType?: true
     pollData?: true
@@ -15312,6 +15525,7 @@ export namespace Prisma {
     content: string
     likes: number
     replies: number
+    views: number
     mediaUrl: string | null
     mediaType: $Enums.MediaType | null
     pollData: JsonValue | null
@@ -15347,6 +15561,7 @@ export namespace Prisma {
     content?: boolean
     likes?: boolean
     replies?: boolean
+    views?: boolean
     mediaUrl?: boolean
     mediaType?: boolean
     pollData?: boolean
@@ -15357,6 +15572,8 @@ export namespace Prisma {
     updatedAt?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
     community?: boolean | CommunityDefaultArgs<ExtArgs>
+    comments?: boolean | CommunityPost$commentsArgs<ExtArgs>
+    _count?: boolean | CommunityPostCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["communityPost"]>
 
   export type CommunityPostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15365,6 +15582,7 @@ export namespace Prisma {
     content?: boolean
     likes?: boolean
     replies?: boolean
+    views?: boolean
     mediaUrl?: boolean
     mediaType?: boolean
     pollData?: boolean
@@ -15383,6 +15601,7 @@ export namespace Prisma {
     content?: boolean
     likes?: boolean
     replies?: boolean
+    views?: boolean
     mediaUrl?: boolean
     mediaType?: boolean
     pollData?: boolean
@@ -15401,6 +15620,7 @@ export namespace Prisma {
     content?: boolean
     likes?: boolean
     replies?: boolean
+    views?: boolean
     mediaUrl?: boolean
     mediaType?: boolean
     pollData?: boolean
@@ -15411,10 +15631,12 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CommunityPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "likes" | "replies" | "mediaUrl" | "mediaType" | "pollData" | "authorId" | "communityId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["communityPost"]>
+  export type CommunityPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "likes" | "replies" | "views" | "mediaUrl" | "mediaType" | "pollData" | "authorId" | "communityId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["communityPost"]>
   export type CommunityPostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
     community?: boolean | CommunityDefaultArgs<ExtArgs>
+    comments?: boolean | CommunityPost$commentsArgs<ExtArgs>
+    _count?: boolean | CommunityPostCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CommunityPostIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
@@ -15430,6 +15652,7 @@ export namespace Prisma {
     objects: {
       author: Prisma.$UserPayload<ExtArgs>
       community: Prisma.$CommunityPayload<ExtArgs>
+      comments: Prisma.$PostCommentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15437,6 +15660,7 @@ export namespace Prisma {
       content: string
       likes: number
       replies: number
+      views: number
       mediaUrl: string | null
       mediaType: $Enums.MediaType | null
       pollData: Prisma.JsonValue | null
@@ -15841,6 +16065,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     community<T extends CommunityDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CommunityDefaultArgs<ExtArgs>>): Prisma__CommunityClient<$Result.GetResult<Prisma.$CommunityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    comments<T extends CommunityPost$commentsArgs<ExtArgs> = {}>(args?: Subset<T, CommunityPost$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15875,6 +16100,7 @@ export namespace Prisma {
     readonly content: FieldRef<"CommunityPost", 'String'>
     readonly likes: FieldRef<"CommunityPost", 'Int'>
     readonly replies: FieldRef<"CommunityPost", 'Int'>
+    readonly views: FieldRef<"CommunityPost", 'Int'>
     readonly mediaUrl: FieldRef<"CommunityPost", 'String'>
     readonly mediaType: FieldRef<"CommunityPost", 'MediaType'>
     readonly pollData: FieldRef<"CommunityPost", 'Json'>
@@ -16284,6 +16510,30 @@ export namespace Prisma {
   }
 
   /**
+   * CommunityPost.comments
+   */
+  export type CommunityPost$commentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    where?: PostCommentWhereInput
+    orderBy?: PostCommentOrderByWithRelationInput | PostCommentOrderByWithRelationInput[]
+    cursor?: PostCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostCommentScalarFieldEnum | PostCommentScalarFieldEnum[]
+  }
+
+  /**
    * CommunityPost without action
    */
   export type CommunityPostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16299,6 +16549,1160 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CommunityPostInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PostComment
+   */
+
+  export type AggregatePostComment = {
+    _count: PostCommentCountAggregateOutputType | null
+    _min: PostCommentMinAggregateOutputType | null
+    _max: PostCommentMaxAggregateOutputType | null
+  }
+
+  export type PostCommentMinAggregateOutputType = {
+    id: string | null
+    content: string | null
+    postId: string | null
+    authorId: string | null
+    parentId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PostCommentMaxAggregateOutputType = {
+    id: string | null
+    content: string | null
+    postId: string | null
+    authorId: string | null
+    parentId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PostCommentCountAggregateOutputType = {
+    id: number
+    content: number
+    postId: number
+    authorId: number
+    parentId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PostCommentMinAggregateInputType = {
+    id?: true
+    content?: true
+    postId?: true
+    authorId?: true
+    parentId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PostCommentMaxAggregateInputType = {
+    id?: true
+    content?: true
+    postId?: true
+    authorId?: true
+    parentId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PostCommentCountAggregateInputType = {
+    id?: true
+    content?: true
+    postId?: true
+    authorId?: true
+    parentId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PostCommentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PostComment to aggregate.
+     */
+    where?: PostCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostComments to fetch.
+     */
+    orderBy?: PostCommentOrderByWithRelationInput | PostCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PostCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PostComments
+    **/
+    _count?: true | PostCommentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PostCommentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PostCommentMaxAggregateInputType
+  }
+
+  export type GetPostCommentAggregateType<T extends PostCommentAggregateArgs> = {
+        [P in keyof T & keyof AggregatePostComment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePostComment[P]>
+      : GetScalarType<T[P], AggregatePostComment[P]>
+  }
+
+
+
+
+  export type PostCommentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostCommentWhereInput
+    orderBy?: PostCommentOrderByWithAggregationInput | PostCommentOrderByWithAggregationInput[]
+    by: PostCommentScalarFieldEnum[] | PostCommentScalarFieldEnum
+    having?: PostCommentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PostCommentCountAggregateInputType | true
+    _min?: PostCommentMinAggregateInputType
+    _max?: PostCommentMaxAggregateInputType
+  }
+
+  export type PostCommentGroupByOutputType = {
+    id: string
+    content: string
+    postId: string
+    authorId: string
+    parentId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PostCommentCountAggregateOutputType | null
+    _min: PostCommentMinAggregateOutputType | null
+    _max: PostCommentMaxAggregateOutputType | null
+  }
+
+  type GetPostCommentGroupByPayload<T extends PostCommentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PostCommentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PostCommentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PostCommentGroupByOutputType[P]>
+            : GetScalarType<T[P], PostCommentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PostCommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    postId?: boolean
+    authorId?: boolean
+    parentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    parent?: boolean | PostComment$parentArgs<ExtArgs>
+    children?: boolean | PostComment$childrenArgs<ExtArgs>
+    _count?: boolean | PostCommentCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["postComment"]>
+
+  export type PostCommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    postId?: boolean
+    authorId?: boolean
+    parentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    parent?: boolean | PostComment$parentArgs<ExtArgs>
+  }, ExtArgs["result"]["postComment"]>
+
+  export type PostCommentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    postId?: boolean
+    authorId?: boolean
+    parentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    parent?: boolean | PostComment$parentArgs<ExtArgs>
+  }, ExtArgs["result"]["postComment"]>
+
+  export type PostCommentSelectScalar = {
+    id?: boolean
+    content?: boolean
+    postId?: boolean
+    authorId?: boolean
+    parentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PostCommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "postId" | "authorId" | "parentId" | "createdAt" | "updatedAt", ExtArgs["result"]["postComment"]>
+  export type PostCommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    parent?: boolean | PostComment$parentArgs<ExtArgs>
+    children?: boolean | PostComment$childrenArgs<ExtArgs>
+    _count?: boolean | PostCommentCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PostCommentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    parent?: boolean | PostComment$parentArgs<ExtArgs>
+  }
+  export type PostCommentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    parent?: boolean | PostComment$parentArgs<ExtArgs>
+  }
+
+  export type $PostCommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PostComment"
+    objects: {
+      post: Prisma.$CommunityPostPayload<ExtArgs>
+      author: Prisma.$UserPayload<ExtArgs>
+      parent: Prisma.$PostCommentPayload<ExtArgs> | null
+      children: Prisma.$PostCommentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      content: string
+      postId: string
+      authorId: string
+      parentId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["postComment"]>
+    composites: {}
+  }
+
+  type PostCommentGetPayload<S extends boolean | null | undefined | PostCommentDefaultArgs> = $Result.GetResult<Prisma.$PostCommentPayload, S>
+
+  type PostCommentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PostCommentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PostCommentCountAggregateInputType | true
+    }
+
+  export interface PostCommentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PostComment'], meta: { name: 'PostComment' } }
+    /**
+     * Find zero or one PostComment that matches the filter.
+     * @param {PostCommentFindUniqueArgs} args - Arguments to find a PostComment
+     * @example
+     * // Get one PostComment
+     * const postComment = await prisma.postComment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PostCommentFindUniqueArgs>(args: SelectSubset<T, PostCommentFindUniqueArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PostComment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PostCommentFindUniqueOrThrowArgs} args - Arguments to find a PostComment
+     * @example
+     * // Get one PostComment
+     * const postComment = await prisma.postComment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PostCommentFindUniqueOrThrowArgs>(args: SelectSubset<T, PostCommentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PostComment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCommentFindFirstArgs} args - Arguments to find a PostComment
+     * @example
+     * // Get one PostComment
+     * const postComment = await prisma.postComment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PostCommentFindFirstArgs>(args?: SelectSubset<T, PostCommentFindFirstArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PostComment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCommentFindFirstOrThrowArgs} args - Arguments to find a PostComment
+     * @example
+     * // Get one PostComment
+     * const postComment = await prisma.postComment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PostCommentFindFirstOrThrowArgs>(args?: SelectSubset<T, PostCommentFindFirstOrThrowArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PostComments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCommentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PostComments
+     * const postComments = await prisma.postComment.findMany()
+     * 
+     * // Get first 10 PostComments
+     * const postComments = await prisma.postComment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const postCommentWithIdOnly = await prisma.postComment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PostCommentFindManyArgs>(args?: SelectSubset<T, PostCommentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PostComment.
+     * @param {PostCommentCreateArgs} args - Arguments to create a PostComment.
+     * @example
+     * // Create one PostComment
+     * const PostComment = await prisma.postComment.create({
+     *   data: {
+     *     // ... data to create a PostComment
+     *   }
+     * })
+     * 
+     */
+    create<T extends PostCommentCreateArgs>(args: SelectSubset<T, PostCommentCreateArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PostComments.
+     * @param {PostCommentCreateManyArgs} args - Arguments to create many PostComments.
+     * @example
+     * // Create many PostComments
+     * const postComment = await prisma.postComment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PostCommentCreateManyArgs>(args?: SelectSubset<T, PostCommentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PostComments and returns the data saved in the database.
+     * @param {PostCommentCreateManyAndReturnArgs} args - Arguments to create many PostComments.
+     * @example
+     * // Create many PostComments
+     * const postComment = await prisma.postComment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PostComments and only return the `id`
+     * const postCommentWithIdOnly = await prisma.postComment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PostCommentCreateManyAndReturnArgs>(args?: SelectSubset<T, PostCommentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PostComment.
+     * @param {PostCommentDeleteArgs} args - Arguments to delete one PostComment.
+     * @example
+     * // Delete one PostComment
+     * const PostComment = await prisma.postComment.delete({
+     *   where: {
+     *     // ... filter to delete one PostComment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PostCommentDeleteArgs>(args: SelectSubset<T, PostCommentDeleteArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PostComment.
+     * @param {PostCommentUpdateArgs} args - Arguments to update one PostComment.
+     * @example
+     * // Update one PostComment
+     * const postComment = await prisma.postComment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PostCommentUpdateArgs>(args: SelectSubset<T, PostCommentUpdateArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PostComments.
+     * @param {PostCommentDeleteManyArgs} args - Arguments to filter PostComments to delete.
+     * @example
+     * // Delete a few PostComments
+     * const { count } = await prisma.postComment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PostCommentDeleteManyArgs>(args?: SelectSubset<T, PostCommentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PostComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCommentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PostComments
+     * const postComment = await prisma.postComment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PostCommentUpdateManyArgs>(args: SelectSubset<T, PostCommentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PostComments and returns the data updated in the database.
+     * @param {PostCommentUpdateManyAndReturnArgs} args - Arguments to update many PostComments.
+     * @example
+     * // Update many PostComments
+     * const postComment = await prisma.postComment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PostComments and only return the `id`
+     * const postCommentWithIdOnly = await prisma.postComment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PostCommentUpdateManyAndReturnArgs>(args: SelectSubset<T, PostCommentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PostComment.
+     * @param {PostCommentUpsertArgs} args - Arguments to update or create a PostComment.
+     * @example
+     * // Update or create a PostComment
+     * const postComment = await prisma.postComment.upsert({
+     *   create: {
+     *     // ... data to create a PostComment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PostComment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PostCommentUpsertArgs>(args: SelectSubset<T, PostCommentUpsertArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PostComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCommentCountArgs} args - Arguments to filter PostComments to count.
+     * @example
+     * // Count the number of PostComments
+     * const count = await prisma.postComment.count({
+     *   where: {
+     *     // ... the filter for the PostComments we want to count
+     *   }
+     * })
+    **/
+    count<T extends PostCommentCountArgs>(
+      args?: Subset<T, PostCommentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PostCommentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PostComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCommentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PostCommentAggregateArgs>(args: Subset<T, PostCommentAggregateArgs>): Prisma.PrismaPromise<GetPostCommentAggregateType<T>>
+
+    /**
+     * Group by PostComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCommentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PostCommentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PostCommentGroupByArgs['orderBy'] }
+        : { orderBy?: PostCommentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PostCommentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPostCommentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PostComment model
+   */
+  readonly fields: PostCommentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PostComment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PostCommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    post<T extends CommunityPostDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CommunityPostDefaultArgs<ExtArgs>>): Prisma__CommunityPostClient<$Result.GetResult<Prisma.$CommunityPostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    parent<T extends PostComment$parentArgs<ExtArgs> = {}>(args?: Subset<T, PostComment$parentArgs<ExtArgs>>): Prisma__PostCommentClient<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    children<T extends PostComment$childrenArgs<ExtArgs> = {}>(args?: Subset<T, PostComment$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PostComment model
+   */
+  interface PostCommentFieldRefs {
+    readonly id: FieldRef<"PostComment", 'String'>
+    readonly content: FieldRef<"PostComment", 'String'>
+    readonly postId: FieldRef<"PostComment", 'String'>
+    readonly authorId: FieldRef<"PostComment", 'String'>
+    readonly parentId: FieldRef<"PostComment", 'String'>
+    readonly createdAt: FieldRef<"PostComment", 'DateTime'>
+    readonly updatedAt: FieldRef<"PostComment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PostComment findUnique
+   */
+  export type PostCommentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which PostComment to fetch.
+     */
+    where: PostCommentWhereUniqueInput
+  }
+
+  /**
+   * PostComment findUniqueOrThrow
+   */
+  export type PostCommentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which PostComment to fetch.
+     */
+    where: PostCommentWhereUniqueInput
+  }
+
+  /**
+   * PostComment findFirst
+   */
+  export type PostCommentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which PostComment to fetch.
+     */
+    where?: PostCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostComments to fetch.
+     */
+    orderBy?: PostCommentOrderByWithRelationInput | PostCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PostComments.
+     */
+    cursor?: PostCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PostComments.
+     */
+    distinct?: PostCommentScalarFieldEnum | PostCommentScalarFieldEnum[]
+  }
+
+  /**
+   * PostComment findFirstOrThrow
+   */
+  export type PostCommentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which PostComment to fetch.
+     */
+    where?: PostCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostComments to fetch.
+     */
+    orderBy?: PostCommentOrderByWithRelationInput | PostCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PostComments.
+     */
+    cursor?: PostCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PostComments.
+     */
+    distinct?: PostCommentScalarFieldEnum | PostCommentScalarFieldEnum[]
+  }
+
+  /**
+   * PostComment findMany
+   */
+  export type PostCommentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which PostComments to fetch.
+     */
+    where?: PostCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostComments to fetch.
+     */
+    orderBy?: PostCommentOrderByWithRelationInput | PostCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PostComments.
+     */
+    cursor?: PostCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PostComments.
+     */
+    distinct?: PostCommentScalarFieldEnum | PostCommentScalarFieldEnum[]
+  }
+
+  /**
+   * PostComment create
+   */
+  export type PostCommentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PostComment.
+     */
+    data: XOR<PostCommentCreateInput, PostCommentUncheckedCreateInput>
+  }
+
+  /**
+   * PostComment createMany
+   */
+  export type PostCommentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PostComments.
+     */
+    data: PostCommentCreateManyInput | PostCommentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PostComment createManyAndReturn
+   */
+  export type PostCommentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * The data used to create many PostComments.
+     */
+    data: PostCommentCreateManyInput | PostCommentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PostComment update
+   */
+  export type PostCommentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PostComment.
+     */
+    data: XOR<PostCommentUpdateInput, PostCommentUncheckedUpdateInput>
+    /**
+     * Choose, which PostComment to update.
+     */
+    where: PostCommentWhereUniqueInput
+  }
+
+  /**
+   * PostComment updateMany
+   */
+  export type PostCommentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PostComments.
+     */
+    data: XOR<PostCommentUpdateManyMutationInput, PostCommentUncheckedUpdateManyInput>
+    /**
+     * Filter which PostComments to update
+     */
+    where?: PostCommentWhereInput
+    /**
+     * Limit how many PostComments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PostComment updateManyAndReturn
+   */
+  export type PostCommentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * The data used to update PostComments.
+     */
+    data: XOR<PostCommentUpdateManyMutationInput, PostCommentUncheckedUpdateManyInput>
+    /**
+     * Filter which PostComments to update
+     */
+    where?: PostCommentWhereInput
+    /**
+     * Limit how many PostComments to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PostComment upsert
+   */
+  export type PostCommentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PostComment to update in case it exists.
+     */
+    where: PostCommentWhereUniqueInput
+    /**
+     * In case the PostComment found by the `where` argument doesn't exist, create a new PostComment with this data.
+     */
+    create: XOR<PostCommentCreateInput, PostCommentUncheckedCreateInput>
+    /**
+     * In case the PostComment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PostCommentUpdateInput, PostCommentUncheckedUpdateInput>
+  }
+
+  /**
+   * PostComment delete
+   */
+  export type PostCommentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    /**
+     * Filter which PostComment to delete.
+     */
+    where: PostCommentWhereUniqueInput
+  }
+
+  /**
+   * PostComment deleteMany
+   */
+  export type PostCommentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PostComments to delete
+     */
+    where?: PostCommentWhereInput
+    /**
+     * Limit how many PostComments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PostComment.parent
+   */
+  export type PostComment$parentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    where?: PostCommentWhereInput
+  }
+
+  /**
+   * PostComment.children
+   */
+  export type PostComment$childrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
+    where?: PostCommentWhereInput
+    orderBy?: PostCommentOrderByWithRelationInput | PostCommentOrderByWithRelationInput[]
+    cursor?: PostCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostCommentScalarFieldEnum | PostCommentScalarFieldEnum[]
+  }
+
+  /**
+   * PostComment without action
+   */
+  export type PostCommentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostComment
+     */
+    select?: PostCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PostComment
+     */
+    omit?: PostCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostCommentInclude<ExtArgs> | null
   }
 
 
@@ -21032,6 +22436,7 @@ export namespace Prisma {
     membersCount: 'membersCount',
     isActive: 'isActive',
     isFeatured: 'isFeatured',
+    status: 'status',
     createdBy: 'createdBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -21057,6 +22462,7 @@ export namespace Prisma {
     content: 'content',
     likes: 'likes',
     replies: 'replies',
+    views: 'views',
     mediaUrl: 'mediaUrl',
     mediaType: 'mediaType',
     pollData: 'pollData',
@@ -21068,6 +22474,19 @@ export namespace Prisma {
   };
 
   export type CommunityPostScalarFieldEnum = (typeof CommunityPostScalarFieldEnum)[keyof typeof CommunityPostScalarFieldEnum]
+
+
+  export const PostCommentScalarFieldEnum: {
+    id: 'id',
+    content: 'content',
+    postId: 'postId',
+    authorId: 'authorId',
+    parentId: 'parentId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PostCommentScalarFieldEnum = (typeof PostCommentScalarFieldEnum)[keyof typeof PostCommentScalarFieldEnum]
 
 
   export const JourneyScalarFieldEnum: {
@@ -21308,6 +22727,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ApprovalStatus'
+   */
+  export type EnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ApprovalStatus[]'
+   */
+  export type ListEnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'CommunityRole'
    */
   export type EnumCommunityRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommunityRole'>
@@ -21333,20 +22766,6 @@ export namespace Prisma {
    */
   export type ListEnumMediaTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MediaType[]'>
     
-
-
-  /**
-   * Reference to a field of type 'ApprovalStatus'
-   */
-  export type EnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'ApprovalStatus[]'
-   */
-  export type ListEnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus[]'>
-    
   /**
    * Deep Input Types
    */
@@ -21370,6 +22789,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     communityPosts?: CommunityPostListRelationFilter
+    postComments?: PostCommentListRelationFilter
     journeys?: JourneyListRelationFilter
     galleryItems?: GalleryItemListRelationFilter
     notifications?: NotificationListRelationFilter
@@ -21392,6 +22812,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     communityPosts?: CommunityPostOrderByRelationAggregateInput
+    postComments?: PostCommentOrderByRelationAggregateInput
     journeys?: JourneyOrderByRelationAggregateInput
     galleryItems?: GalleryItemOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
@@ -21417,6 +22838,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     communityPosts?: CommunityPostListRelationFilter
+    postComments?: PostCommentListRelationFilter
     journeys?: JourneyListRelationFilter
     galleryItems?: GalleryItemListRelationFilter
     notifications?: NotificationListRelationFilter
@@ -22121,6 +23543,7 @@ export namespace Prisma {
     membersCount?: IntFilter<"Community"> | number
     isActive?: BoolFilter<"Community"> | boolean
     isFeatured?: BoolFilter<"Community"> | boolean
+    status?: EnumApprovalStatusFilter<"Community"> | $Enums.ApprovalStatus
     createdBy?: StringNullableFilter<"Community"> | string | null
     createdAt?: DateTimeFilter<"Community"> | Date | string
     updatedAt?: DateTimeFilter<"Community"> | Date | string
@@ -22143,6 +23566,7 @@ export namespace Prisma {
     membersCount?: SortOrder
     isActive?: SortOrder
     isFeatured?: SortOrder
+    status?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -22168,6 +23592,7 @@ export namespace Prisma {
     membersCount?: IntFilter<"Community"> | number
     isActive?: BoolFilter<"Community"> | boolean
     isFeatured?: BoolFilter<"Community"> | boolean
+    status?: EnumApprovalStatusFilter<"Community"> | $Enums.ApprovalStatus
     createdBy?: StringNullableFilter<"Community"> | string | null
     createdAt?: DateTimeFilter<"Community"> | Date | string
     updatedAt?: DateTimeFilter<"Community"> | Date | string
@@ -22190,6 +23615,7 @@ export namespace Prisma {
     membersCount?: SortOrder
     isActive?: SortOrder
     isFeatured?: SortOrder
+    status?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -22217,6 +23643,7 @@ export namespace Prisma {
     membersCount?: IntWithAggregatesFilter<"Community"> | number
     isActive?: BoolWithAggregatesFilter<"Community"> | boolean
     isFeatured?: BoolWithAggregatesFilter<"Community"> | boolean
+    status?: EnumApprovalStatusWithAggregatesFilter<"Community"> | $Enums.ApprovalStatus
     createdBy?: StringNullableWithAggregatesFilter<"Community"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Community"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Community"> | Date | string
@@ -22290,6 +23717,7 @@ export namespace Prisma {
     content?: StringFilter<"CommunityPost"> | string
     likes?: IntFilter<"CommunityPost"> | number
     replies?: IntFilter<"CommunityPost"> | number
+    views?: IntFilter<"CommunityPost"> | number
     mediaUrl?: StringNullableFilter<"CommunityPost"> | string | null
     mediaType?: EnumMediaTypeNullableFilter<"CommunityPost"> | $Enums.MediaType | null
     pollData?: JsonNullableFilter<"CommunityPost">
@@ -22300,6 +23728,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"CommunityPost"> | Date | string
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
     community?: XOR<CommunityScalarRelationFilter, CommunityWhereInput>
+    comments?: PostCommentListRelationFilter
   }
 
   export type CommunityPostOrderByWithRelationInput = {
@@ -22308,6 +23737,7 @@ export namespace Prisma {
     content?: SortOrder
     likes?: SortOrder
     replies?: SortOrder
+    views?: SortOrder
     mediaUrl?: SortOrderInput | SortOrder
     mediaType?: SortOrderInput | SortOrder
     pollData?: SortOrderInput | SortOrder
@@ -22318,6 +23748,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     author?: UserOrderByWithRelationInput
     community?: CommunityOrderByWithRelationInput
+    comments?: PostCommentOrderByRelationAggregateInput
   }
 
   export type CommunityPostWhereUniqueInput = Prisma.AtLeast<{
@@ -22329,6 +23760,7 @@ export namespace Prisma {
     content?: StringFilter<"CommunityPost"> | string
     likes?: IntFilter<"CommunityPost"> | number
     replies?: IntFilter<"CommunityPost"> | number
+    views?: IntFilter<"CommunityPost"> | number
     mediaUrl?: StringNullableFilter<"CommunityPost"> | string | null
     mediaType?: EnumMediaTypeNullableFilter<"CommunityPost"> | $Enums.MediaType | null
     pollData?: JsonNullableFilter<"CommunityPost">
@@ -22339,6 +23771,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"CommunityPost"> | Date | string
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
     community?: XOR<CommunityScalarRelationFilter, CommunityWhereInput>
+    comments?: PostCommentListRelationFilter
   }, "id">
 
   export type CommunityPostOrderByWithAggregationInput = {
@@ -22347,6 +23780,7 @@ export namespace Prisma {
     content?: SortOrder
     likes?: SortOrder
     replies?: SortOrder
+    views?: SortOrder
     mediaUrl?: SortOrderInput | SortOrder
     mediaType?: SortOrderInput | SortOrder
     pollData?: SortOrderInput | SortOrder
@@ -22371,6 +23805,7 @@ export namespace Prisma {
     content?: StringWithAggregatesFilter<"CommunityPost"> | string
     likes?: IntWithAggregatesFilter<"CommunityPost"> | number
     replies?: IntWithAggregatesFilter<"CommunityPost"> | number
+    views?: IntWithAggregatesFilter<"CommunityPost"> | number
     mediaUrl?: StringNullableWithAggregatesFilter<"CommunityPost"> | string | null
     mediaType?: EnumMediaTypeNullableWithAggregatesFilter<"CommunityPost"> | $Enums.MediaType | null
     pollData?: JsonNullableWithAggregatesFilter<"CommunityPost">
@@ -22379,6 +23814,80 @@ export namespace Prisma {
     status?: EnumApprovalStatusWithAggregatesFilter<"CommunityPost"> | $Enums.ApprovalStatus
     createdAt?: DateTimeWithAggregatesFilter<"CommunityPost"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CommunityPost"> | Date | string
+  }
+
+  export type PostCommentWhereInput = {
+    AND?: PostCommentWhereInput | PostCommentWhereInput[]
+    OR?: PostCommentWhereInput[]
+    NOT?: PostCommentWhereInput | PostCommentWhereInput[]
+    id?: StringFilter<"PostComment"> | string
+    content?: StringFilter<"PostComment"> | string
+    postId?: StringFilter<"PostComment"> | string
+    authorId?: StringFilter<"PostComment"> | string
+    parentId?: StringNullableFilter<"PostComment"> | string | null
+    createdAt?: DateTimeFilter<"PostComment"> | Date | string
+    updatedAt?: DateTimeFilter<"PostComment"> | Date | string
+    post?: XOR<CommunityPostScalarRelationFilter, CommunityPostWhereInput>
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    parent?: XOR<PostCommentNullableScalarRelationFilter, PostCommentWhereInput> | null
+    children?: PostCommentListRelationFilter
+  }
+
+  export type PostCommentOrderByWithRelationInput = {
+    id?: SortOrder
+    content?: SortOrder
+    postId?: SortOrder
+    authorId?: SortOrder
+    parentId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    post?: CommunityPostOrderByWithRelationInput
+    author?: UserOrderByWithRelationInput
+    parent?: PostCommentOrderByWithRelationInput
+    children?: PostCommentOrderByRelationAggregateInput
+  }
+
+  export type PostCommentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PostCommentWhereInput | PostCommentWhereInput[]
+    OR?: PostCommentWhereInput[]
+    NOT?: PostCommentWhereInput | PostCommentWhereInput[]
+    content?: StringFilter<"PostComment"> | string
+    postId?: StringFilter<"PostComment"> | string
+    authorId?: StringFilter<"PostComment"> | string
+    parentId?: StringNullableFilter<"PostComment"> | string | null
+    createdAt?: DateTimeFilter<"PostComment"> | Date | string
+    updatedAt?: DateTimeFilter<"PostComment"> | Date | string
+    post?: XOR<CommunityPostScalarRelationFilter, CommunityPostWhereInput>
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    parent?: XOR<PostCommentNullableScalarRelationFilter, PostCommentWhereInput> | null
+    children?: PostCommentListRelationFilter
+  }, "id">
+
+  export type PostCommentOrderByWithAggregationInput = {
+    id?: SortOrder
+    content?: SortOrder
+    postId?: SortOrder
+    authorId?: SortOrder
+    parentId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PostCommentCountOrderByAggregateInput
+    _max?: PostCommentMaxOrderByAggregateInput
+    _min?: PostCommentMinOrderByAggregateInput
+  }
+
+  export type PostCommentScalarWhereWithAggregatesInput = {
+    AND?: PostCommentScalarWhereWithAggregatesInput | PostCommentScalarWhereWithAggregatesInput[]
+    OR?: PostCommentScalarWhereWithAggregatesInput[]
+    NOT?: PostCommentScalarWhereWithAggregatesInput | PostCommentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PostComment"> | string
+    content?: StringWithAggregatesFilter<"PostComment"> | string
+    postId?: StringWithAggregatesFilter<"PostComment"> | string
+    authorId?: StringWithAggregatesFilter<"PostComment"> | string
+    parentId?: StringNullableWithAggregatesFilter<"PostComment"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PostComment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PostComment"> | Date | string
   }
 
   export type JourneyWhereInput = {
@@ -22754,6 +24263,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentCreateNestedManyWithoutAuthorInput
     journeys?: JourneyCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemCreateNestedManyWithoutUploaderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -22776,6 +24286,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentUncheckedCreateNestedManyWithoutAuthorInput
     journeys?: JourneyUncheckedCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemUncheckedCreateNestedManyWithoutUploaderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -22798,6 +24309,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -22820,6 +24332,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUncheckedUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUncheckedUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUncheckedUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -23629,6 +25142,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     creator?: UserCreateNestedOneWithoutCommunitiesCreatedInput
@@ -23650,6 +25164,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23671,6 +25186,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     creator?: UserUpdateOneWithoutCommunitiesCreatedNestedInput
@@ -23692,6 +25208,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23713,6 +25230,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23732,6 +25250,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23750,6 +25269,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23815,6 +25335,7 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -23823,6 +25344,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutCommunityPostsInput
     community: CommunityCreateNestedOneWithoutPostsInput
+    comments?: PostCommentCreateNestedManyWithoutPostInput
   }
 
   export type CommunityPostUncheckedCreateInput = {
@@ -23831,6 +25353,7 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -23839,6 +25362,7 @@ export namespace Prisma {
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    comments?: PostCommentUncheckedCreateNestedManyWithoutPostInput
   }
 
   export type CommunityPostUpdateInput = {
@@ -23847,6 +25371,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -23855,6 +25380,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     author?: UserUpdateOneRequiredWithoutCommunityPostsNestedInput
     community?: CommunityUpdateOneRequiredWithoutPostsNestedInput
+    comments?: PostCommentUpdateManyWithoutPostNestedInput
   }
 
   export type CommunityPostUncheckedUpdateInput = {
@@ -23863,6 +25389,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -23871,6 +25398,7 @@ export namespace Prisma {
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: PostCommentUncheckedUpdateManyWithoutPostNestedInput
   }
 
   export type CommunityPostCreateManyInput = {
@@ -23879,6 +25407,7 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -23895,6 +25424,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -23909,12 +25439,84 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
     authorId?: StringFieldUpdateOperationsInput | string
     communityId?: StringFieldUpdateOperationsInput | string
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostCommentCreateInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    post: CommunityPostCreateNestedOneWithoutCommentsInput
+    author: UserCreateNestedOneWithoutPostCommentsInput
+    parent?: PostCommentCreateNestedOneWithoutChildrenInput
+    children?: PostCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentUncheckedCreateInput = {
+    id?: string
+    content: string
+    postId: string
+    authorId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    children?: PostCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
+    author?: UserUpdateOneRequiredWithoutPostCommentsNestedInput
+    parent?: PostCommentUpdateOneWithoutChildrenNestedInput
+    children?: PostCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    children?: PostCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentCreateManyInput = {
+    id?: string
+    content: string
+    postId: string
+    authorId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PostCommentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostCommentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24402,6 +26004,12 @@ export namespace Prisma {
     none?: CommunityPostWhereInput
   }
 
+  export type PostCommentListRelationFilter = {
+    every?: PostCommentWhereInput
+    some?: PostCommentWhereInput
+    none?: PostCommentWhereInput
+  }
+
   export type JourneyListRelationFilter = {
     every?: JourneyWhereInput
     some?: JourneyWhereInput
@@ -24438,6 +26046,10 @@ export namespace Prisma {
   }
 
   export type CommunityPostOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PostCommentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25106,6 +26718,13 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
+  export type EnumApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
+  }
+
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
@@ -25125,6 +26744,7 @@ export namespace Prisma {
     membersCount?: SortOrder
     isActive?: SortOrder
     isFeatured?: SortOrder
+    status?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25148,6 +26768,7 @@ export namespace Prisma {
     membersCount?: SortOrder
     isActive?: SortOrder
     isFeatured?: SortOrder
+    status?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25166,6 +26787,7 @@ export namespace Prisma {
     membersCount?: SortOrder
     isActive?: SortOrder
     isFeatured?: SortOrder
+    status?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25174,6 +26796,16 @@ export namespace Prisma {
   export type CommunitySumOrderByAggregateInput = {
     postsCount?: SortOrder
     membersCount?: SortOrder
+  }
+
+  export type EnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
   }
 
   export type EnumCommunityRoleFilter<$PrismaModel = never> = {
@@ -25234,19 +26866,13 @@ export namespace Prisma {
     not?: NestedEnumMediaTypeNullableFilter<$PrismaModel> | $Enums.MediaType | null
   }
 
-  export type EnumApprovalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
-  }
-
   export type CommunityPostCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
     likes?: SortOrder
     replies?: SortOrder
+    views?: SortOrder
     mediaUrl?: SortOrder
     mediaType?: SortOrder
     pollData?: SortOrder
@@ -25260,6 +26886,7 @@ export namespace Prisma {
   export type CommunityPostAvgOrderByAggregateInput = {
     likes?: SortOrder
     replies?: SortOrder
+    views?: SortOrder
   }
 
   export type CommunityPostMaxOrderByAggregateInput = {
@@ -25268,6 +26895,7 @@ export namespace Prisma {
     content?: SortOrder
     likes?: SortOrder
     replies?: SortOrder
+    views?: SortOrder
     mediaUrl?: SortOrder
     mediaType?: SortOrder
     authorId?: SortOrder
@@ -25283,6 +26911,7 @@ export namespace Prisma {
     content?: SortOrder
     likes?: SortOrder
     replies?: SortOrder
+    views?: SortOrder
     mediaUrl?: SortOrder
     mediaType?: SortOrder
     authorId?: SortOrder
@@ -25295,6 +26924,7 @@ export namespace Prisma {
   export type CommunityPostSumOrderByAggregateInput = {
     likes?: SortOrder
     replies?: SortOrder
+    views?: SortOrder
   }
 
   export type EnumMediaTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -25307,14 +26937,44 @@ export namespace Prisma {
     _max?: NestedEnumMediaTypeNullableFilter<$PrismaModel>
   }
 
-  export type EnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
-    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
+  export type CommunityPostScalarRelationFilter = {
+    is?: CommunityPostWhereInput
+    isNot?: CommunityPostWhereInput
+  }
+
+  export type PostCommentNullableScalarRelationFilter = {
+    is?: PostCommentWhereInput | null
+    isNot?: PostCommentWhereInput | null
+  }
+
+  export type PostCommentCountOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    postId?: SortOrder
+    authorId?: SortOrder
+    parentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PostCommentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    postId?: SortOrder
+    authorId?: SortOrder
+    parentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PostCommentMinOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    postId?: SortOrder
+    authorId?: SortOrder
+    parentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type JourneyCountOrderByAggregateInput = {
@@ -25518,6 +27178,13 @@ export namespace Prisma {
     connect?: CommunityPostWhereUniqueInput | CommunityPostWhereUniqueInput[]
   }
 
+  export type PostCommentCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<PostCommentCreateWithoutAuthorInput, PostCommentUncheckedCreateWithoutAuthorInput> | PostCommentCreateWithoutAuthorInput[] | PostCommentUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutAuthorInput | PostCommentCreateOrConnectWithoutAuthorInput[]
+    createMany?: PostCommentCreateManyAuthorInputEnvelope
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+  }
+
   export type JourneyCreateNestedManyWithoutAuthorInput = {
     create?: XOR<JourneyCreateWithoutAuthorInput, JourneyUncheckedCreateWithoutAuthorInput> | JourneyCreateWithoutAuthorInput[] | JourneyUncheckedCreateWithoutAuthorInput[]
     connectOrCreate?: JourneyCreateOrConnectWithoutAuthorInput | JourneyCreateOrConnectWithoutAuthorInput[]
@@ -25558,6 +27225,13 @@ export namespace Prisma {
     connectOrCreate?: CommunityPostCreateOrConnectWithoutAuthorInput | CommunityPostCreateOrConnectWithoutAuthorInput[]
     createMany?: CommunityPostCreateManyAuthorInputEnvelope
     connect?: CommunityPostWhereUniqueInput | CommunityPostWhereUniqueInput[]
+  }
+
+  export type PostCommentUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<PostCommentCreateWithoutAuthorInput, PostCommentUncheckedCreateWithoutAuthorInput> | PostCommentCreateWithoutAuthorInput[] | PostCommentUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutAuthorInput | PostCommentCreateOrConnectWithoutAuthorInput[]
+    createMany?: PostCommentCreateManyAuthorInputEnvelope
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
   }
 
   export type JourneyUncheckedCreateNestedManyWithoutAuthorInput = {
@@ -25631,6 +27305,20 @@ export namespace Prisma {
     update?: CommunityPostUpdateWithWhereUniqueWithoutAuthorInput | CommunityPostUpdateWithWhereUniqueWithoutAuthorInput[]
     updateMany?: CommunityPostUpdateManyWithWhereWithoutAuthorInput | CommunityPostUpdateManyWithWhereWithoutAuthorInput[]
     deleteMany?: CommunityPostScalarWhereInput | CommunityPostScalarWhereInput[]
+  }
+
+  export type PostCommentUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<PostCommentCreateWithoutAuthorInput, PostCommentUncheckedCreateWithoutAuthorInput> | PostCommentCreateWithoutAuthorInput[] | PostCommentUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutAuthorInput | PostCommentCreateOrConnectWithoutAuthorInput[]
+    upsert?: PostCommentUpsertWithWhereUniqueWithoutAuthorInput | PostCommentUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: PostCommentCreateManyAuthorInputEnvelope
+    set?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    disconnect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    delete?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    update?: PostCommentUpdateWithWhereUniqueWithoutAuthorInput | PostCommentUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: PostCommentUpdateManyWithWhereWithoutAuthorInput | PostCommentUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
   }
 
   export type JourneyUpdateManyWithoutAuthorNestedInput = {
@@ -25715,6 +27403,20 @@ export namespace Prisma {
     update?: CommunityPostUpdateWithWhereUniqueWithoutAuthorInput | CommunityPostUpdateWithWhereUniqueWithoutAuthorInput[]
     updateMany?: CommunityPostUpdateManyWithWhereWithoutAuthorInput | CommunityPostUpdateManyWithWhereWithoutAuthorInput[]
     deleteMany?: CommunityPostScalarWhereInput | CommunityPostScalarWhereInput[]
+  }
+
+  export type PostCommentUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<PostCommentCreateWithoutAuthorInput, PostCommentUncheckedCreateWithoutAuthorInput> | PostCommentCreateWithoutAuthorInput[] | PostCommentUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutAuthorInput | PostCommentCreateOrConnectWithoutAuthorInput[]
+    upsert?: PostCommentUpsertWithWhereUniqueWithoutAuthorInput | PostCommentUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: PostCommentCreateManyAuthorInputEnvelope
+    set?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    disconnect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    delete?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    update?: PostCommentUpdateWithWhereUniqueWithoutAuthorInput | PostCommentUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: PostCommentUpdateManyWithWhereWithoutAuthorInput | PostCommentUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
   }
 
   export type JourneyUncheckedUpdateManyWithoutAuthorNestedInput = {
@@ -26011,6 +27713,10 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type EnumApprovalStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ApprovalStatus
+  }
+
   export type UserUpdateOneWithoutCommunitiesCreatedNestedInput = {
     create?: XOR<UserCreateWithoutCommunitiesCreatedInput, UserUncheckedCreateWithoutCommunitiesCreatedInput>
     connectOrCreate?: UserCreateOrConnectWithoutCommunitiesCreatedInput
@@ -26121,12 +27827,22 @@ export namespace Prisma {
     connect?: CommunityWhereUniqueInput
   }
 
-  export type NullableEnumMediaTypeFieldUpdateOperationsInput = {
-    set?: $Enums.MediaType | null
+  export type PostCommentCreateNestedManyWithoutPostInput = {
+    create?: XOR<PostCommentCreateWithoutPostInput, PostCommentUncheckedCreateWithoutPostInput> | PostCommentCreateWithoutPostInput[] | PostCommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutPostInput | PostCommentCreateOrConnectWithoutPostInput[]
+    createMany?: PostCommentCreateManyPostInputEnvelope
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
   }
 
-  export type EnumApprovalStatusFieldUpdateOperationsInput = {
-    set?: $Enums.ApprovalStatus
+  export type PostCommentUncheckedCreateNestedManyWithoutPostInput = {
+    create?: XOR<PostCommentCreateWithoutPostInput, PostCommentUncheckedCreateWithoutPostInput> | PostCommentCreateWithoutPostInput[] | PostCommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutPostInput | PostCommentCreateOrConnectWithoutPostInput[]
+    createMany?: PostCommentCreateManyPostInputEnvelope
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+  }
+
+  export type NullableEnumMediaTypeFieldUpdateOperationsInput = {
+    set?: $Enums.MediaType | null
   }
 
   export type UserUpdateOneRequiredWithoutCommunityPostsNestedInput = {
@@ -26143,6 +27859,120 @@ export namespace Prisma {
     upsert?: CommunityUpsertWithoutPostsInput
     connect?: CommunityWhereUniqueInput
     update?: XOR<XOR<CommunityUpdateToOneWithWhereWithoutPostsInput, CommunityUpdateWithoutPostsInput>, CommunityUncheckedUpdateWithoutPostsInput>
+  }
+
+  export type PostCommentUpdateManyWithoutPostNestedInput = {
+    create?: XOR<PostCommentCreateWithoutPostInput, PostCommentUncheckedCreateWithoutPostInput> | PostCommentCreateWithoutPostInput[] | PostCommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutPostInput | PostCommentCreateOrConnectWithoutPostInput[]
+    upsert?: PostCommentUpsertWithWhereUniqueWithoutPostInput | PostCommentUpsertWithWhereUniqueWithoutPostInput[]
+    createMany?: PostCommentCreateManyPostInputEnvelope
+    set?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    disconnect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    delete?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    update?: PostCommentUpdateWithWhereUniqueWithoutPostInput | PostCommentUpdateWithWhereUniqueWithoutPostInput[]
+    updateMany?: PostCommentUpdateManyWithWhereWithoutPostInput | PostCommentUpdateManyWithWhereWithoutPostInput[]
+    deleteMany?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
+  }
+
+  export type PostCommentUncheckedUpdateManyWithoutPostNestedInput = {
+    create?: XOR<PostCommentCreateWithoutPostInput, PostCommentUncheckedCreateWithoutPostInput> | PostCommentCreateWithoutPostInput[] | PostCommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutPostInput | PostCommentCreateOrConnectWithoutPostInput[]
+    upsert?: PostCommentUpsertWithWhereUniqueWithoutPostInput | PostCommentUpsertWithWhereUniqueWithoutPostInput[]
+    createMany?: PostCommentCreateManyPostInputEnvelope
+    set?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    disconnect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    delete?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    update?: PostCommentUpdateWithWhereUniqueWithoutPostInput | PostCommentUpdateWithWhereUniqueWithoutPostInput[]
+    updateMany?: PostCommentUpdateManyWithWhereWithoutPostInput | PostCommentUpdateManyWithWhereWithoutPostInput[]
+    deleteMany?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
+  }
+
+  export type CommunityPostCreateNestedOneWithoutCommentsInput = {
+    create?: XOR<CommunityPostCreateWithoutCommentsInput, CommunityPostUncheckedCreateWithoutCommentsInput>
+    connectOrCreate?: CommunityPostCreateOrConnectWithoutCommentsInput
+    connect?: CommunityPostWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutPostCommentsInput = {
+    create?: XOR<UserCreateWithoutPostCommentsInput, UserUncheckedCreateWithoutPostCommentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPostCommentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PostCommentCreateNestedOneWithoutChildrenInput = {
+    create?: XOR<PostCommentCreateWithoutChildrenInput, PostCommentUncheckedCreateWithoutChildrenInput>
+    connectOrCreate?: PostCommentCreateOrConnectWithoutChildrenInput
+    connect?: PostCommentWhereUniqueInput
+  }
+
+  export type PostCommentCreateNestedManyWithoutParentInput = {
+    create?: XOR<PostCommentCreateWithoutParentInput, PostCommentUncheckedCreateWithoutParentInput> | PostCommentCreateWithoutParentInput[] | PostCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutParentInput | PostCommentCreateOrConnectWithoutParentInput[]
+    createMany?: PostCommentCreateManyParentInputEnvelope
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+  }
+
+  export type PostCommentUncheckedCreateNestedManyWithoutParentInput = {
+    create?: XOR<PostCommentCreateWithoutParentInput, PostCommentUncheckedCreateWithoutParentInput> | PostCommentCreateWithoutParentInput[] | PostCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutParentInput | PostCommentCreateOrConnectWithoutParentInput[]
+    createMany?: PostCommentCreateManyParentInputEnvelope
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+  }
+
+  export type CommunityPostUpdateOneRequiredWithoutCommentsNestedInput = {
+    create?: XOR<CommunityPostCreateWithoutCommentsInput, CommunityPostUncheckedCreateWithoutCommentsInput>
+    connectOrCreate?: CommunityPostCreateOrConnectWithoutCommentsInput
+    upsert?: CommunityPostUpsertWithoutCommentsInput
+    connect?: CommunityPostWhereUniqueInput
+    update?: XOR<XOR<CommunityPostUpdateToOneWithWhereWithoutCommentsInput, CommunityPostUpdateWithoutCommentsInput>, CommunityPostUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutPostCommentsNestedInput = {
+    create?: XOR<UserCreateWithoutPostCommentsInput, UserUncheckedCreateWithoutPostCommentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPostCommentsInput
+    upsert?: UserUpsertWithoutPostCommentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostCommentsInput, UserUpdateWithoutPostCommentsInput>, UserUncheckedUpdateWithoutPostCommentsInput>
+  }
+
+  export type PostCommentUpdateOneWithoutChildrenNestedInput = {
+    create?: XOR<PostCommentCreateWithoutChildrenInput, PostCommentUncheckedCreateWithoutChildrenInput>
+    connectOrCreate?: PostCommentCreateOrConnectWithoutChildrenInput
+    upsert?: PostCommentUpsertWithoutChildrenInput
+    disconnect?: PostCommentWhereInput | boolean
+    delete?: PostCommentWhereInput | boolean
+    connect?: PostCommentWhereUniqueInput
+    update?: XOR<XOR<PostCommentUpdateToOneWithWhereWithoutChildrenInput, PostCommentUpdateWithoutChildrenInput>, PostCommentUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type PostCommentUpdateManyWithoutParentNestedInput = {
+    create?: XOR<PostCommentCreateWithoutParentInput, PostCommentUncheckedCreateWithoutParentInput> | PostCommentCreateWithoutParentInput[] | PostCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutParentInput | PostCommentCreateOrConnectWithoutParentInput[]
+    upsert?: PostCommentUpsertWithWhereUniqueWithoutParentInput | PostCommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: PostCommentCreateManyParentInputEnvelope
+    set?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    disconnect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    delete?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    update?: PostCommentUpdateWithWhereUniqueWithoutParentInput | PostCommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: PostCommentUpdateManyWithWhereWithoutParentInput | PostCommentUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
+  }
+
+  export type PostCommentUncheckedUpdateManyWithoutParentNestedInput = {
+    create?: XOR<PostCommentCreateWithoutParentInput, PostCommentUncheckedCreateWithoutParentInput> | PostCommentCreateWithoutParentInput[] | PostCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: PostCommentCreateOrConnectWithoutParentInput | PostCommentCreateOrConnectWithoutParentInput[]
+    upsert?: PostCommentUpsertWithWhereUniqueWithoutParentInput | PostCommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: PostCommentCreateManyParentInputEnvelope
+    set?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    disconnect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    delete?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    connect?: PostCommentWhereUniqueInput | PostCommentWhereUniqueInput[]
+    update?: PostCommentUpdateWithWhereUniqueWithoutParentInput | PostCommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: PostCommentUpdateManyWithWhereWithoutParentInput | PostCommentUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
   }
 
   export type JourneyCreatestopsInput = {
@@ -26457,6 +28287,23 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
+  }
+
+  export type NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
+  }
+
   export type NestedEnumCommunityRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.CommunityRole | EnumCommunityRoleFieldRefInput<$PrismaModel>
     in?: $Enums.CommunityRole[] | ListEnumCommunityRoleFieldRefInput<$PrismaModel>
@@ -26481,13 +28328,6 @@ export namespace Prisma {
     not?: NestedEnumMediaTypeNullableFilter<$PrismaModel> | $Enums.MediaType | null
   }
 
-  export type NestedEnumApprovalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
-  }
-
   export type NestedEnumMediaTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.MediaType | EnumMediaTypeFieldRefInput<$PrismaModel> | null
     in?: $Enums.MediaType[] | ListEnumMediaTypeFieldRefInput<$PrismaModel> | null
@@ -26498,22 +28338,13 @@ export namespace Prisma {
     _max?: NestedEnumMediaTypeNullableFilter<$PrismaModel>
   }
 
-  export type NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
-    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
-  }
-
   export type CommunityPostCreateWithoutAuthorInput = {
     id?: string
     title: string
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -26521,6 +28352,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     community: CommunityCreateNestedOneWithoutPostsInput
+    comments?: PostCommentCreateNestedManyWithoutPostInput
   }
 
   export type CommunityPostUncheckedCreateWithoutAuthorInput = {
@@ -26529,6 +28361,7 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -26536,6 +28369,7 @@ export namespace Prisma {
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    comments?: PostCommentUncheckedCreateNestedManyWithoutPostInput
   }
 
   export type CommunityPostCreateOrConnectWithoutAuthorInput = {
@@ -26545,6 +28379,36 @@ export namespace Prisma {
 
   export type CommunityPostCreateManyAuthorInputEnvelope = {
     data: CommunityPostCreateManyAuthorInput | CommunityPostCreateManyAuthorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PostCommentCreateWithoutAuthorInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    post: CommunityPostCreateNestedOneWithoutCommentsInput
+    parent?: PostCommentCreateNestedOneWithoutChildrenInput
+    children?: PostCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentUncheckedCreateWithoutAuthorInput = {
+    id?: string
+    content: string
+    postId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    children?: PostCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentCreateOrConnectWithoutAuthorInput = {
+    where: PostCommentWhereUniqueInput
+    create: XOR<PostCommentCreateWithoutAuthorInput, PostCommentUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type PostCommentCreateManyAuthorInputEnvelope = {
+    data: PostCommentCreateManyAuthorInput | PostCommentCreateManyAuthorInput[]
     skipDuplicates?: boolean
   }
 
@@ -26664,6 +28528,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     posts?: CommunityPostCreateNestedManyWithoutCommunityInput
@@ -26684,6 +28549,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     posts?: CommunityPostUncheckedCreateNestedManyWithoutCommunityInput
@@ -26749,6 +28615,7 @@ export namespace Prisma {
     content?: StringFilter<"CommunityPost"> | string
     likes?: IntFilter<"CommunityPost"> | number
     replies?: IntFilter<"CommunityPost"> | number
+    views?: IntFilter<"CommunityPost"> | number
     mediaUrl?: StringNullableFilter<"CommunityPost"> | string | null
     mediaType?: EnumMediaTypeNullableFilter<"CommunityPost"> | $Enums.MediaType | null
     pollData?: JsonNullableFilter<"CommunityPost">
@@ -26757,6 +28624,35 @@ export namespace Prisma {
     status?: EnumApprovalStatusFilter<"CommunityPost"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"CommunityPost"> | Date | string
     updatedAt?: DateTimeFilter<"CommunityPost"> | Date | string
+  }
+
+  export type PostCommentUpsertWithWhereUniqueWithoutAuthorInput = {
+    where: PostCommentWhereUniqueInput
+    update: XOR<PostCommentUpdateWithoutAuthorInput, PostCommentUncheckedUpdateWithoutAuthorInput>
+    create: XOR<PostCommentCreateWithoutAuthorInput, PostCommentUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type PostCommentUpdateWithWhereUniqueWithoutAuthorInput = {
+    where: PostCommentWhereUniqueInput
+    data: XOR<PostCommentUpdateWithoutAuthorInput, PostCommentUncheckedUpdateWithoutAuthorInput>
+  }
+
+  export type PostCommentUpdateManyWithWhereWithoutAuthorInput = {
+    where: PostCommentScalarWhereInput
+    data: XOR<PostCommentUpdateManyMutationInput, PostCommentUncheckedUpdateManyWithoutAuthorInput>
+  }
+
+  export type PostCommentScalarWhereInput = {
+    AND?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
+    OR?: PostCommentScalarWhereInput[]
+    NOT?: PostCommentScalarWhereInput | PostCommentScalarWhereInput[]
+    id?: StringFilter<"PostComment"> | string
+    content?: StringFilter<"PostComment"> | string
+    postId?: StringFilter<"PostComment"> | string
+    authorId?: StringFilter<"PostComment"> | string
+    parentId?: StringNullableFilter<"PostComment"> | string | null
+    createdAt?: DateTimeFilter<"PostComment"> | Date | string
+    updatedAt?: DateTimeFilter<"PostComment"> | Date | string
   }
 
   export type JourneyUpsertWithWhereUniqueWithoutAuthorInput = {
@@ -26888,6 +28784,7 @@ export namespace Prisma {
     membersCount?: IntFilter<"Community"> | number
     isActive?: BoolFilter<"Community"> | boolean
     isFeatured?: BoolFilter<"Community"> | boolean
+    status?: EnumApprovalStatusFilter<"Community"> | $Enums.ApprovalStatus
     createdBy?: StringNullableFilter<"Community"> | string | null
     createdAt?: DateTimeFilter<"Community"> | Date | string
     updatedAt?: DateTimeFilter<"Community"> | Date | string
@@ -26935,6 +28832,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentCreateNestedManyWithoutAuthorInput
     journeys?: JourneyCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemCreateNestedManyWithoutUploaderInput
     communitiesCreated?: CommunityCreateNestedManyWithoutCreatorInput
@@ -26956,6 +28854,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentUncheckedCreateNestedManyWithoutAuthorInput
     journeys?: JourneyUncheckedCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemUncheckedCreateNestedManyWithoutUploaderInput
     communitiesCreated?: CommunityUncheckedCreateNestedManyWithoutCreatorInput
@@ -26993,6 +28892,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUpdateManyWithoutUploaderNestedInput
     communitiesCreated?: CommunityUpdateManyWithoutCreatorNestedInput
@@ -27014,6 +28914,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUncheckedUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUncheckedUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUncheckedUpdateManyWithoutUploaderNestedInput
     communitiesCreated?: CommunityUncheckedUpdateManyWithoutCreatorNestedInput
@@ -27325,6 +29226,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentCreateNestedManyWithoutAuthorInput
     journeys?: JourneyCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemCreateNestedManyWithoutUploaderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -27346,6 +29248,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentUncheckedCreateNestedManyWithoutAuthorInput
     journeys?: JourneyUncheckedCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemUncheckedCreateNestedManyWithoutUploaderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -27363,6 +29266,7 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -27370,6 +29274,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutCommunityPostsInput
+    comments?: PostCommentCreateNestedManyWithoutPostInput
   }
 
   export type CommunityPostUncheckedCreateWithoutCommunityInput = {
@@ -27378,6 +29283,7 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -27385,6 +29291,7 @@ export namespace Prisma {
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    comments?: PostCommentUncheckedCreateNestedManyWithoutPostInput
   }
 
   export type CommunityPostCreateOrConnectWithoutCommunityInput = {
@@ -27447,6 +29354,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -27468,6 +29376,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUncheckedUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUncheckedUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUncheckedUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -27520,6 +29429,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     creator?: UserCreateNestedOneWithoutCommunitiesCreatedInput
@@ -27540,6 +29450,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27566,6 +29477,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentCreateNestedManyWithoutAuthorInput
     journeys?: JourneyCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemCreateNestedManyWithoutUploaderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -27587,6 +29499,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentUncheckedCreateNestedManyWithoutAuthorInput
     journeys?: JourneyUncheckedCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemUncheckedCreateNestedManyWithoutUploaderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -27623,6 +29536,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     creator?: UserUpdateOneWithoutCommunitiesCreatedNestedInput
@@ -27643,6 +29557,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27675,6 +29590,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -27696,6 +29612,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUncheckedUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUncheckedUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUncheckedUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -27716,6 +29633,7 @@ export namespace Prisma {
     role?: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
+    postComments?: PostCommentCreateNestedManyWithoutAuthorInput
     journeys?: JourneyCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemCreateNestedManyWithoutUploaderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -27737,6 +29655,7 @@ export namespace Prisma {
     role?: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
+    postComments?: PostCommentUncheckedCreateNestedManyWithoutAuthorInput
     journeys?: JourneyUncheckedCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemUncheckedCreateNestedManyWithoutUploaderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -27763,6 +29682,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     creator?: UserCreateNestedOneWithoutCommunitiesCreatedInput
@@ -27783,6 +29703,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27792,6 +29713,36 @@ export namespace Prisma {
   export type CommunityCreateOrConnectWithoutPostsInput = {
     where: CommunityWhereUniqueInput
     create: XOR<CommunityCreateWithoutPostsInput, CommunityUncheckedCreateWithoutPostsInput>
+  }
+
+  export type PostCommentCreateWithoutPostInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author: UserCreateNestedOneWithoutPostCommentsInput
+    parent?: PostCommentCreateNestedOneWithoutChildrenInput
+    children?: PostCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentUncheckedCreateWithoutPostInput = {
+    id?: string
+    content: string
+    authorId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    children?: PostCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentCreateOrConnectWithoutPostInput = {
+    where: PostCommentWhereUniqueInput
+    create: XOR<PostCommentCreateWithoutPostInput, PostCommentUncheckedCreateWithoutPostInput>
+  }
+
+  export type PostCommentCreateManyPostInputEnvelope = {
+    data: PostCommentCreateManyPostInput | PostCommentCreateManyPostInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutCommunityPostsInput = {
@@ -27819,6 +29770,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postComments?: PostCommentUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -27840,6 +29792,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postComments?: PostCommentUncheckedUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUncheckedUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUncheckedUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -27872,6 +29825,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     creator?: UserUpdateOneWithoutCommunitiesCreatedNestedInput
@@ -27892,10 +29846,317 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: CommunityMemberUncheckedUpdateManyWithoutCommunityNestedInput
+  }
+
+  export type PostCommentUpsertWithWhereUniqueWithoutPostInput = {
+    where: PostCommentWhereUniqueInput
+    update: XOR<PostCommentUpdateWithoutPostInput, PostCommentUncheckedUpdateWithoutPostInput>
+    create: XOR<PostCommentCreateWithoutPostInput, PostCommentUncheckedCreateWithoutPostInput>
+  }
+
+  export type PostCommentUpdateWithWhereUniqueWithoutPostInput = {
+    where: PostCommentWhereUniqueInput
+    data: XOR<PostCommentUpdateWithoutPostInput, PostCommentUncheckedUpdateWithoutPostInput>
+  }
+
+  export type PostCommentUpdateManyWithWhereWithoutPostInput = {
+    where: PostCommentScalarWhereInput
+    data: XOR<PostCommentUpdateManyMutationInput, PostCommentUncheckedUpdateManyWithoutPostInput>
+  }
+
+  export type CommunityPostCreateWithoutCommentsInput = {
+    id?: string
+    title: string
+    content: string
+    likes?: number
+    replies?: number
+    views?: number
+    mediaUrl?: string | null
+    mediaType?: $Enums.MediaType | null
+    pollData?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.ApprovalStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author: UserCreateNestedOneWithoutCommunityPostsInput
+    community: CommunityCreateNestedOneWithoutPostsInput
+  }
+
+  export type CommunityPostUncheckedCreateWithoutCommentsInput = {
+    id?: string
+    title: string
+    content: string
+    likes?: number
+    replies?: number
+    views?: number
+    mediaUrl?: string | null
+    mediaType?: $Enums.MediaType | null
+    pollData?: NullableJsonNullValueInput | InputJsonValue
+    authorId: string
+    communityId: string
+    status?: $Enums.ApprovalStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CommunityPostCreateOrConnectWithoutCommentsInput = {
+    where: CommunityPostWhereUniqueInput
+    create: XOR<CommunityPostCreateWithoutCommentsInput, CommunityPostUncheckedCreateWithoutCommentsInput>
+  }
+
+  export type UserCreateWithoutPostCommentsInput = {
+    id?: string
+    firebaseUid: string
+    email?: string | null
+    name: string
+    avatar?: string | null
+    title?: string | null
+    bio?: string | null
+    background?: string | null
+    rewardPoints?: number
+    badges?: number
+    role?: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    communityPosts?: CommunityPostCreateNestedManyWithoutAuthorInput
+    journeys?: JourneyCreateNestedManyWithoutAuthorInput
+    galleryItems?: GalleryItemCreateNestedManyWithoutUploaderInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    communitiesCreated?: CommunityCreateNestedManyWithoutCreatorInput
+    communityMemberships?: CommunityMemberCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPostCommentsInput = {
+    id?: string
+    firebaseUid: string
+    email?: string | null
+    name: string
+    avatar?: string | null
+    title?: string | null
+    bio?: string | null
+    background?: string | null
+    rewardPoints?: number
+    badges?: number
+    role?: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    communityPosts?: CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+    journeys?: JourneyUncheckedCreateNestedManyWithoutAuthorInput
+    galleryItems?: GalleryItemUncheckedCreateNestedManyWithoutUploaderInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    communitiesCreated?: CommunityUncheckedCreateNestedManyWithoutCreatorInput
+    communityMemberships?: CommunityMemberUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPostCommentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPostCommentsInput, UserUncheckedCreateWithoutPostCommentsInput>
+  }
+
+  export type PostCommentCreateWithoutChildrenInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    post: CommunityPostCreateNestedOneWithoutCommentsInput
+    author: UserCreateNestedOneWithoutPostCommentsInput
+    parent?: PostCommentCreateNestedOneWithoutChildrenInput
+  }
+
+  export type PostCommentUncheckedCreateWithoutChildrenInput = {
+    id?: string
+    content: string
+    postId: string
+    authorId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PostCommentCreateOrConnectWithoutChildrenInput = {
+    where: PostCommentWhereUniqueInput
+    create: XOR<PostCommentCreateWithoutChildrenInput, PostCommentUncheckedCreateWithoutChildrenInput>
+  }
+
+  export type PostCommentCreateWithoutParentInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    post: CommunityPostCreateNestedOneWithoutCommentsInput
+    author: UserCreateNestedOneWithoutPostCommentsInput
+    children?: PostCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentUncheckedCreateWithoutParentInput = {
+    id?: string
+    content: string
+    postId: string
+    authorId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    children?: PostCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type PostCommentCreateOrConnectWithoutParentInput = {
+    where: PostCommentWhereUniqueInput
+    create: XOR<PostCommentCreateWithoutParentInput, PostCommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type PostCommentCreateManyParentInputEnvelope = {
+    data: PostCommentCreateManyParentInput | PostCommentCreateManyParentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CommunityPostUpsertWithoutCommentsInput = {
+    update: XOR<CommunityPostUpdateWithoutCommentsInput, CommunityPostUncheckedUpdateWithoutCommentsInput>
+    create: XOR<CommunityPostCreateWithoutCommentsInput, CommunityPostUncheckedCreateWithoutCommentsInput>
+    where?: CommunityPostWhereInput
+  }
+
+  export type CommunityPostUpdateToOneWithWhereWithoutCommentsInput = {
+    where?: CommunityPostWhereInput
+    data: XOR<CommunityPostUpdateWithoutCommentsInput, CommunityPostUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type CommunityPostUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    likes?: IntFieldUpdateOperationsInput | number
+    replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
+    pollData?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: UserUpdateOneRequiredWithoutCommunityPostsNestedInput
+    community?: CommunityUpdateOneRequiredWithoutPostsNestedInput
+  }
+
+  export type CommunityPostUncheckedUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    likes?: IntFieldUpdateOperationsInput | number
+    replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
+    pollData?: NullableJsonNullValueInput | InputJsonValue
+    authorId?: StringFieldUpdateOperationsInput | string
+    communityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpsertWithoutPostCommentsInput = {
+    update: XOR<UserUpdateWithoutPostCommentsInput, UserUncheckedUpdateWithoutPostCommentsInput>
+    create: XOR<UserCreateWithoutPostCommentsInput, UserUncheckedCreateWithoutPostCommentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPostCommentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPostCommentsInput, UserUncheckedUpdateWithoutPostCommentsInput>
+  }
+
+  export type UserUpdateWithoutPostCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    background?: NullableStringFieldUpdateOperationsInput | string | null
+    rewardPoints?: IntFieldUpdateOperationsInput | number
+    badges?: IntFieldUpdateOperationsInput | number
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    communityPosts?: CommunityPostUpdateManyWithoutAuthorNestedInput
+    journeys?: JourneyUpdateManyWithoutAuthorNestedInput
+    galleryItems?: GalleryItemUpdateManyWithoutUploaderNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    communitiesCreated?: CommunityUpdateManyWithoutCreatorNestedInput
+    communityMemberships?: CommunityMemberUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPostCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    background?: NullableStringFieldUpdateOperationsInput | string | null
+    rewardPoints?: IntFieldUpdateOperationsInput | number
+    badges?: IntFieldUpdateOperationsInput | number
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    communityPosts?: CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+    journeys?: JourneyUncheckedUpdateManyWithoutAuthorNestedInput
+    galleryItems?: GalleryItemUncheckedUpdateManyWithoutUploaderNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    communitiesCreated?: CommunityUncheckedUpdateManyWithoutCreatorNestedInput
+    communityMemberships?: CommunityMemberUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type PostCommentUpsertWithoutChildrenInput = {
+    update: XOR<PostCommentUpdateWithoutChildrenInput, PostCommentUncheckedUpdateWithoutChildrenInput>
+    create: XOR<PostCommentCreateWithoutChildrenInput, PostCommentUncheckedCreateWithoutChildrenInput>
+    where?: PostCommentWhereInput
+  }
+
+  export type PostCommentUpdateToOneWithWhereWithoutChildrenInput = {
+    where?: PostCommentWhereInput
+    data: XOR<PostCommentUpdateWithoutChildrenInput, PostCommentUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type PostCommentUpdateWithoutChildrenInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
+    author?: UserUpdateOneRequiredWithoutPostCommentsNestedInput
+    parent?: PostCommentUpdateOneWithoutChildrenNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateWithoutChildrenInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostCommentUpsertWithWhereUniqueWithoutParentInput = {
+    where: PostCommentWhereUniqueInput
+    update: XOR<PostCommentUpdateWithoutParentInput, PostCommentUncheckedUpdateWithoutParentInput>
+    create: XOR<PostCommentCreateWithoutParentInput, PostCommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type PostCommentUpdateWithWhereUniqueWithoutParentInput = {
+    where: PostCommentWhereUniqueInput
+    data: XOR<PostCommentUpdateWithoutParentInput, PostCommentUncheckedUpdateWithoutParentInput>
+  }
+
+  export type PostCommentUpdateManyWithWhereWithoutParentInput = {
+    where: PostCommentScalarWhereInput
+    data: XOR<PostCommentUpdateManyMutationInput, PostCommentUncheckedUpdateManyWithoutParentInput>
   }
 
   export type UserCreateWithoutJourneysInput = {
@@ -27913,6 +30174,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemCreateNestedManyWithoutUploaderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     communitiesCreated?: CommunityCreateNestedManyWithoutCreatorInput
@@ -27934,6 +30196,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentUncheckedCreateNestedManyWithoutAuthorInput
     galleryItems?: GalleryItemUncheckedCreateNestedManyWithoutUploaderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     communitiesCreated?: CommunityUncheckedCreateNestedManyWithoutCreatorInput
@@ -27971,6 +30234,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     communitiesCreated?: CommunityUpdateManyWithoutCreatorNestedInput
@@ -27992,6 +30256,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUncheckedUpdateManyWithoutAuthorNestedInput
     galleryItems?: GalleryItemUncheckedUpdateManyWithoutUploaderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     communitiesCreated?: CommunityUncheckedUpdateManyWithoutCreatorNestedInput
@@ -28013,6 +30278,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentCreateNestedManyWithoutAuthorInput
     journeys?: JourneyCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     communitiesCreated?: CommunityCreateNestedManyWithoutCreatorInput
@@ -28034,6 +30300,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     communityPosts?: CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+    postComments?: PostCommentUncheckedCreateNestedManyWithoutAuthorInput
     journeys?: JourneyUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     communitiesCreated?: CommunityUncheckedCreateNestedManyWithoutCreatorInput
@@ -28071,6 +30338,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     communitiesCreated?: CommunityUpdateManyWithoutCreatorNestedInput
@@ -28092,6 +30360,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     communityPosts?: CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+    postComments?: PostCommentUncheckedUpdateManyWithoutAuthorNestedInput
     journeys?: JourneyUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     communitiesCreated?: CommunityUncheckedUpdateManyWithoutCreatorNestedInput
@@ -28104,11 +30373,21 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
     communityId: string
     status?: $Enums.ApprovalStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PostCommentCreateManyAuthorInput = {
+    id?: string
+    content: string
+    postId: string
+    parentId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -28163,6 +30442,7 @@ export namespace Prisma {
     membersCount?: number
     isActive?: boolean
     isFeatured?: boolean
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -28180,6 +30460,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -28187,6 +30468,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     community?: CommunityUpdateOneRequiredWithoutPostsNestedInput
+    comments?: PostCommentUpdateManyWithoutPostNestedInput
   }
 
   export type CommunityPostUncheckedUpdateWithoutAuthorInput = {
@@ -28195,6 +30477,24 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
+    pollData?: NullableJsonNullValueInput | InputJsonValue
+    communityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: PostCommentUncheckedUpdateManyWithoutPostNestedInput
+  }
+
+  export type CommunityPostUncheckedUpdateManyWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    likes?: IntFieldUpdateOperationsInput | number
+    replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -28204,17 +30504,31 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type CommunityPostUncheckedUpdateManyWithoutAuthorInput = {
+  export type PostCommentUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    likes?: IntFieldUpdateOperationsInput | number
-    replies?: IntFieldUpdateOperationsInput | number
-    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-    pollData?: NullableJsonNullValueInput | InputJsonValue
-    communityId?: StringFieldUpdateOperationsInput | string
-    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
+    parent?: PostCommentUpdateOneWithoutChildrenNestedInput
+    children?: PostCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    children?: PostCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateManyWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28341,6 +30655,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: CommunityPostUpdateManyWithoutCommunityNestedInput
@@ -28361,6 +30676,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: CommunityPostUncheckedUpdateManyWithoutCommunityNestedInput
@@ -28381,6 +30697,7 @@ export namespace Prisma {
     membersCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28484,6 +30801,7 @@ export namespace Prisma {
     content: string
     likes?: number
     replies?: number
+    views?: number
     mediaUrl?: string | null
     mediaType?: $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -28506,6 +30824,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -28513,6 +30832,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     author?: UserUpdateOneRequiredWithoutCommunityPostsNestedInput
+    comments?: PostCommentUpdateManyWithoutPostNestedInput
   }
 
   export type CommunityPostUncheckedUpdateWithoutCommunityInput = {
@@ -28521,6 +30841,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -28528,6 +30849,7 @@ export namespace Prisma {
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: PostCommentUncheckedUpdateManyWithoutPostNestedInput
   }
 
   export type CommunityPostUncheckedUpdateManyWithoutCommunityInput = {
@@ -28536,6 +30858,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     likes?: IntFieldUpdateOperationsInput | number
     replies?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     mediaType?: NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
     pollData?: NullableJsonNullValueInput | InputJsonValue
@@ -28564,6 +30887,82 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     role?: EnumCommunityRoleFieldUpdateOperationsInput | $Enums.CommunityRole
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostCommentCreateManyPostInput = {
+    id?: string
+    content: string
+    authorId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PostCommentUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: UserUpdateOneRequiredWithoutPostCommentsNestedInput
+    parent?: PostCommentUpdateOneWithoutChildrenNestedInput
+    children?: PostCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    children?: PostCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateManyWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostCommentCreateManyParentInput = {
+    id?: string
+    content: string
+    postId: string
+    authorId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PostCommentUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
+    author?: UserUpdateOneRequiredWithoutPostCommentsNestedInput
+    children?: PostCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    children?: PostCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type PostCommentUncheckedUpdateManyWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

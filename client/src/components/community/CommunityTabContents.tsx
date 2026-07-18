@@ -1,5 +1,6 @@
-import { Users, Shield, Calendar, MapPin, Clock, ExternalLink, Image as ImageIcon, BookOpen, Info } from 'lucide-react';
-import type { Community, Contributor } from '../../data/communityData';
+import { useState } from 'react';
+import { Users, Shield, Calendar, MapPin, Clock, ExternalLink, Image as ImageIcon, BookOpen, Info, Play, BarChart2, Video as VideoIcon } from 'lucide-react';
+import type { Community, Contributor, Discussion } from '../../data/communityData';
 
 // ── Members Tab ───────────────────────────────────────────────────────────
 export const TabMembers = ({ contributors }: { contributors: Contributor[] }) => {
@@ -26,61 +27,188 @@ export const TabMembers = ({ contributors }: { contributors: Contributor[] }) =>
   );
 };
 
-import { galleryData } from '../../data/galleryData';
 
-export const TabMedia = ({ community }: { community: Community }) => {
-  // Map community id to relevant gallery categories
-  const categoryMap: Record<string, string[]> = {
-    'bihar-travel': ['Tourism', 'Places', 'Heritage'],
-    'bihar-culture': ['Culture', 'Art & Craft', 'Religion'],
-    'bihari-food': ['Food'],
-    'bihar-festivals': ['Festivals'],
-    'bihar-photography': ['Tourism', 'Places', 'Wildlife', 'Heritage'],
-    'bihar-history': ['Heritage', 'Architecture'],
-    'bihar-tribes': ['Culture', 'Community'],
-    'students-bihar': ['Community'],
-    'bihar-agriculture': ['Agriculture'],
-  };
 
-  const targetedCategories = categoryMap[community.id] || [];
+interface TabMediaProps {
+  community: Community;
+  discussions?: Discussion[];
+}
 
-  // Filter photos from galleryData matching the search categories
-  const matchingMedia = galleryData.filter(
-    (item) => item.mediaType === 'photo' && targetedCategories.includes(item.category)
-  );
+export const TabMedia = ({ community: _community, discussions = [] }: TabMediaProps) => {
+  const [activeSubTab, setActiveSubTab] = useState<'all' | 'photos' | 'videos' | 'polls'>('all');
 
-  // Fallback to top general gallery photos if none matched
-  const displayPhotos = matchingMedia.length > 0
-    ? matchingMedia
-    : galleryData.filter((item) => item.mediaType === 'photo');
+  // Only show real community uploads — no dummy/fallback data
+  const customPhotos = discussions
+    .filter((d) => d.mediaUrl && d.mediaType === 'image')
+    .map((d) => ({
+      id: d.id,
+      title: d.title,
+      image: d.mediaUrl!,
+      mediaType: 'photo' as const,
+      photographer: d.author,
+      location: 'Community Upload',
+    }));
+
+  const customVideos = discussions
+    .filter((d) => d.mediaUrl && d.mediaType === 'video')
+    .map((d) => ({
+      id: d.id,
+      title: d.title,
+      image: d.mediaUrl!,
+      mediaType: 'video' as const,
+      photographer: d.author,
+      location: 'Community Upload',
+    }));
+
+  const customPolls = discussions
+    .filter((d) => d.poll)
+    .map((d) => ({
+      id: d.id,
+      title: d.title,
+      poll: d.poll!,
+      author: d.author,
+      timeAgo: d.timeAgo,
+    }));
+
+  const allPhotos = customPhotos;
+  const allVideos = customVideos;
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-      <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-        <ImageIcon className="text-gold-dark" size={20} />
-        Shared Media ({displayPhotos.length})
-      </h3>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {displayPhotos.map((item) => (
-          <div key={item.id} className="aspect-square rounded-xl overflow-hidden group relative cursor-pointer shadow-sm">
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
-            />
-            {/* Visual overlay with details on hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-              <span className="text-white font-semibold text-sm line-clamp-1">
-                {item.title}
-              </span>
-              <span className="text-white/70 text-xs mt-0.5">
-                by {item.photographer} • {item.location}
-              </span>
-            </div>
-          </div>
-        ))}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <ImageIcon className="text-gold-dark" size={20} />
+          Shared Media & Polls
+        </h3>
+        <div className="flex flex-wrap gap-1 bg-gray-100/80 p-1 rounded-xl">
+          {(['all', 'photos', 'videos', 'polls'] as const).map((tab) => {
+            let label = '';
+            let count = 0;
+            if (tab === 'all') {
+              label = 'All';
+              count = allPhotos.length + allVideos.length + customPolls.length;
+            } else if (tab === 'photos') {
+              label = 'Photos';
+              count = allPhotos.length;
+            } else if (tab === 'videos') {
+              label = 'Videos';
+              count = allVideos.length;
+            } else if (tab === 'polls') {
+              label = 'Polls';
+              count = customPolls.length;
+            }
+
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveSubTab(tab)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${activeSubTab === tab
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+                  }`}
+              >
+                {label} ({count})
+              </button>
+            );
+          })}
+        </div>
       </div>
+
+      {activeSubTab === 'polls' ? (
+        customPolls.length === 0 ? (
+          <div className="text-center py-12 text-gray-400 text-sm flex flex-col items-center gap-2">
+            <BarChart2 size={36} className="text-gray-300" />
+            No polls posted in this community yet.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {customPolls.map((item) => {
+              const totalVotes = item.poll.options.reduce((sum, o) => sum + o.votes, 0) || 0;
+              return (
+                <div key={item.id} className="bg-gray-50 border border-gray-100 rounded-xl p-5 hover:border-amber-200 hover:shadow-sm transition-all duration-300">
+                  <div className="flex items-center gap-2 mb-2 text-xs text-gray-400 font-semibold">
+                    <span>Posted by {item.author}</span>
+                    <span>•</span>
+                    <span>{item.timeAgo}</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-gray-900 mb-3">{item.poll.question}</h4>
+                  <div className="space-y-2">
+                    {item.poll.options.map((option) => {
+                      const pct = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
+                      return (
+                        <div key={option.id} className="relative">
+                          <div className="absolute inset-0 rounded-lg bg-amber-100/50" style={{ width: `${pct}%` }} />
+                          <div className="relative flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white/60">
+                            <span className="text-xs font-semibold text-gray-700">{option.text}</span>
+                            <span className="text-xs font-bold text-gray-500">{pct}%</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center justify-between mt-3 pt-2 text-[10px] font-bold tracking-wider text-gray-400 border-t border-gray-100">
+                    <span>{totalVotes} VOTES</span>
+                    <span className="text-amber-600 bg-amber-100/50 px-2 py-0.5 rounded-full uppercase">POLL</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )
+      ) : (activeSubTab === 'photos' && allPhotos.length === 0) || (activeSubTab === 'videos' && allVideos.length === 0) ? (
+        <div className="text-center py-12 text-gray-400 text-sm flex flex-col items-center gap-2">
+          {activeSubTab === 'photos' ? <ImageIcon size={36} className="text-gray-300" /> : <VideoIcon size={36} className="text-gray-300" />}
+          No shared {activeSubTab} in this community yet.
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {/* Photos */}
+          {(activeSubTab === 'all' || activeSubTab === 'photos') &&
+            allPhotos.map((item) => (
+              <div key={item.id} className="aspect-square rounded-xl overflow-hidden group relative cursor-pointer shadow-sm border border-gray-100">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                  <span className="text-white font-semibold text-xs line-clamp-1">{item.title}</span>
+                  <span className="text-white/70 text-[10px] mt-0.5">by {item.photographer} • {item.location}</span>
+                </div>
+              </div>
+            ))}
+
+          {/* Videos */}
+          {(activeSubTab === 'all' || activeSubTab === 'videos') &&
+            allVideos.map((item) => (
+              <div key={item.id} className="aspect-square rounded-xl overflow-hidden group relative cursor-pointer shadow-sm border border-gray-100 bg-black">
+                <video
+                  src={item.image}
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                  preload="metadata"
+                  playsInline
+                  onMouseOver={(e) => {
+                    const video = e.target as HTMLVideoElement;
+                    video.play().catch(() => { });
+                  }}
+                  onMouseOut={(e) => {
+                    const video = e.target as HTMLVideoElement;
+                    video.pause();
+                  }}
+                />
+                <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <Play size={8} fill="currentColor" />
+                  VIDEO
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 pointer-events-none">
+                  <span className="text-white font-semibold text-xs line-clamp-1">{item.title}</span>
+                  <span className="text-white/70 text-[10px] mt-0.5">by {item.photographer} • {item.location}</span>
+                </div>
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };

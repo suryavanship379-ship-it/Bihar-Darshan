@@ -38,6 +38,7 @@ export const authenticate = catchAsync(async (req: Request, res: Response, next:
     req.firebaseUid = firebaseUid;
     next();
   } catch (error) {
+    console.error('Authentication error:', error);
     return next(new AppError('Invalid token or token has expired', 401));
   }
 });

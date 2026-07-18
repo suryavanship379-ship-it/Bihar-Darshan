@@ -23,7 +23,7 @@ export interface ExtendedGalleryItem extends GalleryItem {
 
 const Gallery = () => {
   const { gallerySubmissions } = useContributions();
-  const { 
+  const {
     gallery: galleryData, 
     districts: allDistricts, 
     tourism: featuredTrips, 

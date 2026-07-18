@@ -49,11 +49,37 @@ const CreateCommunity = () => {
     setActiveDropZone(null);
   };
 
-  const processFile = (file: File, type: "banner" | "logo") => {
+  const compressImage = (file: File, maxW: number, maxH: number, quality = 0.75): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxW || height > maxH) {
+            const ratio = Math.min(maxW / width, maxH / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target!.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const processFile = async (file: File, type: "banner" | "logo") => {
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, [type]: "File size exceeds 5MB limit. Please choose a smaller file." }));
+    if (file.size > 10 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, [type]: "File size exceeds 10MB limit. Please choose a smaller file." }));
       return;
     }
 
@@ -66,12 +92,14 @@ const CreateCommunity = () => {
       return copy;
     });
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === "banner") setBannerFile(reader.result as string);
-      else setLogoFile(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const [maxW, maxH, quality] = type === "banner" ? [1600, 500, 0.8] : [512, 512, 0.85];
+      const compressed = await compressImage(file, maxW, maxH, quality);
+      if (type === "banner") setBannerFile(compressed);
+      else setLogoFile(compressed);
+    } catch {
+      setErrors((prev) => ({ ...prev, [type]: "Failed to process image. Please try another file." }));
+    }
   };
 
   const handleDrop = (e: React.DragEvent, type: "banner" | "logo") => {
@@ -113,7 +141,7 @@ const CreateCommunity = () => {
     setTimeout(async () => {
       try {
         const rulesList = rules.split('\n').filter(r => r.trim() !== '');
-        
+
         await addCommunitySubmission({
           name,
           category,
@@ -126,11 +154,16 @@ const CreateCommunity = () => {
         });
 
         setIsSubmitting(false);
-        navigate("/community");
-      } catch (err) {
+        navigate("/community", { state: { pendingApproval: true } });
+      } catch (err: any) {
         console.error(err);
         setIsSubmitting(false);
-        setErrors({ submit: "An error occurred while saving your community. Storage might be full." });
+        const msg = err?.message || '';
+        if (msg.includes('url') || msg.includes('URL') || msg.includes('bannerImageUrl') || msg.includes('logoImageUrl')) {
+          setErrors({ submit: "Image validation failed. Please re-upload your banner or logo." });
+        } else {
+          setErrors({ submit: `Failed to create community. ${msg}` });
+        }
       }
     }, 1200);
   };
@@ -159,9 +192,9 @@ const CreateCommunity = () => {
 
       <main className="share-story-content-container">
         <div className="share-story-card-panel">
-          <button 
-            type="button" 
-            className="btn-secondary mr-auto flex items-center gap-2 mb-8" 
+          <button
+            type="button"
+            className="btn-secondary mr-auto flex items-center gap-2 mb-8"
             onClick={() => navigate('/community')}
           >
             <ArrowLeft size={16} /> Back
@@ -180,7 +213,8 @@ const CreateCommunity = () => {
                 <span className="divider-line"></span>
               </div>
               <p className="share-story-form-subtitle">
-                Build a space for people to share, discuss, and celebrate shared interests.
+                Build a space for people to share, discuss, and celebrate shared interests.<br />
+                <span style={{ fontSize: '0.85em', opacity: 0.7 }}>Your community will be reviewed by an admin before it goes live.</span>
               </p>
             </div>
 
@@ -191,7 +225,7 @@ const CreateCommunity = () => {
             )}
 
             <form onSubmit={handleSubmit} className="share-story-form">
-              
+
               {/* Step 1: Community Name */}
               <div className="form-group-step">
                 <div className="step-title-row">

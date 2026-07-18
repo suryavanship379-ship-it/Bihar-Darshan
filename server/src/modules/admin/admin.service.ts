@@ -5,6 +5,7 @@ export const getDashboardStats = async () => {
     totalUsers,
     totalDistricts,
     totalCommunities,
+    pendingCommunities,
     pendingPosts,
     pendingJourneys,
     pendingGalleryItems
@@ -12,6 +13,7 @@ export const getDashboardStats = async () => {
     db.user.count(),
     db.district.count(),
     db.community.count(),
+    db.community.count({ where: { status: 'PENDING' } }),
     db.communityPost.count({ where: { status: 'PENDING' } }),
     db.journey.count({ where: { status: 'PENDING' } }),
     db.galleryItem.count({ where: { status: 'PENDING' } }),
@@ -24,6 +26,7 @@ export const getDashboardStats = async () => {
       totalCommunities,
     },
     pendingApprovals: {
+      communities: pendingCommunities,
       posts: pendingPosts,
       journeys: pendingJourneys,
       galleryItems: pendingGalleryItems,
@@ -32,13 +35,15 @@ export const getDashboardStats = async () => {
 };
 
 export const getPendingApprovals = async () => {
-  const [posts, journeys, galleryItems] = await Promise.all([
+  const [communities, posts, journeys, galleryItems] = await Promise.all([
+    db.community.findMany({ where: { status: 'PENDING' }, include: { creator: { select: { name: true, email: true } } } }),
     db.communityPost.findMany({ where: { status: 'PENDING' }, include: { author: { select: { name: true, email: true } } } }),
     db.journey.findMany({ where: { status: 'PENDING' }, include: { author: { select: { name: true, email: true } } } }),
     db.galleryItem.findMany({ where: { status: 'PENDING' }, include: { uploader: { select: { name: true, email: true } } } }),
   ]);
 
   return {
+    communities,
     posts,
     journeys,
     galleryItems,

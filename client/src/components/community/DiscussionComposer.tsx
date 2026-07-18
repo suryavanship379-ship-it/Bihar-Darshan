@@ -11,13 +11,13 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
   const [title, setTitle] = useState('');
   const [tag, setTag] = useState<Discussion['tag']>('Tips');
   const [content, setContent] = useState('');
-  
+
   // Media State
   const [activeTab, setActiveTab] = useState<'text' | 'media' | 'poll'>('text');
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Poll State
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState([{ id: '1', text: '' }, { id: '2', text: '' }]);
@@ -25,8 +25,11 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setMediaUrl(url);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setMediaUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
       setMediaType(file.type.startsWith('video/') ? 'video' : 'image');
     }
   };
@@ -42,7 +45,7 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
 
   const handlePost = () => {
     if (!title.trim()) return;
-    
+
     let pollData;
     if (activeTab === 'poll' && pollQuestion.trim() && pollOptions.filter(o => o.text.trim()).length >= 2) {
       pollData = {
@@ -51,15 +54,15 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
       };
     }
 
-    onPost?.({ 
-      title, 
+    onPost?.({
+      title,
       content,
-      tag, 
+      tag,
       tagColor: 'bg-green-100 text-green-700',
       ...(activeTab === 'media' && mediaUrl ? { mediaUrl, mediaType } : {}),
       ...(pollData ? { poll: pollData } : {})
     });
-    
+
     // Reset state
     setTitle('');
     setContent('');
@@ -106,12 +109,11 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
 
             <div className="flex gap-2">
               {(['text', 'media', 'poll'] as const).map(t => (
-                <button 
+                <button
                   key={t}
                   onClick={() => setActiveTab(t)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-colors ${
-                    activeTab === t ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-colors ${activeTab === t ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                    }`}
                 >
                   {t}
                 </button>
@@ -130,14 +132,14 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
 
           {activeTab === 'media' && (
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col items-center justify-center text-center">
-              <input 
-                type="file" 
-                accept="image/*,video/*" 
+              <input
+                type="file"
+                accept="image/*,video/*"
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className="hidden"
               />
-              
+
               {mediaUrl ? (
                 <div className="relative w-full max-h-[300px] rounded-lg overflow-hidden border border-gray-200 bg-black">
                   {mediaType === 'video' ? (
@@ -145,7 +147,7 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
                   ) : (
                     <img src={mediaUrl} alt="Preview" className="w-full h-full object-contain max-h-[300px]" />
                   )}
-                  <button 
+                  <button
                     onClick={() => {
                       setMediaUrl('');
                       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -156,7 +158,7 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
                   </button>
                 </div>
               ) : (
-                <div 
+                <div
                   className="flex flex-col items-center gap-3 cursor-pointer p-8 w-full border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-100 hover:border-brand-gold transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -194,7 +196,7 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
                 ))}
               </div>
               {pollOptions.length < 5 && (
-                <button 
+                <button
                   onClick={addPollOption}
                   className="text-xs font-bold text-violet-600 hover:text-violet-700 transition-colors"
                 >
@@ -205,7 +207,7 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
           )}
 
           <div className="flex justify-end pt-3 border-t border-gray-100 mt-2">
-            <button 
+            <button
               onClick={handlePost}
               disabled={!title.trim()}
               className="px-6 py-2 rounded-xl bg-violet-600 text-white font-bold text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-violet-700 transition-colors"
@@ -220,7 +222,7 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
 
   // Collapsed View
   return (
-    <div 
+    <div
       className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm cursor-pointer hover:border-amber-200 transition-colors"
       onClick={() => { setIsExpanded(true); setActiveTab('text'); }}
     >
@@ -235,25 +237,25 @@ const DiscussionComposer = ({ onPost }: DiscussionComposerProps) => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <div 
+          <div
             onClick={(e) => { e.stopPropagation(); setIsExpanded(true); setActiveTab('text'); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
           >
             <Type size={13} /> Text
           </div>
-          <div 
+          <div
             onClick={(e) => { e.stopPropagation(); setIsExpanded(true); setActiveTab('media'); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
           >
             <Image size={13} /> Image
           </div>
-          <div 
+          <div
             onClick={(e) => { e.stopPropagation(); setIsExpanded(true); setActiveTab('poll'); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
           >
             <BarChart2 size={13} /> Poll
           </div>
-          <div 
+          <div
             onClick={(e) => { e.stopPropagation(); setIsExpanded(true); setActiveTab('media'); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
           >

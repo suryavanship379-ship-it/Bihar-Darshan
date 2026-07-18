@@ -28,12 +28,16 @@ import {
 } from '../data/communityData';
 import type { Community, Discussion } from '../data/communityData';
 import { useContributions } from '../data/ContributionContext';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+
 
 const CommunityPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { communitySubmissions } = useContributions();
 
+  const [pendingApprovalBanner, setPendingApprovalBanner] = useState(() => !!(location.state as any)?.pendingApproval);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryOption>('All Categories');
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(() => {
@@ -46,13 +50,103 @@ const CommunityPage = () => {
   });
   const [activeTab, setActiveTab] = useState<DetailTab>('Discussions');
   const [customDiscussions, setCustomDiscussions] = useState<Discussion[]>([]);
+  const [dbPosts, setDbPosts] = useState<Discussion[]>([]);
   const [joinedCommunityIds, setJoinedCommunityIds] = useState<string[]>([]);
+  const [memberCountAdjustments, setMemberCountAdjustments] = useState<Record<string, number>>({});
 
-  const toggleJoinCommunity = (id: string) => {
-    setJoinedCommunityIds(prev =>
-      prev.includes(id) ? prev.filter(cId => cId !== id) : [...prev, id]
-    );
+  // Sync user joined community IDs from backend
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const token = await user.getIdToken();
+          const response = await fetch('http://localhost:5000/api/v1/community/joined/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data && result.data.communityIds) {
+              setJoinedCommunityIds(result.data.communityIds);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch user joined communities:", err);
+        }
+      } else {
+        setJoinedCommunityIds([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const toggleJoinCommunity = async (id: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login to join this community.");
+      navigate('/login');
+      return;
+    }
+
+    const isCurrentlyJoined = joinedCommunityIds.includes(id);
+    const action = isCurrentlyJoined ? 'leave' : 'join';
+
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch(`http://localhost:5000/api/v1/community/${id}/${action}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${action} community`);
+      }
+
+      setJoinedCommunityIds(prev =>
+        isCurrentlyJoined ? prev.filter(cId => cId !== id) : [...prev, id]
+      );
+      setMemberCountAdjustments(prev => ({
+        ...prev,
+        [id]: (prev[id] || 0) + (isCurrentlyJoined ? -1 : 1),
+      }));
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || `Failed to ${action} community`);
+    }
   };
+
+  // Parse a member count string like '12.5K', '9.8K', '1.2M' or plain number → integer
+  const parseMemberCount = (val: string | number): number => {
+    if (typeof val === 'number') return val;
+    const str = String(val).trim().toUpperCase();
+    const num = parseFloat(str);
+    if (str.endsWith('K')) return Math.round(num * 1000);
+    if (str.endsWith('M')) return Math.round(num * 1_000_000);
+    return parseInt(str.replace(/[^0-9]/g, ''), 10) || 1;
+  };
+
+  // Format integer back to a readable string
+  const formatMemberCount = (n: number): string | number => {
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 10_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return n;
+  };
+
+  // Returns a community object with its member count adjusted for join/leave
+  const withAdjustedMembers = (community: Community): Community => {
+    const adj = memberCountAdjustments[community.id] || 0;
+    const initialCount = community.membersCount !== undefined
+      ? community.membersCount
+      : parseMemberCount(community.members || '0');
+    const adjusted = initialCount + adj;
+    return { ...community, members: formatMemberCount(Math.max(0, adjusted)) };
+  };
+
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -61,6 +155,41 @@ const CommunityPage = () => {
   // Scroll to top when entering / leaving detail view
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedCommunity]);
+
+  // Fetch posts from DB when a community is selected (public — no auth needed)
+  useEffect(() => {
+    if (!selectedCommunity) {
+      setDbPosts([]);
+      setCustomDiscussions([]);
+      return;
+    }
+    fetch(`http://localhost:5000/api/v1/community/${selectedCommunity.id}/posts`)
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data?.posts) {
+          const mapped: Discussion[] = result.data.posts.map((p: any) => ({
+            id: p.id,
+            communityId: p.communityId,
+            title: p.title,
+            content: p.content || '',
+            author: p.author?.name || 'Anonymous',
+            authorAvatar: (p.author?.name || 'A').slice(0, 2).toUpperCase(),
+            timeAgo: new Date(p.createdAt).toLocaleDateString(),
+            views: '0 views',
+            replies: p.replies ?? 0,
+            tag: 'Destinations' as const,
+            tagColor: 'bg-blue-100 text-blue-700',
+            mediaUrl: p.mediaUrl,
+            mediaType: p.mediaType ? p.mediaType.toLowerCase() : undefined,
+            likes: p.likes ?? 0,
+            poll: p.pollData || undefined,
+          }));
+          setDbPosts(mapped);
+          setCustomDiscussions([]);
+        }
+      })
+      .catch(err => console.error('Failed to fetch posts:', err));
   }, [selectedCommunity]);
 
   // Synchronize state with URL search param "?id="
@@ -88,35 +217,109 @@ const CommunityPage = () => {
       const q = searchQuery.toLowerCase();
       result = result.filter(
         (c) =>
-          c.name.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q) ||
-          c.category.toLowerCase().includes(q)
+          (c.name || '').toLowerCase().includes(q) ||
+          (c.description || c.shortDescription || '').toLowerCase().includes(q) ||
+          (c.category || '').toLowerCase().includes(q)
       );
     }
 
     return result;
   }, [activeCategory, searchQuery, communitySubmissions]);
 
-  // Discussions for the selected community
+  // Discussions for the selected community — DB posts take priority, mock data only as fallback
   const communityDiscussions = useMemo(() => {
     if (!selectedCommunity) return [];
-    const allDiscussions = [...customDiscussions, ...discussions];
-    return allDiscussions.filter((d) => d.communityId === selectedCommunity.id);
-  }, [selectedCommunity, customDiscussions]);
+    if (dbPosts.length > 0) {
+      // If we have DB posts, show them plus any local optimistic posts not yet in DB
+      const dbIds = new Set(dbPosts.map(p => p.id));
+      const optimistic = customDiscussions.filter(d => !dbIds.has(d.id));
+      return [...optimistic, ...dbPosts];
+    }
+    // Fallback to mock data if no DB posts yet
+    const mockFiltered = discussions.filter(d => d.communityId === selectedCommunity.id);
+    return [...customDiscussions, ...mockFiltered];
+  }, [selectedCommunity, customDiscussions, dbPosts]);
 
-  const handlePost = (newPost: Omit<Discussion, 'id' | 'author' | 'authorAvatar' | 'timeAgo' | 'views' | 'replies' | 'communityId'>) => {
+  // Fetch (or re-fetch) posts for the current community from the DB
+  const refreshPosts = async (communityId: string) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/v1/community/${communityId}/posts`);
+      const result = await res.json();
+      if (result.success && result.data?.posts) {
+        const mapped: Discussion[] = result.data.posts.map((p: any) => ({
+          id: p.id,
+          communityId: p.communityId,
+          title: p.title,
+          content: p.content || '',
+          author: p.author?.name || 'Anonymous',
+          authorAvatar: (p.author?.name || 'A').slice(0, 2).toUpperCase(),
+          timeAgo: new Date(p.createdAt).toLocaleDateString(),
+          views: '0 views',
+          replies: p.replies ?? 0,
+          tag: 'Destinations' as const,
+          tagColor: 'bg-blue-100 text-blue-700',
+          mediaUrl: p.mediaUrl,
+          mediaType: p.mediaType ? p.mediaType.toLowerCase() : undefined,
+          likes: p.likes ?? 0,
+          poll: p.pollData || undefined,
+        }));
+        setDbPosts(mapped);
+        setCustomDiscussions([]); // clear optimistic state once DB is synced
+      }
+    } catch (err) {
+      console.error('Failed to refresh posts:', err);
+    }
+  };
+
+  const handlePost = async (newPost: Omit<Discussion, 'id' | 'author' | 'authorAvatar' | 'timeAgo' | 'views' | 'replies' | 'communityId'>) => {
     if (!selectedCommunity) return;
+    const user = auth.currentUser;
+
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        const bodyData = {
+          title: newPost.title,
+          content: newPost.content,
+          communityId: selectedCommunity.id,
+          mediaUrl: newPost.mediaUrl,
+          mediaType: newPost.mediaType,
+          pollData: newPost.poll,
+        };
+        const response = await fetch('http://localhost:5000/api/v1/community/posts', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyData)
+        });
+        if (response.ok) {
+          // Re-fetch all posts from DB so every user (including this one) sees the latest
+          await refreshPosts(selectedCommunity.id);
+          return;
+        } else {
+          const err = await response.json();
+          console.error('Post API error:', err);
+          alert(err.message || 'Failed to publish post. Please check details and try again.');
+          return;
+        }
+      } catch (err: any) {
+        console.error('Failed to save post to DB:', err);
+        alert(err.message || 'Network error: could not connect to server.');
+        return;
+      }
+    }
+
+    // Fallback: add locally only if not logged in or API completely failed
     const post: Discussion = {
       ...newPost,
-      id: `custom_${Date.now()}`,
+      id: `local_${Date.now()}`,
       communityId: selectedCommunity.id,
       author: 'You',
-      authorAvatar: 'YOU',
+      authorAvatar: 'YO',
       timeAgo: 'Just now',
       views: '0 views',
       replies: 0,
     };
-    setCustomDiscussions([post, ...customDiscussions]);
+    setCustomDiscussions(prev => [post, ...prev]);
   };
 
   return (
@@ -158,7 +361,7 @@ const CommunityPage = () => {
                     </div>
 
                     <CommunitySidebar
-                      community={selectedCommunity}
+                      community={withAdjustedMembers(selectedCommunity)}
                       contributors={contributors}
                       onViewGuidelines={() => setActiveTab('About')}
                       isJoined={joinedCommunityIds.includes(selectedCommunity.id)}
@@ -169,7 +372,7 @@ const CommunityPage = () => {
 
                 {activeTab === 'Media' && (
                   <div className="mt-4">
-                    <TabMedia community={selectedCommunity} />
+                    <TabMedia community={selectedCommunity} discussions={communityDiscussions} />
                   </div>
                 )}
 
