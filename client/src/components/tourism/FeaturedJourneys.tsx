@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Edit3 } from "lucide-react";
+import { ArrowRight, Edit3, MapPin, Clock, Wallet } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useContributions } from "../../data/ContributionContext";
 import { auth } from "../../lib/firebase";
@@ -126,11 +126,33 @@ const FeaturedJourneys = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="p-8 flex-1 flex flex-col justify-center items-center text-center relative bg-[url('https://www.transparenttextures.com/patterns/handmade-paper.png')]">
-                      <h3 className="text-2xl font-serif font-bold text-[#3e2723] group-hover:text-[#8b5a2b] transition-colors duration-300">{trip.title}</h3>
+                    <div className="p-8 flex-1 flex flex-col justify-start items-center text-center relative bg-[url('https://www.transparenttextures.com/patterns/handmade-paper.png')]">
+                      <div className="flex items-center gap-3 mb-3 text-xs font-bold text-[#c19a5b] font-sans">
+                        <span className="flex items-center gap-1"><Clock size={12} /> {trip.duration}</span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1"><MapPin size={12} /> {trip.departureCity}</span>
+                      </div>
 
-                      <div className="mt-6 overflow-hidden">
-                        <div className="flex items-center justify-center gap-2 text-[#8b5a2b] font-bold text-xs uppercase tracking-widest translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                      <h3 className="text-2xl font-serif font-bold text-[#3e2723] group-hover:text-[#8b5a2b] transition-colors duration-300 mb-3">{trip.title}</h3>
+
+                      <p className="text-sm text-[#3e2723]/60 mb-5 line-clamp-2 max-w-sm">{trip.desc || trip.description}</p>
+
+                      {trip.places && trip.places.length > 0 && (
+                        <div className="flex flex-wrap justify-center gap-1.5 mb-6">
+                          {trip.places.slice(0, 3).map((place, idx) => (
+                            <span key={idx} className="text-[10px] uppercase font-bold tracking-widest text-[#3e2723]/50 px-2 py-0.5 rounded bg-[#f5efe6] border border-[#e8dfcf]">
+                              {place}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-auto pt-4 border-t border-[#e8dfcf]/60 w-full flex items-center justify-between">
+                        <span className="text-xs text-[#3e2723]/50 font-sans flex items-center gap-1">
+                          <Wallet size={12} className="text-[#c19a5b]" />
+                          Budget: <strong className="text-[#3e2723] font-bold">{trip.price}</strong>
+                        </span>
+                        <div className="flex items-center gap-1 text-[#8b5a2b] font-bold text-xs uppercase tracking-widest">
                           View Details
                           <motion.div
                             animate={{ x: [0, 5, 0] }}

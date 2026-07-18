@@ -98,6 +98,7 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
           };
           let timeline: any[] = [];
           let galleryImages: string[] = [];
+          let quote = "Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends.";
 
           if (j.description && j.description.startsWith('{"__isImmersivePackage"')) {
             try {
@@ -108,6 +109,7 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
                 if (parsed.guide) guide = parsed.guide;
                 if (parsed.timeline) timeline = parsed.timeline;
                 if (parsed.galleryImages) galleryImages = parsed.galleryImages;
+                if (parsed.quote) quote = parsed.quote;
               }
             } catch (e) {
               console.error("Failed to parse immersive package description JSON:", e);
@@ -144,7 +146,8 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
             galleryImages,
             videos: [],
             mapMarkers: [],
-            reviews: []
+            reviews: [],
+            quote
           };
         });
         setJourneySubmissions(dbJourneys);
@@ -256,7 +259,8 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         image: submission.image,
         guide: submission.guide,
         timeline: submission.timeline,
-        galleryImages: submission.galleryImages
+        galleryImages: submission.galleryImages,
+        quote: submission.quote
       });
       const response = await fetch('http://localhost:5000/api/v1/journeys', {
         method: 'POST',
@@ -292,7 +296,8 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         image: submission.image,
         guide: submission.guide,
         timeline: submission.timeline,
-        galleryImages: submission.galleryImages
+        galleryImages: submission.galleryImages,
+        quote: submission.quote
       });
       const response = await fetch(`http://localhost:5000/api/v1/journeys/${id}`, {
         method: 'PUT',

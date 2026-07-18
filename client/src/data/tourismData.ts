@@ -86,6 +86,8 @@ export interface TourTrip {
   reviews: ReviewDetail[];
   emergencyContact: string;
   email: string;
+  quote?: string;
+  desc?: string;
 }
 
 export const featuredTrips: TourTrip[] = [

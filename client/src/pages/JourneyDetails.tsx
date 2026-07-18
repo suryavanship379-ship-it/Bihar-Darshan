@@ -217,7 +217,7 @@ const JourneyDetails = () => {
               <blockquote className="relative p-8 bg-white rounded-2xl border border-[#FCEBD3] shadow-sm mb-12">
                 <Quote className="absolute top-6 left-6 w-12 h-12 text-[#F4A261] opacity-20" />
                 <p className="text-2xl font-serif text-[#2A2A2A] leading-relaxed italic relative z-10 pl-6">
-                  "Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends."
+                  "{currentTrip.quote || "Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends."}"
                 </p>
               </blockquote>
 

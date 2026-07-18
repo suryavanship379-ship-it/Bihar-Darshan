@@ -58,6 +58,9 @@ const CreateJourney = () => {
         setShortDesc(trip.desc || "");
         setDescription(trip.description || "");
         setHeroImage(trip.image || null);
+        if (trip.quote) setQuote(trip.quote);
+        if (trip.price) setBudget(trip.price);
+        if (trip.departureCity) setDistrict(trip.departureCity);
         if (trip.guide) {
           setGuideName(trip.guide.name || "");
           setGuidePhoto(trip.guide.image || null);
@@ -92,6 +95,8 @@ const CreateJourney = () => {
   const [title, setTitle] = useState("Mahabodhi Trail");
   const [shortDesc, setShortDesc] = useState("Walk the path of Buddha in Bodh Gaya.");
   const [heroImage, setHeroImage] = useState<string | null>(null);
+  const [budget, setBudget] = useState("Flexible");
+  const [district, setDistrict] = useState("Patna");
 
   // 2. Introduction
   const [quote, setQuote] = useState("Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends.");
@@ -231,6 +236,7 @@ const CreateJourney = () => {
       image: heroImage || "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?q=80&w=2000&auto=format&fit=crop",
       duration: `${durationDays > 1 ? durationDays - 1 : 1} Nights / ${durationDays} Days`,
       overviewText: description || shortDesc,
+      quote: quote,
       guide: {
         name: guideName || "Ramesh Kumar",
         image: guidePhoto || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=500&auto=format&fit=crop",
@@ -255,9 +261,9 @@ const CreateJourney = () => {
       })),
       provider: "Community Contributor",
       providerLogo: "https://cdn-icons-png.flaticon.com/512/3233/3233481.png",
-      departureCity: "Patna",
-      places: [],
-      price: "Flexible",
+      departureCity: district || "Patna",
+      places: timeline.map(day => day.title).filter(t => t && t.trim() !== "" && t !== "New Day"),
+      price: budget || "Flexible",
       phone: callNumber || "+919876543210",
       whatsapp: whatsapp || "+919876543210",
       difficulty: "Easy" as "Easy" | "Moderate" | "Challenging",
@@ -360,6 +366,28 @@ const CreateJourney = () => {
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="e.g. Mahabodhi Trail"
                           />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="form-group">
+                            <label className="form-label">Estimated Budget</label>
+                            <input
+                              type="text"
+                              className="form-control-dark"
+                              value={budget}
+                              onChange={(e) => setBudget(e.target.value)}
+                              placeholder="e.g. ₹15,000 or Flexible"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Departure District</label>
+                            <input
+                              type="text"
+                              className="form-control-dark"
+                              value={district}
+                              onChange={(e) => setDistrict(e.target.value)}
+                              placeholder="e.g. Patna or Gaya"
+                            />
+                          </div>
                         </div>
                         <div className="form-group">
                           <label className="form-label">Short Description</label>
