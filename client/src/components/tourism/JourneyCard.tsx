@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { TourTrip } from "../../data/tourismData";
 import { ArrowRight, Edit3, MapPin, Clock, Wallet } from "lucide-react";
@@ -9,7 +10,15 @@ interface JourneyCardProps {
 
 const JourneyCard = ({ trip }: JourneyCardProps) => {
   const navigate = useNavigate();
-  const currentUser = auth.currentUser;
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const isAuthor = currentUser && (trip as any).authorId === currentUser.uid;
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -56,15 +65,6 @@ const JourneyCard = ({ trip }: JourneyCardProps) => {
 
           <p className="text-xs md:text-sm text-brand-dark/60 mb-4 line-clamp-2 max-w-sm">{trip.desc || trip.description}</p>
 
-          {trip.places && trip.places.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-1 mb-4">
-              {trip.places.slice(0, 3).map((place, idx) => (
-                <span key={idx} className="text-[9px] uppercase font-bold tracking-widest text-brand-dark/50 px-2 py-0.5 rounded bg-[#f5efe6] border border-[#e8dfcf]">
-                  {place}
-                </span>
-              ))}
-            </div>
-          )}
 
           <div className="mt-auto pt-4 border-t border-gray-100/60 w-full flex items-center justify-between">
             <span className="text-[11px] text-brand-dark/50 font-sans flex items-center gap-1">

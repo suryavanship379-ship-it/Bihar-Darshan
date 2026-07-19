@@ -17,5 +17,6 @@ router.get('/:id', journeyController.getJourneyById);
 router.use(authenticate);
 router.post('/', journeyController.createJourney);
 router.put('/:id', journeyController.updateJourney);
+router.patch('/:id', restrictTo('ADMIN'), journeyController.updateJourney);
 
 export const journeyRoutes = router;

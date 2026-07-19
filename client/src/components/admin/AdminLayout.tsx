@@ -57,7 +57,7 @@ const AdminLayout = () => {
         {/* Header */}
         <div className="flex items-center justify-between px-4 h-16 border-b border-white/[0.06] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#F4A261] to-[#F4A261] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#EAB308] to-[#EAB308] flex items-center justify-center shrink-0">
               <Shield size={18} className="text-black" />
             </div>
             {sidebarOpen && <span className="text-white font-bold text-sm tracking-tight">Bihar Darshan</span>}
@@ -86,7 +86,7 @@ const AdminLayout = () => {
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                   ${active
-                    ? 'bg-[#F4A261]/10 text-[#F4A261] shadow-sm'
+                    ? 'bg-[#EAB308]/10 text-[#EAB308] shadow-sm'
                     : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'
                   }
                 `}
@@ -126,10 +126,10 @@ const AdminLayout = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/" className="text-xs text-white/30 hover:text-[#F4A261] transition-colors border border-white/10 px-3 py-1.5 rounded-lg hover:border-[#F4A261]/30">
+            <Link to="/" className="text-xs text-white/30 hover:text-[#EAB308] transition-colors border border-white/10 px-3 py-1.5 rounded-lg hover:border-[#EAB308]/30">
               View Site →
             </Link>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F4A261] to-[#F4A261] flex items-center justify-center text-black text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#EAB308] to-[#EAB308] flex items-center justify-center text-black text-xs font-bold">
               A
             </div>
           </div>

@@ -135,7 +135,7 @@ const AdminDistricts = () => {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${
                     activeTab === tab.id 
-                      ? 'bg-[#F4A261] text-black' 
+                      ? 'bg-[#EAB308] text-black' 
                       : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
                   }`}
                 >
@@ -193,7 +193,7 @@ const AdminDistricts = () => {
                   <div className="pt-4">
                     <div className="flex justify-between items-center mb-2">
                       <label className="block text-sm font-medium text-white/70">Why it should be in your tourist list</label>
-                      <button type="button" onClick={() => addArrayStringItem('whyInTouristList')} className="text-xs flex items-center gap-1 text-[#F4A261] hover:text-[#D4A017]">
+                      <button type="button" onClick={() => addArrayStringItem('whyInTouristList')} className="text-xs flex items-center gap-1 text-[#EAB308] hover:text-[#D4A017]">
                         <Plus size={14} /> Add Point
                       </button>
                     </div>
@@ -204,7 +204,7 @@ const AdminDistricts = () => {
                             type="text"
                             value={point}
                             onChange={(e) => handleArrayStringChange(index, e.target.value, 'whyInTouristList')}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-[#F4A261]/50 focus:ring-1 focus:ring-[#F4A261]/50"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-[#EAB308]/50 focus:ring-1 focus:ring-[#EAB308]/50"
                           />
                           <button type="button" onClick={() => removeArrayStringItem(index, 'whyInTouristList')} className="p-2 text-white/40 hover:text-red-400 bg-white/5 rounded-lg border border-white/10">
                             <Trash2 size={16} />
@@ -432,7 +432,7 @@ const AdminDistricts = () => {
               <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-white font-medium hover:bg-white/5 transition-colors">
                 Cancel
               </button>
-              <button type="submit" className="px-5 py-2.5 rounded-xl bg-[#F4A261] text-black font-bold hover:bg-[#D4A017] transition-colors">
+              <button type="submit" className="px-5 py-2.5 rounded-xl bg-[#EAB308] text-black font-bold hover:bg-[#D4A017] transition-colors">
                 {editingItem ? 'Save Changes' : 'Add District'}
               </button>
             </div>

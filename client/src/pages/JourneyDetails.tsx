@@ -21,7 +21,12 @@ import {
   Car,
   BriefcaseMedical,
   Quote,
-  ArrowRight
+  ArrowRight,
+  Tag,
+  Building2,
+  XCircle,
+  Users,
+  ExternalLink,
 } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import PremiumFooter from "../components/tourism/PremiumFooter";
@@ -45,7 +50,15 @@ const JourneyDetails = () => {
   const { journeySubmissions, refreshJourneys } = useContributions();
   const [isLoading, setIsLoading] = useState(true);
   const foundTrip = featuredTrips.find((t) => t.id === id) || journeySubmissions.find((t) => t.id === id);
-  const currentUser = auth.currentUser;
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const isAuthor = currentUser && foundTrip && (foundTrip as any).authorId === currentUser.uid;
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -59,7 +72,7 @@ const JourneyDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FCEBD3] flex items-center justify-center">
+      <div className="min-h-screen bg-brand-gray flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#0F3D2E]/20 border-t-[#0F3D2E] rounded-full animate-spin" />
       </div>
     );
@@ -103,7 +116,15 @@ const JourneyDetails = () => {
             }
           ]
         }
-      ]
+      ],
+    // Extended fields
+    category: (foundTrip as any).category || "",
+    companyName: (foundTrip as any).companyName || foundTrip.provider || "",
+    tripDuration: (foundTrip as any).tripDuration || foundTrip.duration || "",
+    highlights: (foundTrip as any).highlights as string[] | undefined,
+    includedServices: (foundTrip as any).includedServices as string[] | undefined,
+    excludedServices: (foundTrip as any).excludedServices as string[] | undefined,
+    googleMapsLink: (foundTrip as any).googleMapsLink || "",
   };
 
   const relatedTrips = journeySubmissions.filter((t) => t.id !== id).slice(0, 3);
@@ -128,7 +149,7 @@ const JourneyDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FCEBD3] text-[#2A2A2A] selection:bg-[#F4A261] selection:text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-brand-gray text-brand-dark selection:bg-brand-gold selection:text-white font-sans relative overflow-x-hidden">
       <Navbar forceDarkText={true} />
 
       {/* Decorative Texture */}
@@ -139,7 +160,7 @@ const JourneyDetails = () => {
       {/* ========================
           SECTION 1: Premium Hero
           ======================== */}
-      <section className="relative h-[75vh] w-full overflow-hidden flex items-end">
+      <section className="relative min-h-[75vh] pt-32 pb-16 w-full overflow-hidden flex flex-col justify-between">
         {/* Parallax Background */}
         <motion.div style={{ y: heroY }} className="absolute inset-0 z-0 h-[120%] -top-[10%]">
           <img
@@ -147,11 +168,11 @@ const JourneyDetails = () => {
             alt={currentTrip.title}
             className="w-full h-full object-cover select-none"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E] via-[#0F3D2E]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/50 to-transparent" />
         </motion.div>
 
         {/* Back & Action Buttons */}
-        <div className="absolute top-28 left-6 md:left-12 z-20 flex justify-between items-center w-[calc(100%-3rem)] md:w-[calc(100%-6rem)]">
+        <div className="container mx-auto px-6 md:px-12 max-w-[1280px] relative z-20 flex justify-between items-center w-full mb-12">
           <Link
             to="/tourism"
             className="inline-flex items-center gap-2 text-white/80 hover:text-white font-bold uppercase tracking-widest text-xs transition-colors"
@@ -162,7 +183,7 @@ const JourneyDetails = () => {
           {isAuthor && (
             <Link
               to={`/tourism/create-journey?editId=${currentTrip.id}`}
-              className="inline-flex items-center gap-2 bg-[#F4A261] hover:bg-[#E5914F] text-black font-semibold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-lg hover:scale-105 font-sans"
+              className="inline-flex items-center gap-2 bg-brand-gold hover:bg-yellow-600 text-black font-semibold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-lg hover:scale-105 font-sans"
             >
               Edit Experience
             </Link>
@@ -170,29 +191,65 @@ const JourneyDetails = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="container mx-auto px-6 md:px-12 max-w-[1280px] relative z-10 pb-16 w-full flex flex-col lg:flex-row lg:items-end justify-between gap-12">
+        <div className="container mx-auto px-6 md:px-12 max-w-[1280px] relative z-10 w-full flex flex-col lg:flex-row lg:items-end justify-between gap-12 mt-auto">
           {/* Left Side */}
-          <div className="flex-1 space-y-6">
+          <div className="flex-1 space-y-4">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <span className="text-[#F4A261] text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">
-                Luxury Experience
-              </span>
+              {/* Category + Company row */}
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
+                {currentTrip.category && (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-brand-gold/20 border border-[#F4A261]/40 text-brand-gold px-3 py-1.5 rounded-full backdrop-blur-sm">
+                    <Tag className="w-3 h-3" />{currentTrip.category}
+                  </span>
+                )}
+                {currentTrip.companyName && currentTrip.companyName !== 'Community Contributor' && (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white/60 uppercase tracking-widest">
+                    <Building2 className="w-3 h-3 text-brand-gold" />{currentTrip.companyName}
+                  </span>
+                )}
+              </div>
+
               <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl text-white leading-tight mb-6">
                 {currentTrip.title}
               </h1>
-              <p className="text-white/80 text-lg md:text-xl font-light max-w-2xl leading-relaxed">
+
+              <p className="text-white/80 text-lg md:text-xl font-light max-w-2xl leading-relaxed mb-6">
                 {currentTrip.overviewText.slice(0, 150)}...
               </p>
+
+              {/* Stats row */}
+              <div className="flex items-center gap-6 flex-wrap">
+                {currentTrip.tripDuration && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <Clock className="w-4 h-4 text-brand-gold" />
+                    <span>{currentTrip.tripDuration}</span>
+                  </div>
+                )}
+                {currentTrip.departureCity && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <MapPin className="w-4 h-4 text-brand-gold" />
+                    <span>{currentTrip.departureCity}</span>
+                  </div>
+                )}
+                {currentTrip.bestTime && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <Star className="w-4 h-4 text-brand-gold" />
+                    <span>Best: {currentTrip.bestTime}</span>
+                  </div>
+                )}
+                {currentTrip.groupSize && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <Users className="w-4 h-4 text-brand-gold" />
+                    <span>{currentTrip.groupSize}</span>
+                  </div>
+                )}
+              </div>
             </motion.div>
-
-            {/* Stats Row Removed */}
           </div>
-
-          {/* Right Side Glass Card Removed */}
         </div>
       </section>
 
@@ -210,13 +267,13 @@ const JourneyDetails = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl md:text-5xl font-serif text-[#0F3D2E] mb-8 font-light">
+              <h2 className="text-4xl md:text-5xl font-serif text-brand-dark mb-8 font-light">
                 The Journey
               </h2>
 
-              <blockquote className="relative p-8 bg-white rounded-2xl border border-[#FCEBD3] shadow-sm mb-12">
-                <Quote className="absolute top-6 left-6 w-12 h-12 text-[#F4A261] opacity-20" />
-                <p className="text-2xl font-serif text-[#2A2A2A] leading-relaxed italic relative z-10 pl-6">
+              <blockquote className="relative p-8 bg-white rounded-2xl border border-brand-gold/20 shadow-sm mb-12">
+                <Quote className="absolute top-6 left-6 w-12 h-12 text-brand-gold opacity-20" />
+                <p className="text-2xl font-serif text-brand-dark leading-relaxed italic relative z-10 pl-6">
                   "{currentTrip.quote || "Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends."}"
                 </p>
               </blockquote>
@@ -226,6 +283,88 @@ const JourneyDetails = () => {
                 <p className="mt-6">{currentTrip.description}</p>
               </div>
             </motion.div>
+
+            {/* Journey Highlights */}
+            {currentTrip.highlights && currentTrip.highlights.filter((h: string) => h.trim()).length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7 }}
+              >
+                <h3 className="text-2xl font-serif text-brand-dark mb-6 font-light">Journey Highlights</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {currentTrip.highlights.filter((h: string) => h.trim()).map((h: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-3 bg-white rounded-xl p-4 border border-brand-gold/20 shadow-sm">
+                      <span className="text-brand-gold mt-0.5 shrink-0">✦</span>
+                      <span className="text-[#4A4A4A] text-sm leading-relaxed">{h}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Included & Excluded Services */}
+            {((currentTrip.includedServices && currentTrip.includedServices.filter((s: string) => s.trim()).length > 0) ||
+              (currentTrip.excludedServices && currentTrip.excludedServices.filter((s: string) => s.trim()).length > 0)) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7 }}
+                >
+                  <h3 className="text-2xl font-serif text-brand-dark mb-6 font-light">What's Included</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Included */}
+                    {currentTrip.includedServices && currentTrip.includedServices.filter((s: string) => s.trim()).length > 0 && (
+                      <div className="bg-white rounded-2xl p-6 border border-brand-gold/20 shadow-sm">
+                        <h4 className="text-sm font-bold uppercase tracking-widest text-green-600 mb-4">Included</h4>
+                        <ul className="space-y-2">
+                          {currentTrip.includedServices.filter((s: string) => s.trim()).map((s: string, idx: number) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm text-[#4A4A4A]">
+                              <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                              {s}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {/* Excluded */}
+                    {currentTrip.excludedServices && currentTrip.excludedServices.filter((s: string) => s.trim()).length > 0 && (
+                      <div className="bg-white rounded-2xl p-6 border border-brand-gold/20 shadow-sm">
+                        <h4 className="text-sm font-bold uppercase tracking-widest text-red-500 mb-4">Not Included</h4>
+                        <ul className="space-y-2">
+                          {currentTrip.excludedServices.filter((s: string) => s.trim()).map((s: string, idx: number) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm text-[#4A4A4A]">
+                              <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                              {s}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+            {/* Google Maps */}
+            {currentTrip.googleMapsLink && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7 }}
+              >
+                <a
+                  href={currentTrip.googleMapsLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 bg-brand-dark text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-brand-gold transition-colors duration-300"
+                >
+                  <ExternalLink className="w-4 h-4" /> View on Google Maps
+                </a>
+              </motion.div>
+            )}
           </div>
 
           {/* Right Column (35%) Sticky Guide Card */}
@@ -234,31 +373,31 @@ const JourneyDetails = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl p-8 border border-[#FCEBD3] shadow-xl shadow-black/5"
+              className="bg-white rounded-2xl p-8 border border-brand-gold/20 shadow-xl shadow-black/5"
             >
               <div className="flex flex-col items-center text-center mb-8">
                 <div className="relative mb-6">
                   <img
                     src={currentTrip.guide.image}
                     alt={currentTrip.guide.name}
-                    className="w-32 h-32 rounded-full object-cover border-4 border-[#FCEBD3]"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-brand-gold/20"
                   />
-                  <div className="absolute bottom-0 right-0 bg-[#F4A261] text-white p-2 rounded-full border-2 border-white">
+                  <div className="absolute bottom-0 right-0 bg-brand-gold text-white p-2 rounded-full border-2 border-white">
                     <CheckCircle className="w-4 h-4" />
                   </div>
                 </div>
-                <span className="text-[#F4A261] text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Verified Expert</span>
-                <h3 className="text-2xl font-serif text-[#0F3D2E] mb-1">{currentTrip.guide.name}</h3>
+                <span className="text-brand-gold text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Verified Expert</span>
+                <h3 className="text-2xl font-serif text-brand-dark mb-1">{currentTrip.guide.name}</h3>
                 <p className="text-[#6A6A6A] text-sm">{currentTrip.guide.experience} Experience</p>
               </div>
 
               <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-4 text-sm text-[#4A4A4A] pb-4 border-b border-[#FCEBD3]">
-                  <Globe className="w-5 h-5 text-[#F4A261]" />
+                <div className="flex items-center gap-4 text-sm text-[#4A4A4A] pb-4 border-b border-brand-gold/20">
+                  <Globe className="w-5 h-5 text-brand-gold" />
                   <span>Speaks: {currentTrip.guide.languages.join(", ")}</span>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-[#4A4A4A] pb-4 border-b border-[#FCEBD3]">
-                  <Star className="w-5 h-5 text-[#F4A261] fill-[#F4A261]" />
+                <div className="flex items-center gap-4 text-sm text-[#4A4A4A] pb-4 border-b border-brand-gold/20">
+                  <Star className="w-5 h-5 text-brand-gold fill-brand-gold" />
                   <span>{currentTrip.rating} / 5 ({currentTrip.reviews.length} reviews)</span>
                 </div>
               </div>
@@ -266,7 +405,7 @@ const JourneyDetails = () => {
               <div className="flex flex-col gap-3">
                 <a
                   href={`tel:${currentTrip.guide.phone}`}
-                  className="w-full h-14 bg-[#0F3D2E] text-white rounded-full flex items-center justify-center gap-3 font-bold text-xs uppercase tracking-widest hover:bg-[#F4A261] transition-colors duration-300"
+                  className="w-full h-14 bg-brand-dark text-white rounded-full flex items-center justify-center gap-3 font-bold text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors duration-300"
                 >
                   <Phone className="w-4 h-4" />
                   Call Guide
@@ -293,8 +432,8 @@ const JourneyDetails = () => {
       <section className="py-[120px] container mx-auto px-6 md:px-12 max-w-[1280px]">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
-            <span className="text-[#F4A261] text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Visual Artifacts</span>
-            <h2 className="text-4xl md:text-5xl font-serif text-[#0F3D2E] font-light">Immersive Gallery</h2>
+            <span className="text-brand-gold text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Visual Artifacts</span>
+            <h2 className="text-4xl md:text-5xl font-serif text-brand-dark font-light">Immersive Gallery</h2>
           </div>
         </div>
 
@@ -318,7 +457,7 @@ const JourneyDetails = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
 
               <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <span className="text-[#F4A261] text-[10px] font-bold uppercase tracking-widest mb-2 block">
+                <span className="text-brand-gold text-[10px] font-bold uppercase tracking-widest mb-2 block">
                   {mem.category}
                 </span>
                 <h3 className="text-white font-serif text-2xl">
@@ -340,8 +479,8 @@ const JourneyDetails = () => {
       <section className="py-[120px] bg-white relative">
         <div className="container mx-auto px-6 md:px-12 max-w-[1000px] relative z-10">
           <div className="text-center mb-16">
-            <span className="text-[#F4A261] text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Itinerary</span>
-            <h2 className="text-4xl md:text-5xl font-serif text-[#0F3D2E] font-light">Journey Details</h2>
+            <span className="text-brand-gold text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Itinerary</span>
+            <h2 className="text-4xl md:text-5xl font-serif text-brand-dark font-light">Journey Details</h2>
           </div>
 
           <div className="space-y-12">
@@ -352,10 +491,10 @@ const JourneyDetails = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="bg-[#FCEBD3] rounded-2xl p-8 md:p-10 shadow-sm border border-[#FCEBD3]"
+                className="bg-brand-gray rounded-2xl p-8 md:p-10 shadow-sm border border-brand-gold/20"
               >
-                <h3 className="text-2xl font-serif text-[#0F3D2E] mb-8 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 border-b border-[#FCEBD3] pb-6">
-                  <span className="text-[#F4A261] font-bold text-sm tracking-widest uppercase bg-white px-4 py-2 rounded-full shadow-sm">
+                <h3 className="text-2xl font-serif text-brand-dark mb-8 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 border-b border-brand-gold/20 pb-6">
+                  <span className="text-brand-gold font-bold text-sm tracking-widest uppercase bg-white px-4 py-2 rounded-full shadow-sm">
                     Day {day.day}
                   </span>
                   <span>{day.title}</span>
@@ -372,7 +511,7 @@ const JourneyDetails = () => {
                         </div>
                       )}
                       <div>
-                        <h4 className="text-lg font-serif text-[#0F3D2E] mb-2">{act.activity}</h4>
+                        <h4 className="text-lg font-serif text-brand-dark mb-2">{act.activity}</h4>
                         <p className="text-[#4A4A4A] leading-relaxed text-sm">
                           {act.description}
                         </p>
@@ -397,8 +536,8 @@ const JourneyDetails = () => {
         <div className="container mx-auto px-6 md:px-12 max-w-[1280px]">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
-              <span className="text-[#F4A261] text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Continue Exploring</span>
-              <h2 className="text-4xl md:text-5xl font-serif text-[#0F3D2E] font-light">Related Experiences</h2>
+              <span className="text-brand-gold text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Continue Exploring</span>
+              <h2 className="text-4xl md:text-5xl font-serif text-brand-dark font-light">Related Experiences</h2>
             </div>
           </div>
 
@@ -419,7 +558,7 @@ const JourneyDetails = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#0F3D2E]/95 z-[9999] flex items-center justify-center p-4 backdrop-blur-xl"
+            className="fixed inset-0 bg-brand-dark/95 z-[9999] flex items-center justify-center p-4 backdrop-blur-xl"
           >
             <button onClick={() => setLightboxIndex(null)} className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/20 z-[100] transition-colors">
               <X className="w-5 h-5" />

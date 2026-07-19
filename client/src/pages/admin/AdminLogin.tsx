@@ -36,15 +36,15 @@ const AdminLogin = () => {
     <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 relative overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#F4A261]/5 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#F4A261]/3 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#EAB308]/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#EAB308]/3 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(212,160,23,0.03) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       </div>
 
       <div className={`relative w-full max-w-md transition-all duration-700 ${isUnlocking ? 'scale-95 opacity-0 translate-y-8' : ''}`}>
         {/* Logo / Shield */}
         <div className="flex flex-col items-center mb-8">
-          <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-[#F4A261] to-[#F4A261] flex items-center justify-center shadow-2xl shadow-[#F4A261]/20 transition-all duration-500 ${isUnlocking ? 'rotate-[360deg] scale-0' : ''}`}>
+          <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-[#EAB308] to-[#EAB308] flex items-center justify-center shadow-2xl shadow-[#EAB308]/20 transition-all duration-500 ${isUnlocking ? 'rotate-[360deg] scale-0' : ''}`}>
             <Shield size={36} className="text-black" />
           </div>
           <h1 className="font-display font-bold text-white text-2xl font-bold mt-6 tracking-tight">Admin Panel</h1>
@@ -79,7 +79,7 @@ const AdminLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter admin password"
-              className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-11 pr-12 py-3.5 text-white placeholder-white/20 focus:outline-none focus:border-[#F4A261]/50 focus:ring-1 focus:ring-[#F4A261]/20 transition-all text-sm"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-11 pr-12 py-3.5 text-white placeholder-white/20 focus:outline-none focus:border-[#EAB308]/50 focus:ring-1 focus:ring-[#EAB308]/20 transition-all text-sm"
               required
             />
             <button
@@ -99,7 +99,7 @@ const AdminLogin = () => {
 
           <button
             type="submit"
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#F4A261] to-[#F4A261] text-black font-bold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#F4A261]/20 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#EAB308] to-[#EAB308] text-black font-bold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#EAB308]/20 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
           >
             Unlock Dashboard
           </button>
