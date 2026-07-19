@@ -147,13 +147,19 @@ model TopAttraction {
 // ----------------------------------------
 
 model DiscoverItem {
-  id          String           @id @default(uuid())
-  title       String
-  category    DiscoverCategory
-  image       String
-  description String
-  featured    Boolean          @default(false)
-  author      String?          @default("Admin")
+  id              String           @id @default(uuid())
+  title           String
+  category        DiscoverCategory
+  image           String
+  description     String
+  featured        Boolean          @default(false)
+  author          String?          @default("Admin")
+  district        String           @default("Bihar")
+  status          ApprovalStatus   @default(PENDING)
+  longDescription String?          @db.Text
+  videoUrl        String?
+  galleryImages   String[]         @default([])
+  extendedDetails String[]         @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -177,14 +183,15 @@ model Tribe {
 }
 
 model Personality {
-  id          String  @id @default(uuid())
+  id          String         @id @default(uuid())
   name        String
   category    String
   district    String
   description String
   imageUrl    String
   fullBio     String?
-  author      String? @default("Admin")
+  author      String?        @default("Admin")
+  status      ApprovalStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

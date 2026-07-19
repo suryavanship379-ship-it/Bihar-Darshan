@@ -8,8 +8,9 @@ import { DiscoverCategory } from '../../db';
 
 export const getAllDiscoverItems = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const category = req.query.category as string;
+  const status = req.query.status as string;
   let parsedCategory: DiscoverCategory | undefined;
-  
+
   if (category) {
     const parsed = discoverCategoryEnum.safeParse(category.toUpperCase());
     if (!parsed.success) {
@@ -18,7 +19,7 @@ export const getAllDiscoverItems = catchAsync(async (req: Request, res: Response
     parsedCategory = parsed.data as DiscoverCategory;
   }
 
-  const items = await discoverService.getAllDiscoverItems(parsedCategory);
+  const items = await discoverService.getAllDiscoverItems(parsedCategory, status);
   sendSuccess(res, 200, 'Discover items fetched successfully', { items });
 });
 
@@ -37,6 +38,16 @@ export const updateDiscoverItem = catchAsync(async (req: Request, res: Response,
   const validatedData = updateDiscoverSchema.parse(req.body);
   const item = await discoverService.updateDiscoverItem(req.params.id as string, validatedData);
   sendSuccess(res, 200, 'Item updated successfully', { item });
+});
+
+export const approveDiscoverItem = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const item = await discoverService.approveDiscoverItem(req.params.id as string);
+  sendSuccess(res, 200, 'Item approved successfully', { item });
+});
+
+export const rejectDiscoverItem = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const item = await discoverService.rejectDiscoverItem(req.params.id as string);
+  sendSuccess(res, 200, 'Item rejected successfully', { item });
 });
 
 export const deleteDiscoverItem = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

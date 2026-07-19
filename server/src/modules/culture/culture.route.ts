@@ -14,6 +14,9 @@ router.get('/personalities/:id', cultureController.getPersonalityById);
 router.get('/articles', cultureController.getAllArticles);
 router.get('/articles/:id', cultureController.getArticleById);
 
+// Authenticated routes (for user submissions)
+router.post('/personalities', authenticate, cultureController.createPersonality);
+
 // Admin routes
 router.use(authenticate, restrictTo('ADMIN'));
 
@@ -21,7 +24,8 @@ router.post('/tribes', cultureController.createTribe);
 router.patch('/tribes/:id', cultureController.updateTribe);
 router.delete('/tribes/:id', cultureController.deleteTribe);
 
-router.post('/personalities', cultureController.createPersonality);
+router.patch('/personalities/:id/approve', cultureController.approvePersonality);
+router.patch('/personalities/:id/reject', cultureController.rejectPersonality);
 router.patch('/personalities/:id', cultureController.updatePersonality);
 router.delete('/personalities/:id', cultureController.deletePersonality);
 

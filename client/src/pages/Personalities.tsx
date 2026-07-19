@@ -16,13 +16,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 export interface Personality {
-  id: number;
+  id: number | string;
   name: string;
   category: 'Politician' | 'Arts & Cinema' | 'Historical' | 'Literature' | 'Sports';
   district: string;
   description: string;
   imageUrl: string;
   fullBio?: string;
+  status?: string;
 }
 
 export const personalities: Personality[] = [
@@ -152,6 +153,9 @@ export default function Personalities() {
 
   const filteredData = useMemo(() => {
     return allPersonalities.filter((p) => {
+      const isApproved = p.status === 'APPROVED';
+      if (!isApproved) return false;
+
       const matchSearch =
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.description.toLowerCase().includes(searchTerm.toLowerCase());

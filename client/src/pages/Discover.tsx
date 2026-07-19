@@ -34,6 +34,7 @@ interface DiscoverItem {
   caption?: string;
   videoUrl?: string;
   personalityCategory?: string;
+  status?: string;
 }
 
 const Discover = () => {
@@ -91,7 +92,8 @@ const Discover = () => {
     extendedDetails: item.extendedDetails,
     submittedBy: item.submittedBy,
     caption: item.caption,
-    videoUrl: item.videoUrl
+    videoUrl: item.videoUrl,
+    status: (item as any).status
   }));
 
   const unifiedPersonalities: DiscoverItem[] = personalities.map(item => ({
@@ -101,7 +103,8 @@ const Discover = () => {
     image: item.imageUrl,
     title: item.name,
     description: item.description,
-    personalityCategory: item.category
+    personalityCategory: item.category,
+    status: (item as any).status
   }));
 
   const allDiscoverItems = [...unifiedCulture, ...unifiedPersonalities];
@@ -111,6 +114,7 @@ const Discover = () => {
   const categories = ["All", "Food", "Festivals", "Personalities"];
 
   const filteredData = allDiscoverItems.filter(item => {
+    const isApproved = item.status === 'APPROVED';
     const matchCategory =
       activeCategory === "All" ||
       (activeCategory === "Food" && item.type === "Food") ||
@@ -118,7 +122,7 @@ const Discover = () => {
       (activeCategory === "Personalities" && item.type === "Personality");
 
     const matchDistrict = activeDistrict === "All Districts" || item.district.toLowerCase() === activeDistrict.toLowerCase();
-    return matchCategory && matchDistrict;
+    return isApproved && matchCategory && matchDistrict;
   });
 
   return (
@@ -292,12 +296,6 @@ const Discover = () => {
                       {item.type === "Personality" ? item.personalityCategory : item.type}
                     </div>
 
-                    {/* Community Tag */}
-                    {item.submittedBy && (
-                      <div className="absolute top-3 right-3 bg-brand-dark/80 backdrop-blur-sm border border-brand-gold/30 text-brand-gold px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md z-25">
-                        <Sparkles size={10} /> Community
-                      </div>
-                    )}
 
                     {/* Content */}
                     <div className="absolute inset-0 flex flex-col justify-end p-5 z-20">
@@ -331,7 +329,7 @@ const Discover = () => {
 
                           {/* Action link indicator */}
                           <div className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-brand-gold group/btn">
-                            Learn More 
+                            Learn More
                             <span className="transform transition-transform group-hover/btn:translate-x-1">→</span>
                           </div>
                         </div>

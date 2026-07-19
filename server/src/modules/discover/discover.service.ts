@@ -3,9 +3,22 @@ import { CreateDiscoverInput, UpdateDiscoverInput } from './discover.validation'
 import { AppError } from '../../errors/AppError';
 import { DiscoverCategory } from '../../db';
 
-export const getAllDiscoverItems = async (category?: DiscoverCategory) => {
+export const getAllDiscoverItems = async (category?: DiscoverCategory, status?: string) => {
+  const whereClause: any = {};
+  if (category) {
+    whereClause.category = category;
+  }
+  if (status) {
+    const upperStatus = status.toUpperCase();
+    if (upperStatus !== 'ALL') {
+      whereClause.status = upperStatus;
+    }
+  } else {
+    whereClause.status = 'APPROVED';
+  }
+
   return db.discoverItem.findMany({
-    where: category ? { category } : undefined,
+    where: whereClause,
     orderBy: { createdAt: 'desc' },
   });
 };
@@ -31,6 +44,22 @@ export const updateDiscoverItem = async (id: string, data: UpdateDiscoverInput) 
   return db.discoverItem.update({
     where: { id },
     data,
+  });
+};
+
+export const approveDiscoverItem = async (id: string) => {
+  await getDiscoverItemById(id);
+  return db.discoverItem.update({
+    where: { id },
+    data: { status: 'APPROVED' },
+  });
+};
+
+export const rejectDiscoverItem = async (id: string) => {
+  await getDiscoverItemById(id);
+  return db.discoverItem.update({
+    where: { id },
+    data: { status: 'REJECTED' },
   });
 };
 

@@ -3,7 +3,7 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
-import { cultureData } from '../data/cultureData';
+import { useAdminData } from '../data/AdminContext';
 import { useContributions } from '../data/ContributionContext';
 import { MapPin, Utensils, PartyPopper } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -15,6 +15,7 @@ import 'swiper/css/pagination';
 const CultureDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { cultureSubmissions } = useContributions();
+  const { culture: cultureData } = useAdminData();
 
   const combinedCulture = [...cultureSubmissions, ...cultureData];
   const cultureItem = combinedCulture.find((item) => item.id.toString() === id);

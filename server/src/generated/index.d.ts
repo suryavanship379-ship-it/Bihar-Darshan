@@ -8566,6 +8566,10 @@ export namespace Prisma {
     description: string | null
     featured: boolean | null
     author: string | null
+    district: string | null
+    status: $Enums.ApprovalStatus | null
+    longDescription: string | null
+    videoUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8578,6 +8582,10 @@ export namespace Prisma {
     description: string | null
     featured: boolean | null
     author: string | null
+    district: string | null
+    status: $Enums.ApprovalStatus | null
+    longDescription: string | null
+    videoUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8590,6 +8598,12 @@ export namespace Prisma {
     description: number
     featured: number
     author: number
+    district: number
+    status: number
+    longDescription: number
+    videoUrl: number
+    galleryImages: number
+    extendedDetails: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -8604,6 +8618,10 @@ export namespace Prisma {
     description?: true
     featured?: true
     author?: true
+    district?: true
+    status?: true
+    longDescription?: true
+    videoUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8616,6 +8634,10 @@ export namespace Prisma {
     description?: true
     featured?: true
     author?: true
+    district?: true
+    status?: true
+    longDescription?: true
+    videoUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8628,6 +8650,12 @@ export namespace Prisma {
     description?: true
     featured?: true
     author?: true
+    district?: true
+    status?: true
+    longDescription?: true
+    videoUrl?: true
+    galleryImages?: true
+    extendedDetails?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -8713,6 +8741,12 @@ export namespace Prisma {
     description: string
     featured: boolean
     author: string | null
+    district: string
+    status: $Enums.ApprovalStatus
+    longDescription: string | null
+    videoUrl: string | null
+    galleryImages: string[]
+    extendedDetails: string[]
     createdAt: Date
     updatedAt: Date
     _count: DiscoverItemCountAggregateOutputType | null
@@ -8742,6 +8776,12 @@ export namespace Prisma {
     description?: boolean
     featured?: boolean
     author?: boolean
+    district?: boolean
+    status?: boolean
+    longDescription?: boolean
+    videoUrl?: boolean
+    galleryImages?: boolean
+    extendedDetails?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["discoverItem"]>
@@ -8754,6 +8794,12 @@ export namespace Prisma {
     description?: boolean
     featured?: boolean
     author?: boolean
+    district?: boolean
+    status?: boolean
+    longDescription?: boolean
+    videoUrl?: boolean
+    galleryImages?: boolean
+    extendedDetails?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["discoverItem"]>
@@ -8766,6 +8812,12 @@ export namespace Prisma {
     description?: boolean
     featured?: boolean
     author?: boolean
+    district?: boolean
+    status?: boolean
+    longDescription?: boolean
+    videoUrl?: boolean
+    galleryImages?: boolean
+    extendedDetails?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["discoverItem"]>
@@ -8778,11 +8830,17 @@ export namespace Prisma {
     description?: boolean
     featured?: boolean
     author?: boolean
+    district?: boolean
+    status?: boolean
+    longDescription?: boolean
+    videoUrl?: boolean
+    galleryImages?: boolean
+    extendedDetails?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type DiscoverItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "image" | "description" | "featured" | "author" | "createdAt" | "updatedAt", ExtArgs["result"]["discoverItem"]>
+  export type DiscoverItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "image" | "description" | "featured" | "author" | "district" | "status" | "longDescription" | "videoUrl" | "galleryImages" | "extendedDetails" | "createdAt" | "updatedAt", ExtArgs["result"]["discoverItem"]>
 
   export type $DiscoverItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "DiscoverItem"
@@ -8795,6 +8853,12 @@ export namespace Prisma {
       description: string
       featured: boolean
       author: string | null
+      district: string
+      status: $Enums.ApprovalStatus
+      longDescription: string | null
+      videoUrl: string | null
+      galleryImages: string[]
+      extendedDetails: string[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["discoverItem"]>
@@ -9227,6 +9291,12 @@ export namespace Prisma {
     readonly description: FieldRef<"DiscoverItem", 'String'>
     readonly featured: FieldRef<"DiscoverItem", 'Boolean'>
     readonly author: FieldRef<"DiscoverItem", 'String'>
+    readonly district: FieldRef<"DiscoverItem", 'String'>
+    readonly status: FieldRef<"DiscoverItem", 'ApprovalStatus'>
+    readonly longDescription: FieldRef<"DiscoverItem", 'String'>
+    readonly videoUrl: FieldRef<"DiscoverItem", 'String'>
+    readonly galleryImages: FieldRef<"DiscoverItem", 'String[]'>
+    readonly extendedDetails: FieldRef<"DiscoverItem", 'String[]'>
     readonly createdAt: FieldRef<"DiscoverItem", 'DateTime'>
     readonly updatedAt: FieldRef<"DiscoverItem", 'DateTime'>
   }
@@ -10719,6 +10789,7 @@ export namespace Prisma {
     imageUrl: string | null
     fullBio: string | null
     author: string | null
+    status: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10732,6 +10803,7 @@ export namespace Prisma {
     imageUrl: string | null
     fullBio: string | null
     author: string | null
+    status: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10745,6 +10817,7 @@ export namespace Prisma {
     imageUrl: number
     fullBio: number
     author: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -10760,6 +10833,7 @@ export namespace Prisma {
     imageUrl?: true
     fullBio?: true
     author?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10773,6 +10847,7 @@ export namespace Prisma {
     imageUrl?: true
     fullBio?: true
     author?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10786,6 +10861,7 @@ export namespace Prisma {
     imageUrl?: true
     fullBio?: true
     author?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10872,6 +10948,7 @@ export namespace Prisma {
     imageUrl: string
     fullBio: string | null
     author: string | null
+    status: $Enums.ApprovalStatus
     createdAt: Date
     updatedAt: Date
     _count: PersonalityCountAggregateOutputType | null
@@ -10902,6 +10979,7 @@ export namespace Prisma {
     imageUrl?: boolean
     fullBio?: boolean
     author?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["personality"]>
@@ -10915,6 +10993,7 @@ export namespace Prisma {
     imageUrl?: boolean
     fullBio?: boolean
     author?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["personality"]>
@@ -10928,6 +11007,7 @@ export namespace Prisma {
     imageUrl?: boolean
     fullBio?: boolean
     author?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["personality"]>
@@ -10941,11 +11021,12 @@ export namespace Prisma {
     imageUrl?: boolean
     fullBio?: boolean
     author?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PersonalityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "category" | "district" | "description" | "imageUrl" | "fullBio" | "author" | "createdAt" | "updatedAt", ExtArgs["result"]["personality"]>
+  export type PersonalityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "category" | "district" | "description" | "imageUrl" | "fullBio" | "author" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["personality"]>
 
   export type $PersonalityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Personality"
@@ -10959,6 +11040,7 @@ export namespace Prisma {
       imageUrl: string
       fullBio: string | null
       author: string | null
+      status: $Enums.ApprovalStatus
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["personality"]>
@@ -11392,6 +11474,7 @@ export namespace Prisma {
     readonly imageUrl: FieldRef<"Personality", 'String'>
     readonly fullBio: FieldRef<"Personality", 'String'>
     readonly author: FieldRef<"Personality", 'String'>
+    readonly status: FieldRef<"Personality", 'ApprovalStatus'>
     readonly createdAt: FieldRef<"Personality", 'DateTime'>
     readonly updatedAt: FieldRef<"Personality", 'DateTime'>
   }
@@ -22817,6 +22900,12 @@ export namespace Prisma {
     description: 'description',
     featured: 'featured',
     author: 'author',
+    district: 'district',
+    status: 'status',
+    longDescription: 'longDescription',
+    videoUrl: 'videoUrl',
+    galleryImages: 'galleryImages',
+    extendedDetails: 'extendedDetails',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -22852,6 +22941,7 @@ export namespace Prisma {
     imageUrl: 'imageUrl',
     fullBio: 'fullBio',
     author: 'author',
+    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -23203,20 +23293,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'QueryMode'
-   */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
    * Reference to a field of type 'ApprovalStatus'
    */
   export type EnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus'>
@@ -23227,6 +23303,20 @@ export namespace Prisma {
    * Reference to a field of type 'ApprovalStatus[]'
    */
   export type ListEnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -23692,6 +23782,12 @@ export namespace Prisma {
     description?: StringFilter<"DiscoverItem"> | string
     featured?: BoolFilter<"DiscoverItem"> | boolean
     author?: StringNullableFilter<"DiscoverItem"> | string | null
+    district?: StringFilter<"DiscoverItem"> | string
+    status?: EnumApprovalStatusFilter<"DiscoverItem"> | $Enums.ApprovalStatus
+    longDescription?: StringNullableFilter<"DiscoverItem"> | string | null
+    videoUrl?: StringNullableFilter<"DiscoverItem"> | string | null
+    galleryImages?: StringNullableListFilter<"DiscoverItem">
+    extendedDetails?: StringNullableListFilter<"DiscoverItem">
     createdAt?: DateTimeFilter<"DiscoverItem"> | Date | string
     updatedAt?: DateTimeFilter<"DiscoverItem"> | Date | string
   }
@@ -23704,6 +23800,12 @@ export namespace Prisma {
     description?: SortOrder
     featured?: SortOrder
     author?: SortOrderInput | SortOrder
+    district?: SortOrder
+    status?: SortOrder
+    longDescription?: SortOrderInput | SortOrder
+    videoUrl?: SortOrderInput | SortOrder
+    galleryImages?: SortOrder
+    extendedDetails?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -23719,6 +23821,12 @@ export namespace Prisma {
     description?: StringFilter<"DiscoverItem"> | string
     featured?: BoolFilter<"DiscoverItem"> | boolean
     author?: StringNullableFilter<"DiscoverItem"> | string | null
+    district?: StringFilter<"DiscoverItem"> | string
+    status?: EnumApprovalStatusFilter<"DiscoverItem"> | $Enums.ApprovalStatus
+    longDescription?: StringNullableFilter<"DiscoverItem"> | string | null
+    videoUrl?: StringNullableFilter<"DiscoverItem"> | string | null
+    galleryImages?: StringNullableListFilter<"DiscoverItem">
+    extendedDetails?: StringNullableListFilter<"DiscoverItem">
     createdAt?: DateTimeFilter<"DiscoverItem"> | Date | string
     updatedAt?: DateTimeFilter<"DiscoverItem"> | Date | string
   }, "id">
@@ -23731,6 +23839,12 @@ export namespace Prisma {
     description?: SortOrder
     featured?: SortOrder
     author?: SortOrderInput | SortOrder
+    district?: SortOrder
+    status?: SortOrder
+    longDescription?: SortOrderInput | SortOrder
+    videoUrl?: SortOrderInput | SortOrder
+    galleryImages?: SortOrder
+    extendedDetails?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DiscoverItemCountOrderByAggregateInput
@@ -23749,6 +23863,12 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"DiscoverItem"> | string
     featured?: BoolWithAggregatesFilter<"DiscoverItem"> | boolean
     author?: StringNullableWithAggregatesFilter<"DiscoverItem"> | string | null
+    district?: StringWithAggregatesFilter<"DiscoverItem"> | string
+    status?: EnumApprovalStatusWithAggregatesFilter<"DiscoverItem"> | $Enums.ApprovalStatus
+    longDescription?: StringNullableWithAggregatesFilter<"DiscoverItem"> | string | null
+    videoUrl?: StringNullableWithAggregatesFilter<"DiscoverItem"> | string | null
+    galleryImages?: StringNullableListFilter<"DiscoverItem">
+    extendedDetails?: StringNullableListFilter<"DiscoverItem">
     createdAt?: DateTimeWithAggregatesFilter<"DiscoverItem"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"DiscoverItem"> | Date | string
   }
@@ -23857,6 +23977,7 @@ export namespace Prisma {
     imageUrl?: StringFilter<"Personality"> | string
     fullBio?: StringNullableFilter<"Personality"> | string | null
     author?: StringNullableFilter<"Personality"> | string | null
+    status?: EnumApprovalStatusFilter<"Personality"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Personality"> | Date | string
     updatedAt?: DateTimeFilter<"Personality"> | Date | string
   }
@@ -23870,6 +23991,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     fullBio?: SortOrderInput | SortOrder
     author?: SortOrderInput | SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -23886,6 +24008,7 @@ export namespace Prisma {
     imageUrl?: StringFilter<"Personality"> | string
     fullBio?: StringNullableFilter<"Personality"> | string | null
     author?: StringNullableFilter<"Personality"> | string | null
+    status?: EnumApprovalStatusFilter<"Personality"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Personality"> | Date | string
     updatedAt?: DateTimeFilter<"Personality"> | Date | string
   }, "id">
@@ -23899,6 +24022,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     fullBio?: SortOrderInput | SortOrder
     author?: SortOrderInput | SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PersonalityCountOrderByAggregateInput
@@ -23918,6 +24042,7 @@ export namespace Prisma {
     imageUrl?: StringWithAggregatesFilter<"Personality"> | string
     fullBio?: StringNullableWithAggregatesFilter<"Personality"> | string | null
     author?: StringNullableWithAggregatesFilter<"Personality"> | string | null
+    status?: EnumApprovalStatusWithAggregatesFilter<"Personality"> | $Enums.ApprovalStatus
     createdAt?: DateTimeWithAggregatesFilter<"Personality"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Personality"> | Date | string
   }
@@ -25399,6 +25524,12 @@ export namespace Prisma {
     description: string
     featured?: boolean
     author?: string | null
+    district?: string
+    status?: $Enums.ApprovalStatus
+    longDescription?: string | null
+    videoUrl?: string | null
+    galleryImages?: DiscoverItemCreategalleryImagesInput | string[]
+    extendedDetails?: DiscoverItemCreateextendedDetailsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25411,6 +25542,12 @@ export namespace Prisma {
     description: string
     featured?: boolean
     author?: string | null
+    district?: string
+    status?: $Enums.ApprovalStatus
+    longDescription?: string | null
+    videoUrl?: string | null
+    galleryImages?: DiscoverItemCreategalleryImagesInput | string[]
+    extendedDetails?: DiscoverItemCreateextendedDetailsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25423,6 +25560,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     featured?: BoolFieldUpdateOperationsInput | boolean
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    longDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: DiscoverItemUpdategalleryImagesInput | string[]
+    extendedDetails?: DiscoverItemUpdateextendedDetailsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25435,6 +25578,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     featured?: BoolFieldUpdateOperationsInput | boolean
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    longDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: DiscoverItemUpdategalleryImagesInput | string[]
+    extendedDetails?: DiscoverItemUpdateextendedDetailsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25447,6 +25596,12 @@ export namespace Prisma {
     description: string
     featured?: boolean
     author?: string | null
+    district?: string
+    status?: $Enums.ApprovalStatus
+    longDescription?: string | null
+    videoUrl?: string | null
+    galleryImages?: DiscoverItemCreategalleryImagesInput | string[]
+    extendedDetails?: DiscoverItemCreateextendedDetailsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25459,6 +25614,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     featured?: BoolFieldUpdateOperationsInput | boolean
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    longDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: DiscoverItemUpdategalleryImagesInput | string[]
+    extendedDetails?: DiscoverItemUpdateextendedDetailsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25471,6 +25632,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     featured?: BoolFieldUpdateOperationsInput | boolean
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    longDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: DiscoverItemUpdategalleryImagesInput | string[]
+    extendedDetails?: DiscoverItemUpdateextendedDetailsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25596,6 +25763,7 @@ export namespace Prisma {
     imageUrl: string
     fullBio?: string | null
     author?: string | null
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25609,6 +25777,7 @@ export namespace Prisma {
     imageUrl: string
     fullBio?: string | null
     author?: string | null
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25622,6 +25791,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     fullBio?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25635,6 +25805,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     fullBio?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25648,6 +25819,7 @@ export namespace Prisma {
     imageUrl: string
     fullBio?: string | null
     author?: string | null
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25661,6 +25833,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     fullBio?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25674,6 +25847,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     fullBio?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27359,6 +27533,13 @@ export namespace Prisma {
     not?: NestedEnumDiscoverCategoryFilter<$PrismaModel> | $Enums.DiscoverCategory
   }
 
+  export type EnumApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
+  }
+
   export type DiscoverItemCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -27367,6 +27548,12 @@ export namespace Prisma {
     description?: SortOrder
     featured?: SortOrder
     author?: SortOrder
+    district?: SortOrder
+    status?: SortOrder
+    longDescription?: SortOrder
+    videoUrl?: SortOrder
+    galleryImages?: SortOrder
+    extendedDetails?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27379,6 +27566,10 @@ export namespace Prisma {
     description?: SortOrder
     featured?: SortOrder
     author?: SortOrder
+    district?: SortOrder
+    status?: SortOrder
+    longDescription?: SortOrder
+    videoUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27391,6 +27582,10 @@ export namespace Prisma {
     description?: SortOrder
     featured?: SortOrder
     author?: SortOrder
+    district?: SortOrder
+    status?: SortOrder
+    longDescription?: SortOrder
+    videoUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27403,6 +27598,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDiscoverCategoryFilter<$PrismaModel>
     _max?: NestedEnumDiscoverCategoryFilter<$PrismaModel>
+  }
+
+  export type EnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
   }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -27509,6 +27714,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     fullBio?: SortOrder
     author?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27522,6 +27728,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     fullBio?: SortOrder
     author?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27535,6 +27742,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     fullBio?: SortOrder
     author?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27618,13 +27826,6 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
-  export type EnumApprovalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
-  }
-
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
@@ -27696,16 +27897,6 @@ export namespace Prisma {
   export type CommunitySumOrderByAggregateInput = {
     postsCount?: SortOrder
     membersCount?: SortOrder
-  }
-
-  export type EnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
-    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
   }
 
   export type EnumCommunityRoleFilter<$PrismaModel = never> = {
@@ -28640,8 +28831,30 @@ export namespace Prisma {
     update?: XOR<XOR<DistrictUpdateToOneWithWhereWithoutTopAttractionsInput, DistrictUpdateWithoutTopAttractionsInput>, DistrictUncheckedUpdateWithoutTopAttractionsInput>
   }
 
+  export type DiscoverItemCreategalleryImagesInput = {
+    set: string[]
+  }
+
+  export type DiscoverItemCreateextendedDetailsInput = {
+    set: string[]
+  }
+
   export type EnumDiscoverCategoryFieldUpdateOperationsInput = {
     set?: $Enums.DiscoverCategory
+  }
+
+  export type EnumApprovalStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ApprovalStatus
+  }
+
+  export type DiscoverItemUpdategalleryImagesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type DiscoverItemUpdateextendedDetailsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type TribalArticleCreateimagesInput = {
@@ -28711,10 +28924,6 @@ export namespace Prisma {
   export type CommunityUpdaterulesInput = {
     set?: string[]
     push?: string | string[]
-  }
-
-  export type EnumApprovalStatusFieldUpdateOperationsInput = {
-    set?: $Enums.ApprovalStatus
   }
 
   export type UserUpdateOneWithoutCommunitiesCreatedNestedInput = {
@@ -29283,6 +29492,13 @@ export namespace Prisma {
     not?: NestedEnumDiscoverCategoryFilter<$PrismaModel> | $Enums.DiscoverCategory
   }
 
+  export type NestedEnumApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
+  }
+
   export type NestedEnumDiscoverCategoryWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.DiscoverCategory | EnumDiscoverCategoryFieldRefInput<$PrismaModel>
     in?: $Enums.DiscoverCategory[] | ListEnumDiscoverCategoryFieldRefInput<$PrismaModel>
@@ -29291,6 +29507,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDiscoverCategoryFilter<$PrismaModel>
     _max?: NestedEnumDiscoverCategoryFilter<$PrismaModel>
+  }
+
+  export type NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -29330,23 +29556,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type NestedEnumApprovalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
-  }
-
-  export type NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
-    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumCommunityRoleFilter<$PrismaModel = never> = {

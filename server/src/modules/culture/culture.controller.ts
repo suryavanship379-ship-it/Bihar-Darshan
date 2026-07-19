@@ -34,7 +34,8 @@ export const deleteTribe = catchAsync(async (req: Request, res: Response, next: 
 
 // Personalities
 export const getAllPersonalities = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const personalities = await cultureService.getAllPersonalities();
+  const status = req.query.status as string;
+  const personalities = await cultureService.getAllPersonalities(status);
   sendSuccess(res, 200, 'Personalities fetched successfully', { personalities });
 });
 
@@ -53,6 +54,16 @@ export const updatePersonality = catchAsync(async (req: Request, res: Response, 
   const data = validation.updatePersonalitySchema.parse(req.body);
   const personality = await cultureService.updatePersonality(req.params.id as string, data);
   sendSuccess(res, 200, 'Personality updated successfully', { personality });
+});
+
+export const approvePersonality = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const personality = await cultureService.approvePersonality(req.params.id as string);
+  sendSuccess(res, 200, 'Personality approved successfully', { personality });
+});
+
+export const rejectPersonality = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const personality = await cultureService.rejectPersonality(req.params.id as string);
+  sendSuccess(res, 200, 'Personality rejected successfully', { personality });
 });
 
 export const deletePersonality = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

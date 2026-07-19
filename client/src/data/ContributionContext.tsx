@@ -4,13 +4,14 @@ import type { GalleryItem } from './galleryData';
 import type { TourTrip } from './tourismData';
 
 export interface PersonalityItem {
-  id: number;
+  id: number | string;
   name: string;
   category: 'Politician' | 'Arts & Cinema' | 'Historical' | 'Literature' | 'Sports';
   district: string;
   description: string;
   imageUrl: string;
   author: string;
+  status?: string;
 }
 
 export interface JourneySubmissionItem extends TourTrip {
@@ -86,7 +87,7 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         const dbJourneys = result.data.journeys.map((j: any) => {
           let description = j.description || j.overviewText || '';
           let image = j.image || "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?q=80&w=2000&auto=format&fit=crop";
-          
+
           let guide = {
             name: j.guideName || "Ramesh Kumar",
             image: j.guideImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=500&auto=format&fit=crop",
@@ -153,14 +154,12 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
   // Load submissions from localStorage on mount
   useEffect(() => {
     try {
-      const storedCulture = localStorage.getItem('bihar_culture_submissions');
-      if (storedCulture) setCultureSubmissions(JSON.parse(storedCulture));
+      // Clear local storage for culture and personality submissions to prevent old/unapproved cached items from displaying
+      localStorage.removeItem('bihar_culture_submissions');
+      localStorage.removeItem('bihar_personality_submissions');
 
       const storedGallery = localStorage.getItem('bihar_gallery_submissions');
       if (storedGallery) setGallerySubmissions(JSON.parse(storedGallery));
-
-      const storedPersonality = localStorage.getItem('bihar_personality_submissions');
-      if (storedPersonality) setPersonalitySubmissions(JSON.parse(storedPersonality));
 
       localStorage.removeItem('bihar_journey_submissions');
       fetchApprovedJourneys();
@@ -188,22 +187,64 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // Save to localStorage when submissions change
-  const addCultureSubmission = useCallback((submission: Omit<CultureItem, 'id' | 'featured'>) => {
-    setCultureSubmissions((prev) => {
-      const newItem: CultureItem = {
-        ...submission,
-        id: Date.now(),
-        featured: false,
+  // Save to localStorage/Backend when submissions change
+  const addCultureSubmission = useCallback(async (submission: Omit<CultureItem, 'id' | 'featured'>) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Must be logged in to submit content");
+
+      const token = await user.getIdToken();
+      const mappedCategory = submission.type === "Food" ? "FOOD" : "FESTIVAL";
+
+      const payload = {
+        title: submission.title,
+        category: mappedCategory,
+        image: submission.image,
+        description: submission.description,
+        longDescription: submission.longDescription || '',
+        videoUrl: submission.videoUrl || '',
+        galleryImages: submission.galleryImages || [],
+        extendedDetails: submission.extendedDetails || [],
+        district: submission.district || 'Bihar',
+        author: user.displayName || user.email || 'User',
+        status: 'PENDING'
       };
-      const updated = [newItem, ...prev];
-      try {
-        localStorage.setItem('bihar_culture_submissions', JSON.stringify(updated));
-      } catch (error) {
-        console.error('Failed to save:', error);
+
+      const response = await fetch('http://localhost:5000/api/v1/discover', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create culture item: ${await response.text()}`);
       }
-      return updated;
-    });
+
+      const result = await response.json();
+      const createdItem: CultureItem = {
+        id: result.data.item.id,
+        title: result.data.item.title,
+        type: result.data.item.category === "FOOD" ? "Food" : "Festival",
+        image: result.data.item.image,
+        description: result.data.item.description,
+        longDescription: result.data.item.longDescription,
+        videoUrl: result.data.item.videoUrl,
+        galleryImages: result.data.item.galleryImages,
+        extendedDetails: result.data.item.extendedDetails,
+        district: result.data.item.district,
+        submittedBy: result.data.item.author,
+        featured: result.data.item.featured,
+        status: result.data.item.status
+      };
+
+      setCultureSubmissions((prev) => [createdItem, ...prev]);
+    } catch (error) {
+      console.error('Failed to submit culture item to backend:', error);
+      throw error;
+    }
   }, []);
 
   const addGallerySubmission = useCallback((submission: Omit<GalleryItem, 'id' | 'likes' | 'views' | 'comments' | 'uploadDate'>) => {
@@ -226,29 +267,63 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  const addPersonalitySubmission = useCallback((submission: Omit<PersonalityItem, 'id'>) => {
-    setPersonalitySubmissions((prev) => {
-      const newItem: PersonalityItem = {
-        ...submission,
-        id: Date.now(),
+  const addPersonalitySubmission = useCallback(async (submission: Omit<PersonalityItem, 'id'>) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Must be logged in to submit a personality");
+
+      const token = await user.getIdToken();
+
+      const payload = {
+        name: submission.name,
+        category: submission.category,
+        district: submission.district,
+        description: submission.description,
+        imageUrl: submission.imageUrl,
+        fullBio: submission.imageUrl, // Or empty string, schema holds string/null
+        author: user.displayName || user.email || 'User',
+        status: 'PENDING'
       };
-      const updated = [newItem, ...prev];
-      try {
-        localStorage.setItem('bihar_personality_submissions', JSON.stringify(updated));
-      } catch (error) {
-        console.error('Failed to save:', error);
+
+      const response = await fetch('http://localhost:5000/api/v1/culture/personalities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create personality: ${await response.text()}`);
       }
-      return updated;
-    });
+
+      const result = await response.json();
+      const createdItem: PersonalityItem = {
+        id: result.data.personality.id,
+        name: result.data.personality.name,
+        category: result.data.personality.category,
+        district: result.data.personality.district,
+        description: result.data.personality.description,
+        imageUrl: result.data.personality.imageUrl,
+        author: result.data.personality.author,
+        status: result.data.personality.status
+      };
+
+      setPersonalitySubmissions((prev) => [createdItem, ...prev]);
+    } catch (error) {
+      console.error('Failed to submit personality to backend:', error);
+      throw error;
+    }
   }, []);
 
   const addJourneySubmission = useCallback(async (submission: any) => {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error("Must be logged in to submit a journey");
-      
+
       const token = await user.getIdToken();
-      
+
       // The API uses 'description' as the main field; if the frontend passes 'desc' or 'overviewText', we'll map it to 'description'.
       // The CreateJourney form passes both. Let's pass the whole payload directly.
       const response = await fetch('http://localhost:5000/api/v1/journeys', {
@@ -259,11 +334,11 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         },
         body: JSON.stringify(submission)
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to create journey: ${await response.text()}`);
       }
-      
+
       const result = await response.json();
       setJourneySubmissions((prev) => [result.data.journey, ...prev]);
 
@@ -277,7 +352,7 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     try {
       const user = auth.currentUser;
       const token = user ? await user.getIdToken() : '';
-      
+
       const response = await fetch(`http://localhost:5000/api/v1/journeys/${id}`, {
         method: 'PUT', // The backend currently expects PUT for author updates
         headers: {
@@ -286,11 +361,11 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         },
         body: JSON.stringify(submission)
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to update journey: ${await response.text()}`);
       }
-      
+
       const result = await response.json();
 
       setJourneySubmissions((prev) => {

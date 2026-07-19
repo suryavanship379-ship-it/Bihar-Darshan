@@ -5,18 +5,20 @@ import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
 import { AdminInput, AdminTextarea, AdminSelect, AdminImagePreview } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
+import { CheckCircle, XCircle, LayoutList, ListChecks } from 'lucide-react';
+import { auth } from '../../lib/firebase';
 
 const emptyForm: Partial<PersonalityItem> = {
-  id: 0,
   name: '',
   category: 'Historical',
   district: '',
   description: '',
   imageUrl: '',
+  fullBio: '',
 };
 
 const AdminPersonalities = () => {
-  const { personalities, updatePersonalities } = useAdminData();
+  const { personalities, refreshPersonalities, districts } = useAdminData();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -24,11 +26,56 @@ const AdminPersonalities = () => {
   const [formData, setFormData] = useState<Partial<PersonalityItem>>(emptyForm);
   const [itemToDelete, setItemToDelete] = useState<PersonalityItem | null>(null);
 
-  const filteredData = personalities.filter(item => 
+  // Sub-view tab control
+  const [subView, setSubView] = useState<'approved' | 'pending'>('approved');
+
+  // Filter items by status
+  const approvedPersonalities = personalities.filter(p => (p as any).status === 'APPROVED' || !(p as any).status);
+  const pendingPersonalities = personalities.filter(p => (p as any).status === 'PENDING');
+
+  const activeDataList = subView === 'approved' ? approvedPersonalities : pendingPersonalities;
+
+  const filteredData = activeDataList.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.district.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleApprove = async (id: string | number) => {
+    try {
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : '';
+      const res = await fetch(`http://localhost:5000/api/v1/culture/personalities/${id}/approve`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        refreshPersonalities();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleReject = async (id: string | number) => {
+    try {
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : '';
+      const res = await fetch(`http://localhost:5000/api/v1/culture/personalities/${id}/reject`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        refreshPersonalities();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleAdd = () => {
     setEditingItem(null);
@@ -47,33 +94,110 @@ const AdminPersonalities = () => {
     setIsDeleteOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (itemToDelete) {
-      updatePersonalities(personalities.filter(p => p.id !== itemToDelete.id));
+      try {
+        const user = auth.currentUser;
+        const token = user ? await user.getIdToken() : '';
+        const res = await fetch(`http://localhost:5000/api/v1/culture/personalities/${itemToDelete.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (res.ok) {
+          refreshPersonalities();
+          setIsDeleteOpen(false);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingItem) {
-      updatePersonalities(personalities.map(p => p.id === editingItem.id ? { ...p, ...formData as PersonalityItem } : p));
-    } else {
-      updatePersonalities([{ ...formData as PersonalityItem, id: Date.now() }, ...personalities]);
+    try {
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : '';
+
+      const payload = {
+        name: formData.name,
+        category: formData.category,
+        district: formData.district || 'Bihar',
+        description: formData.description,
+        imageUrl: formData.imageUrl,
+        fullBio: formData.fullBio || '',
+        author: (formData as any).submittedBy || 'Admin',
+        status: 'APPROVED', // Admin created items are auto-approved
+      };
+
+      let response;
+      if (editingItem) {
+        response = await fetch(`http://localhost:5000/api/v1/culture/personalities/${editingItem.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        response = await fetch('http://localhost:5000/api/v1/culture/personalities', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (response.ok) {
+        refreshPersonalities();
+        setIsModalOpen(false);
+      } else {
+        console.error('Failed to save personality to database:', await response.text());
+      }
+    } catch (err) {
+      console.error(err);
     }
-    setIsModalOpen(false);
   };
 
   return (
     <div className="space-y-6">
+      {/* Sub-view switcher */}
+      <div className="flex gap-4 border-b border-white/10 pb-4">
+        <button
+          onClick={() => setSubView('approved')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition ${subView === 'approved' ? 'bg-[#EAB308] text-black' : 'text-white/60 hover:text-white'
+            }`}
+        >
+          <LayoutList size={18} /> Personalities Database ({approvedPersonalities.length})
+        </button>
+        <button
+          onClick={() => setSubView('pending')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition relative ${subView === 'pending' ? 'bg-[#EAB308] text-black' : 'text-white/60 hover:text-white'
+            }`}
+        >
+          <ListChecks size={18} /> Pending Submissions
+          {pendingPersonalities.length > 0 && (
+            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+              {pendingPersonalities.length}
+            </span>
+          )}
+        </button>
+      </div>
+
       <AdminTable
-        title="Personalities"
-        description="Manage famous and historical figures of Bihar."
+        title={subView === 'approved' ? "Famous Personalities" : "Pending Personality Submissions"}
+        description={subView === 'approved' ? "Manage famous and historical figures of Bihar." : "Review user-submitted personalities of Bihar."}
         data={filteredData}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDeleteClick}
+        onAdd={subView === 'approved' ? handleAdd : undefined}
+        onEdit={subView === 'approved' ? handleEdit : undefined}
+        onDelete={subView === 'approved' ? handleDeleteClick : undefined}
         columns={[
           {
             header: 'Image',
@@ -86,6 +210,30 @@ const AdminPersonalities = () => {
           { header: 'Name', accessor: 'name', className: 'font-semibold text-white' },
           { header: 'Category', accessor: 'category' },
           { header: 'District', accessor: 'district' },
+          {
+            header: 'Actions',
+            accessor: (item) => {
+              if (subView === 'pending') {
+                return (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleApprove(item.id)}
+                      className="flex items-center gap-1.5 bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-green-500/20"
+                    >
+                      <CheckCircle size={14} /> Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(item.id)}
+                      className="flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-red-500/20"
+                    >
+                      <XCircle size={14} /> Reject
+                    </button>
+                  </div>
+                );
+              }
+              return null;
+            }
+          }
         ]}
       />
 
@@ -115,12 +263,17 @@ const AdminPersonalities = () => {
             </AdminSelect>
           </div>
 
-          <AdminInput
+          <AdminSelect
             label="Associated District"
             value={formData.district || ''}
             onChange={e => setFormData({ ...formData, district: e.target.value })}
             required
-          />
+          >
+            <option value="">Select a District</option>
+            {districts.map(d => (
+              <option key={d.name} value={d.name}>{d.name}</option>
+            ))}
+          </AdminSelect>
 
           <AdminInput
             label="Portrait Image URL"
@@ -129,7 +282,7 @@ const AdminPersonalities = () => {
             required
           />
           <div className="w-32 h-32 rounded-full overflow-hidden mt-2 border-2 border-white/10">
-             <img src={formData.imageUrl || ''} alt="Preview" className="w-full h-full object-cover bg-white/5" />
+            <img src={formData.imageUrl || ''} alt="Preview" className="w-full h-full object-cover bg-white/5" />
           </div>
 
           <AdminTextarea

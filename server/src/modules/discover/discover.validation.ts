@@ -5,10 +5,16 @@ export const discoverCategoryEnum = z.enum(['FOOD', 'FESTIVAL', 'CRAFT', 'HERITA
 export const createDiscoverSchema = z.object({
   title: z.string().min(1),
   category: discoverCategoryEnum,
-  image: z.string().url(),
+  image: z.string().min(1),
   description: z.string().min(1),
   featured: z.boolean().optional().default(false),
   author: z.string().optional().default('Admin'),
+  district: z.string().optional().default('Bihar'),
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional().default('PENDING'),
+  longDescription: z.string().optional().nullable(),
+  videoUrl: z.string().optional().nullable(),
+  galleryImages: z.array(z.string()).optional().default([]),
+  extendedDetails: z.array(z.string()).optional().default([]),
 });
 
 export const updateDiscoverSchema = createDiscoverSchema.partial();

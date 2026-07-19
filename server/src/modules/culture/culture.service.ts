@@ -24,7 +24,21 @@ export const deleteTribe = async (id: string) => {
 };
 
 // --- Personalities ---
-export const getAllPersonalities = async () => db.personality.findMany();
+export const getAllPersonalities = async (status?: string) => {
+  const whereClause: any = {};
+  if (status) {
+    const upperStatus = status.toUpperCase();
+    if (upperStatus !== 'ALL') {
+      whereClause.status = upperStatus;
+    }
+  } else {
+    whereClause.status = 'APPROVED';
+  }
+  return db.personality.findMany({
+    where: whereClause,
+    orderBy: { createdAt: 'desc' },
+  });
+};
 
 export const getPersonalityById = async (id: string) => {
   const personality = await db.personality.findUnique({ where: { id } });
@@ -37,6 +51,22 @@ export const createPersonality = async (data: CreatePersonalityInput) => db.pers
 export const updatePersonality = async (id: string, data: Partial<CreatePersonalityInput>) => {
   await getPersonalityById(id);
   return db.personality.update({ where: { id }, data });
+};
+
+export const approvePersonality = async (id: string) => {
+  await getPersonalityById(id);
+  return db.personality.update({
+    where: { id },
+    data: { status: 'APPROVED' },
+  });
+};
+
+export const rejectPersonality = async (id: string) => {
+  await getPersonalityById(id);
+  return db.personality.update({
+    where: { id },
+    data: { status: 'REJECTED' },
+  });
 };
 
 export const deletePersonality = async (id: string) => {

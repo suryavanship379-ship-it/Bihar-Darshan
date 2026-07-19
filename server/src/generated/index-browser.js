@@ -192,6 +192,12 @@ exports.Prisma.DiscoverItemScalarFieldEnum = {
   description: 'description',
   featured: 'featured',
   author: 'author',
+  district: 'district',
+  status: 'status',
+  longDescription: 'longDescription',
+  videoUrl: 'videoUrl',
+  galleryImages: 'galleryImages',
+  extendedDetails: 'extendedDetails',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -221,6 +227,7 @@ exports.Prisma.PersonalityScalarFieldEnum = {
   imageUrl: 'imageUrl',
   fullBio: 'fullBio',
   author: 'author',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

@@ -20,9 +20,10 @@ export const createPersonalitySchema = z.object({
   category: z.string().min(1),
   district: z.string().min(1),
   description: z.string().min(1),
-  imageUrl: z.string().url(),
+  imageUrl: z.string().min(1),
   fullBio: z.string().optional().nullable(),
   author: z.string().optional().default('Admin'),
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional().default('PENDING'),
 });
 
 export const updatePersonalitySchema = createPersonalitySchema.partial();

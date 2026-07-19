@@ -39,13 +39,14 @@ export interface TribeItem {
 
 // ── Personality type ──
 export interface PersonalityItem {
-  id: number;
+  id: number | string;
   name: string;
   category: 'Politician' | 'Arts & Cinema' | 'Historical' | 'Literature' | 'Sports';
   district: string;
   description: string;
   imageUrl: string;
   fullBio?: string;
+  status?: string;
 }
 
 // ── Product type ──
@@ -134,6 +135,10 @@ interface AdminContextValue {
 
   // Reset
   resetSection: (section: keyof typeof KEYS) => void;
+
+  // Refresh methods
+  refreshCulture: () => Promise<void>;
+  refreshPersonalities: () => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextValue | null>(null);
@@ -141,7 +146,7 @@ const AdminContext = createContext<AdminContextValue | null>(null);
 export const AdminDataProvider = ({ children }: { children: React.ReactNode }) => {
   const [districts, setDistricts] = useState<District[]>(() => loadFromStorage(KEYS.districts, allDistricts));
   const [districtDetails, setDistrictDetails] = useState<Record<string, DistrictDetail>>(() => loadFromStorage(KEYS.districtDetails, staticDistrictDetails));
-  const [culture, setCulture] = useState<CultureItem[]>(() => loadFromStorage(KEYS.culture, cultureData));
+  const [culture, setCulture] = useState<CultureItem[]>([]);
   const [tourism, setTourism] = useState<TourTrip[]>(() => loadFromStorage(KEYS.tourism, featuredTrips));
   const [gallery, setGallery] = useState<GalleryItem[]>(() => loadFromStorage(KEYS.gallery, defaultGalleryItems));
   const [communitiesState, setCommunitiesState] = useState<Community[]>(() => {
@@ -153,13 +158,103 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
   const [products, setProducts] = useState<ProductItem[]>(() => loadFromStorage(KEYS.products, defaultProducts as ProductItem[]));
   const [tribes, setTribes] = useState<TribeItem[]>(() => loadFromStorage(KEYS.tribes, tribesList));
   const [tribalArticlesState, setTribalArticlesState] = useState<TribalArticle[]>(() => loadFromStorage(KEYS.tribalArticles, tribalArticles));
-  const [personalities, setPersonalities] = useState<PersonalityItem[]>(() => loadFromStorage(KEYS.personalities, defaultPersonalities as unknown as PersonalityItem[]));
+  const [personalities, setPersonalities] = useState<PersonalityItem[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => loadFromStorage(KEYS.siteSettings, defaultSiteSettings));
 
-  // Fetch communities from backend database on mount matching auth status
+  const fetchCulture = useCallback(async () => {
+    const user = auth.currentUser;
+    let discoverUrl = 'http://localhost:5000/api/v1/discover';
+    const headers: any = {};
+
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const profileResult = await profileRes.json();
+        if (profileResult.success && profileResult.data?.user?.role === 'ADMIN') {
+          discoverUrl = 'http://localhost:5000/api/v1/discover?status=all';
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch (err) {
+        console.error('AdminContext: Failed to check user role:', err);
+      }
+    }
+
+    try {
+      const res = await fetch(discoverUrl, { headers });
+      const result = await res.json();
+      if (result.success && result.data && result.data.items) {
+        const dbCulture: CultureItem[] = result.data.items.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          type: item.category === 'FOOD' ? 'Food' : 'Festival',
+          image: item.image,
+          description: item.description,
+          longDescription: item.longDescription || '',
+          videoUrl: item.videoUrl || '',
+          galleryImages: item.galleryImages || [],
+          extendedDetails: item.extendedDetails || [],
+          district: item.district,
+          submittedBy: item.author || 'Admin',
+          featured: item.featured,
+          status: item.status
+        }));
+        setCulture(dbCulture);
+      }
+    } catch (e) {
+      console.error('AdminContext: Failed to fetch discover items:', e);
+    }
+  }, []);
+
+  const fetchPersonalities = useCallback(async () => {
+    const user = auth.currentUser;
+    let personalitiesUrl = 'http://localhost:5000/api/v1/culture/personalities';
+    const headers: any = {};
+
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const profileResult = await profileRes.json();
+        if (profileResult.success && profileResult.data?.user?.role === 'ADMIN') {
+          personalitiesUrl = 'http://localhost:5000/api/v1/culture/personalities?status=all';
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch (err) {
+        console.error('AdminContext: Failed to check user role:', err);
+      }
+    }
+
+    try {
+      const res = await fetch(personalitiesUrl, { headers });
+      const result = await res.json();
+      if (result.success && result.data && result.data.personalities) {
+        const dbPersonalities: PersonalityItem[] = result.data.personalities.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          district: p.district,
+          description: p.description,
+          imageUrl: p.imageUrl,
+          fullBio: p.fullBio || '',
+          submittedBy: p.author || 'Admin',
+          status: p.status
+        }));
+        setPersonalities(dbPersonalities);
+      }
+    } catch (e) {
+      console.error('AdminContext: Failed to fetch personalities:', e);
+    }
+  }, []);
+
+  // Fetch communities, discover items, and personalities from backend database on mount matching auth status
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      let url = 'http://localhost:5000/api/v1/community';
+      let communityUrl = 'http://localhost:5000/api/v1/community';
       const headers: any = {};
 
       if (user) {
@@ -170,7 +265,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
           });
           const profileResult = await profileRes.json();
           if (profileResult.success && profileResult.data?.user?.role === 'ADMIN') {
-            url = 'http://localhost:5000/api/v1/community/admin/all';
+            communityUrl = 'http://localhost:5000/api/v1/community/admin/all';
             headers['Authorization'] = `Bearer ${token}`;
           }
         } catch (err) {
@@ -178,7 +273,8 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
         }
       }
 
-      fetch(url, { headers })
+      // Fetch Communities
+      fetch(communityUrl, { headers })
         .then(res => res.json())
         .then(result => {
           if (result.success && result.data && result.data.communities) {
@@ -218,10 +314,13 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
           }
         })
         .catch(err => console.error('AdminContext: Failed to fetch communities:', err));
+
+      fetchCulture();
+      fetchPersonalities();
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchCulture, fetchPersonalities]);
 
   // Auto-save on change
   const createUpdater = <T,>(key: string, setter: React.Dispatch<React.SetStateAction<T>>) =>
@@ -248,7 +347,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
     const defaults: Record<string, () => void> = {
       districts: () => setDistricts(allDistricts),
       districtDetails: () => setDistrictDetails(staticDistrictDetails),
-      culture: () => setCulture(cultureData),
+      culture: () => setCulture([]),
       tourism: () => setTourism(featuredTrips),
       gallery: () => setGallery(defaultGalleryItems),
       communities: () => setCommunitiesState(defaultCommunities),
@@ -256,7 +355,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
       products: () => setProducts(defaultProducts as ProductItem[]),
       tribes: () => setTribes(tribesList),
       tribalArticles: () => setTribalArticlesState(tribalArticles),
-      personalities: () => setPersonalities(defaultPersonalities as unknown as PersonalityItem[]),
+      personalities: () => setPersonalities([]),
       siteSettings: () => setSiteSettings(defaultSiteSettings),
     };
     defaults[section]?.();
@@ -290,6 +389,8 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
         updatePersonalities,
         updateSiteSettings,
         resetSection,
+        refreshCulture: fetchCulture,
+        refreshPersonalities: fetchPersonalities,
       }}
     >
       {children}

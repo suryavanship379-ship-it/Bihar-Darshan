@@ -8,10 +8,13 @@ const router = Router();
 router.get('/', discoverController.getAllDiscoverItems);
 router.get('/:id', discoverController.getDiscoverItemById);
 
+// Authenticated user routes (for submission)
+router.post('/', authenticate, discoverController.createDiscoverItem);
+
 // Admin routes
-router.use(authenticate, restrictTo('ADMIN'));
-router.post('/', discoverController.createDiscoverItem);
-router.patch('/:id', discoverController.updateDiscoverItem);
-router.delete('/:id', discoverController.deleteDiscoverItem);
+router.patch('/:id/approve', authenticate, restrictTo('ADMIN'), discoverController.approveDiscoverItem);
+router.patch('/:id/reject', authenticate, restrictTo('ADMIN'), discoverController.rejectDiscoverItem);
+router.patch('/:id', authenticate, restrictTo('ADMIN'), discoverController.updateDiscoverItem);
+router.delete('/:id', authenticate, restrictTo('ADMIN'), discoverController.deleteDiscoverItem);
 
 export const discoverRoutes = router;

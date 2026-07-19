@@ -138,91 +138,82 @@ const ShareStory = () => {
   };
 
   // Submit Handler
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-    // Simulate network latency
-    setTimeout(() => {
-      try {
-        if (category === "food" || category === "festival") {
-          const extDetails: string[] = [];
-          let finalDescription = description;
+    try {
+      if (category === "food" || category === "festival") {
+        const extDetails: string[] = [];
+        let finalDescription = description;
 
-          if (category === "food") {
-            if (ingredients.trim()) {
-              extDetails.push(`Ingredients: ${ingredients}`);
-              finalDescription += `\n\nIngredients:\n${ingredients}`;
-            }
-          } else {
-            if (origin.trim()) {
-              extDetails.push(`Origin: ${origin}`);
-            }
-            if (whatSpecial.trim()) {
-              extDetails.push(`Specialty: ${whatSpecial}`);
-            }
-            const extra = [];
-            if (origin.trim()) extra.push(`Origin: ${origin}`);
-            if (whatSpecial.trim()) extra.push(`What makes it special: ${whatSpecial}`);
-            if (extra.length > 0) {
-              finalDescription += `\n\n${extra.join('\n')}`;
-            }
+        if (category === "food") {
+          if (ingredients.trim()) {
+            extDetails.push(`Ingredients: ${ingredients}`);
+            finalDescription += `\n\nIngredients:\n${ingredients}`;
           }
-
-          addCultureSubmission({
-            type: category === "festival" ? "Festival" : "Food",
-            district: "Bihar",
-            image: mediaFile || "/images/placeholder.png",
-            title,
-            description: finalDescription,
-            submittedBy: personName,
-            caption: title,
-            extendedDetails: extDetails,
-          });
-
-          setIsSubmitting(false);
-          if (category === "food") {
-            navigate("/discover?category=food", { state: { activeCategory: "Food" } });
-          } else {
-            navigate("/discover?category=festival", { state: { activeCategory: "Festivals" } });
+        } else {
+          if (origin.trim()) {
+            extDetails.push(`Origin: ${origin}`);
           }
-        } else if (category === "gallery") {
-          addGallerySubmission({
-            title: caption,
-            image: mediaFile || "/images/placeholder.png",
-            mediaType,
-            category: "Community",
-            photographer: personName,
-            location: "Bihar",
-            aspectRatio: "portrait",
-          });
-
-          setIsSubmitting(false);
-          navigate("/gallery");
-        } else if (category === "personality") {
-          const finalCategory = personalityCategory === "Art & Cinema" ? "Arts & Cinema" : personalityCategory;
-          addPersonalitySubmission({
-            name: title,
-            category: finalCategory as any,
-            district: "Patna",
-            description: description,
-            imageUrl: mediaFile || "https://via.placeholder.com/400x600?text=Profile+Coming+Soon",
-            author: personName,
-          });
-
-          setIsSubmitting(false);
-          navigate(`/discover?category=personalities&subcategory=${finalCategory.toLowerCase()}`, {
-            state: { activeCategory: "Personalities", activeSubcategory: finalCategory }
-          });
+          if (whatSpecial.trim()) {
+            extDetails.push(`Specialty: ${whatSpecial}`);
+          }
+          const extra = [];
+          if (origin.trim()) extra.push(`Origin: ${origin}`);
+          if (whatSpecial.trim()) extra.push(`What makes it special: ${whatSpecial}`);
+          if (extra.length > 0) {
+            finalDescription += `\n\n${extra.join('\n')}`;
+          }
         }
-      } catch (err) {
-        console.error(err);
+
+        await addCultureSubmission({
+          type: category === "festival" ? "Festival" : "Food",
+          district: "Bihar",
+          image: mediaFile || "/images/placeholder.png",
+          title,
+          description: finalDescription,
+          submittedBy: personName,
+          caption: title,
+          extendedDetails: extDetails,
+        });
+
         setIsSubmitting(false);
-        setErrors({ submit: "An error occurred while saving your submission. Storage might be full." });
+        setIsSuccess(true);
+      } else if (category === "gallery") {
+        addGallerySubmission({
+          title: caption,
+          image: mediaFile || "/images/placeholder.png",
+          mediaType,
+          category: "Community",
+          photographer: personName,
+          location: "Bihar",
+          aspectRatio: "portrait",
+        });
+
+        setIsSubmitting(false);
+        setIsSuccess(true);
+      } else if (category === "personality") {
+        const finalCategory = personalityCategory === "Art & Cinema" ? "Arts & Cinema" : personalityCategory;
+        await addPersonalitySubmission({
+          name: title,
+          category: finalCategory as any,
+          district: "Patna",
+          description: description,
+          imageUrl: mediaFile || "https://via.placeholder.com/400x600?text=Profile+Coming+Soon",
+          author: personName,
+        });
+
+        setIsSubmitting(false);
+        setIsSuccess(true);
       }
-    }, 1200);
+    } catch (err) {
+      console.error(err);
+      setIsSubmitting(false);
+      setErrors({ submit: "An error occurred while saving your submission. Please try again." });
+    }
   };
 
   const resetForm = () => {
@@ -1059,6 +1050,43 @@ const ShareStory = () => {
 
         </div>
       </main>
+
+      {/* Success Modal Card overlay */}
+      {isSuccess && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-[#122A22] border border-[#d6a55e]/25 max-w-sm w-full rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 rounded-full bg-[#d6a55e]/10 border border-[#d6a55e]/30 flex items-center justify-center mx-auto mb-6 text-[#d6a55e]">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="font-display text-2xl font-bold text-white mb-3">Submission Received!</h3>
+            <p className="text-gray-300 text-sm leading-relaxed mb-8">
+              Thank you for sharing your story! Your submission has been successfully received and is currently in the moderation queue. It will be showcased on the website once approved by the admin.
+            </p>
+            <button
+              onClick={() => {
+                setIsSuccess(false);
+                if (category === "food") {
+                  navigate("/discover?category=food", { state: { activeCategory: "Food" } });
+                } else if (category === "festival") {
+                  navigate("/discover?category=festival", { state: { activeCategory: "Festivals" } });
+                } else if (category === "personality") {
+                  const finalCategory = personalityCategory === "Art & Cinema" ? "Arts & Cinema" : personalityCategory;
+                  navigate(`/discover?category=personalities&subcategory=${finalCategory.toLowerCase()}`, {
+                    state: { activeCategory: "Personalities", activeSubcategory: finalCategory }
+                  });
+                } else {
+                  navigate("/gallery");
+                }
+              }}
+              className="w-full py-3.5 bg-[#d6a55e] hover:bg-[#c3924b] text-black font-extrabold rounded-xl transition-all cursor-pointer uppercase tracking-widest text-xs"
+            >
+              Okay, Got it
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

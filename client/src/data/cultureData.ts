@@ -1,5 +1,5 @@
 export interface CultureItem {
-  id: number;
+  id: number | string;
   type: "Festival" | "Food" | "Personalities";
   district: string;
   image: string;
@@ -12,6 +12,7 @@ export interface CultureItem {
   extendedDetails?: string[];
   submittedBy?: string;
   caption?: string;
+  status?: string;
 }
 
 export const cultureData: CultureItem[] = [
