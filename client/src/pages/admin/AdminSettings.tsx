@@ -42,7 +42,7 @@ const AdminSettings = () => {
         {/* Hero Section Copy */}
         <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 shadow-xl">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F4A261]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#EAB308]" />
             Hero Section Copy
           </h2>
           <div className="space-y-4">
@@ -53,7 +53,7 @@ const AdminSettings = () => {
                   type="text"
                   value={formData.heroTitle}
                   onChange={e => setFormData({ ...formData, heroTitle: e.target.value })}
-                  className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F4A261]/50"
+                  className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#EAB308]/50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -62,7 +62,7 @@ const AdminSettings = () => {
                   type="text"
                   value={formData.heroSubtitle}
                   onChange={e => setFormData({ ...formData, heroSubtitle: e.target.value })}
-                  className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F4A261]/50"
+                  className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#EAB308]/50"
                 />
               </div>
             </div>
@@ -71,7 +71,7 @@ const AdminSettings = () => {
               <textarea
                 value={formData.heroDescription}
                 onChange={e => setFormData({ ...formData, heroDescription: e.target.value })}
-                className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F4A261]/50 min-h-[100px]"
+                className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#EAB308]/50 min-h-[100px]"
               />
             </div>
             <div className="flex flex-col gap-1.5 mt-4">
@@ -81,7 +81,7 @@ const AdminSettings = () => {
                 placeholder="Leave empty to use default image"
                 value={formData.heroImage || ''}
                 onChange={e => setFormData({ ...formData, heroImage: e.target.value })}
-                className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F4A261]/50"
+                className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#EAB308]/50"
               />
               {formData.heroImage && (
                 <div className="mt-2 w-full h-32 rounded-lg overflow-hidden border border-white/10 bg-black/50">
@@ -95,7 +95,7 @@ const AdminSettings = () => {
         {/* Global Statistics */}
         <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 shadow-xl">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F4A261]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#EAB308]" />
             Global Statistics
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -108,7 +108,7 @@ const AdminSettings = () => {
                     type="text"
                     value={(formData as any)[key]}
                     onChange={e => setFormData({ ...formData, [key]: e.target.value })}
-                    className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F4A261]/50"
+                    className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#EAB308]/50"
                   />
                 </div>
               );
@@ -119,7 +119,7 @@ const AdminSettings = () => {
         {/* Footer Section */}
         <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 shadow-xl">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F4A261]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#EAB308]" />
             Footer Copy
           </h2>
           <div className="flex flex-col gap-1.5">
@@ -127,7 +127,7 @@ const AdminSettings = () => {
             <textarea
               value={formData.footerAbout}
               onChange={e => setFormData({ ...formData, footerAbout: e.target.value })}
-              className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F4A261]/50 min-h-[100px]"
+              className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#EAB308]/50 min-h-[100px]"
             />
           </div>
         </div>
@@ -143,7 +143,7 @@ const AdminSettings = () => {
           <button 
             id="save-settings-btn"
             type="submit" 
-            className="px-6 py-3 rounded-xl bg-[#F4A261] hover:bg-[#F4A261] text-black font-bold transition-all shadow-lg shadow-[#F4A261]/20"
+            className="px-6 py-3 rounded-xl bg-[#EAB308] hover:bg-[#EAB308] text-black font-bold transition-all shadow-lg shadow-[#EAB308]/20"
           >
             Save Settings
           </button>

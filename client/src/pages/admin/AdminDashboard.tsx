@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   const communityStats = [
     { label: 'Tourism Packages', count: data.tourism.length, icon: Plane, path: '/admin/tourism', color: 'from-cyan-500/30 to-cyan-500/5', glow: 'bg-cyan-500', textColor: 'text-cyan-400', desc: 'Journeys & itineraries' },
     { label: 'Gallery Media', count: data.gallery.length, icon: ImageIcon, path: '/admin/gallery', color: 'from-pink-500/30 to-pink-500/5', glow: 'bg-pink-500', textColor: 'text-pink-400', desc: 'Photos and videos' },
-    { label: 'Communities', count: data.communities.length, icon: Users, path: '/admin/community', color: 'from-orange-500/30 to-orange-500/5', glow: 'bg-orange-500', textColor: 'text-orange-400', desc: 'Forums & discussions' },
+    { label: 'Communities', count: data.communities.length, icon: Users, path: '/admin/community', color: 'from-yellow-500/30 to-yellow-500/5', glow: 'bg-yellow-500', textColor: 'text-yellow-400', desc: 'Forums & discussions' },
     { label: 'Market Products', count: data.products.length, icon: Store, path: '/admin/marketplace', color: 'from-teal-500/30 to-teal-500/5', glow: 'bg-teal-500', textColor: 'text-teal-400', desc: 'Local artisan goods' },
   ];
 
@@ -63,14 +63,14 @@ const AdminDashboard = () => {
     <div className="space-y-10 animate-fade-in pb-12">
       {/* Hero Welcome Section */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#2A2A2A] to-[#1E1E1E] border border-white/10 p-8 md:p-10 shadow-2xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#F4A261]/20 to-transparent blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#EAB308]/20 to-transparent blur-[80px] rounded-full pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-emerald-500/10 to-transparent blur-[80px] rounded-full pointer-events-none" />
         
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-white/5 rounded-lg border border-white/10">
-                <LayoutDashboard className="text-[#F4A261]" size={20} />
+                <LayoutDashboard className="text-[#EAB308]" size={20} />
               </div>
               <h1 className="font-display font-bold text-3xl text-white tracking-tight">Admin Dashboard</h1>
             </div>

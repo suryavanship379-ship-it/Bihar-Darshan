@@ -88,6 +88,15 @@ export interface TourTrip {
   email: string;
   quote?: string;
   desc?: string;
+
+  // Extended fields for community journeys
+  category?: string;
+  companyName?: string;
+  tripDuration?: string;
+  highlights?: string[];
+  includedServices?: string[];
+  excludedServices?: string[];
+  googleMapsLink?: string;
 }
 
 export const featuredTrips: TourTrip[] = [

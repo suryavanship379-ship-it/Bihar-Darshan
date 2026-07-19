@@ -295,13 +295,51 @@ model PostComment {
 }
 
 model Journey {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  duration    String?
-  budget      String?
-  district    String?
-  stops       String[]
+  id               String   @id @default(uuid())
+  title            String
+  shortDesc        String?
+  description      String
+  overviewText     String?
+  image            String?
+  duration         String?
+  tripDuration     String?
+  budget           String?
+  price            String?
+  district         String?
+  stops            String[]
+  phone            String?
+  whatsapp         String?
+  difficulty       String?
+  bestTime         String?
+  groupSize        String?
+  transportation   String?
+  startPoint       String?
+  endPoint         String?
+  emergencyContact String?
+  email            String?
+  quote            String?
+  galleryImages    String[]
+  timeline         Json?
+
+  // New fields from CreateJourney form
+  category         String?
+  companyName      String?
+  rating           Float?
+  userRating       Float?
+  highlights       String[]
+  includedServices String[]
+  excludedServices String[]
+  googleMapsLink   String?
+
+  // Guide fields
+  guideName       String?
+  guideImage      String?
+  guideExperience String?
+  guideLanguages  String[]
+  guideIntro      String?
+  guidePhone      String?
+  guideEmail      String?
+  guideWhatsapp   String?
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)

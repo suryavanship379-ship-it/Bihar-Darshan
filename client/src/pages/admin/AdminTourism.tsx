@@ -4,42 +4,56 @@ import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
 import { AdminInput, AdminTextarea, AdminImagePreview, AdminSelect } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
-import { Plus, Trash2, Info, LayoutList, Phone, Map, Image as ImageIcon, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Trash2, Info, LayoutList, Phone, Map, Image as ImageIcon, Clock, CheckCircle, XCircle, Tag, Building2, Star, MapPin, ListChecks } from 'lucide-react';
 import type { TourTrip } from '../../data/tourismData';
 import { auth } from '../../lib/firebase';
 
-const emptyForm: Partial<TourTrip> = {
-  id: '',
-  title: '',
-  provider: '',
-  rating: 5,
-  duration: '',
-  departureCity: '',
-  places: [],
-  description: '',
-  price: '',
-  phone: '',
-  whatsapp: '',
-  email: '',
-  emergencyContact: '',
-  image: '',
-  overviewText: '',
-  difficulty: 'Easy',
-  bestTime: '',
-  groupSize: '',
-  transportation: '',
-  startPoint: '',
-  endPoint: '',
-  guide: { name: '', image: '', experience: '', languages: [], intro: '', phone: '', email: '', whatsapp: '' },
-  placesCoveredDetails: [],
-  timeline: [],
-  galleryImages: [],
-  videos: [],
-  mapMarkers: [],
-  reviews: []
+const CATEGORY_OPTIONS = [
+  'Spiritual', 'Heritage', 'Wildlife', 'Nature',
+  'Adventure', 'Cultural', 'Religious', 'Historical',
+];
+
+const BIHAR_DISTRICTS = [
+  'Araria','Arwal','Aurangabad','Banka','Begusarai','Bhagalpur','Bhojpur',
+  'Buxar','Darbhanga','East Champaran','Gaya','Gopalganj','Jamui','Jehanabad',
+  'Kaimur','Katihar','Khagaria','Kishanganj','Lakhisarai','Madhepura',
+  'Madhubani','Munger','Muzaffarpur','Nalanda','Nawada','Patna','Purnia',
+  'Rohtas','Saharsa','Samastipur','Saran','Sheikhpura','Sheohar','Sitamarhi',
+  'Siwan','Supaul','Vaishali','West Champaran',
+];
+
+const BEST_TIME_OPTIONS = [
+  'Winter (Oct - Mar)', 'Summer (Apr - Jun)',
+  'Monsoon (Jul - Sep)', 'All Year Round',
+];
+
+const TRIP_DURATION_OPTIONS = [
+  '1 Day', '2 Days / 1 Night', '3 Days / 2 Nights',
+  '4 Days / 3 Nights', '5 Days / 4 Nights',
+  '6 Days / 5 Nights', '7+ Days',
+];
+
+const RATING_OPTIONS = ['1', '2', '3', '4', '5'];
+
+const emptyForm = {
+  id: '', title: '', description: '', overviewText: '', image: '', quote: '',
+  category: '', companyName: '', tripDuration: '', price: '',
+  departureCity: '', bestTime: '', groupSize: '', googleMapsLink: '',
+  rating: 5, userRating: 5,
+  highlights: ['', '', ''] as string[],
+  includedServices: ['', ''] as string[],
+  excludedServices: ['', ''] as string[],
+  galleryImages: [] as string[],
+  guide: { name: '', image: '', experience: '', languages: [] as string[], intro: '', phone: '', email: '', whatsapp: '' },
+  timeline: [] as { day: number; title: string; activities: { time: string; activity: string; description: string }[] }[],
+  phone: '', whatsapp: '', email: '',
 };
 
-type TabType = 'basic' | 'details' | 'contact' | 'itinerary' | 'media';
+type TabType = 'hero' | 'intro' | 'guide' | 'details' | 'gallery' | 'timeline';
+type AdminFormState = typeof emptyForm;
+
+type SubView = 'packages' | 'journeys';
+type JourneyTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 const AdminTourism = () => {
   const { tourism, updateTourism } = useAdminData();
@@ -47,15 +61,15 @@ const AdminTourism = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<TourTrip | null>(null);
-  const [formData, setFormData] = useState<Partial<TourTrip>>(emptyForm);
+  const [formData, setFormData] = useState<AdminFormState>(emptyForm);
   const [itemToDelete, setItemToDelete] = useState<TourTrip | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>('basic');
+  const [activeTab, setActiveTab] = useState<TabType>('hero');
 
-  // Journey States
-  const [subView, setSubView] = useState<'packages' | 'journeys'>('packages');
+  // Journey moderation states
+  const [subView, setSubView] = useState<SubView>('packages');
   const [journeys, setJourneys] = useState<any[]>([]);
   const [journeysSearch, setJourneysSearch] = useState('');
-  const [journeysTab, setJourneysTab] = useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
+  const [journeysTab, setJourneysTab] = useState<JourneyTab>('PENDING');
 
   const fetchJourneys = async () => {
     try {
@@ -65,32 +79,21 @@ const AdminTourism = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      if (data.success && data.data?.journeys) {
-        setJourneys(data.data.journeys);
-      }
-    } catch (e) {
-      console.error('Failed to fetch journeys for admin:', e);
-    }
+      if (data.success && data.data?.journeys) setJourneys(data.data.journeys);
+    } catch (e) { console.error('Failed to fetch journeys for admin:', e); }
   };
 
-  useEffect(() => {
-    fetchJourneys();
-  }, []);
+  useEffect(() => { fetchJourneys(); }, []);
 
   const handleApproveJourney = async (id: string) => {
     try {
       const user = auth.currentUser;
       const token = user ? await user.getIdToken() : '';
       const res = await fetch(`http://localhost:5000/api/v1/journeys/${id}/approve`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` }
+        method: 'PATCH', headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok) {
-        setJourneys(prev => prev.map(j => j.id === id ? { ...j, status: 'APPROVED' } : j));
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      if (res.ok) setJourneys(prev => prev.map(j => j.id === id ? { ...j, status: 'APPROVED' } : j));
+    } catch (e) { console.error(e); }
   };
 
   const handleRejectJourney = async (id: string) => {
@@ -98,18 +101,112 @@ const AdminTourism = () => {
       const user = auth.currentUser;
       const token = user ? await user.getIdToken() : '';
       const res = await fetch(`http://localhost:5000/api/v1/journeys/${id}/reject`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` }
+        method: 'PATCH', headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok) {
-        setJourneys(prev => prev.map(j => j.id === id ? { ...j, status: 'REJECTED' } : j));
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      if (res.ok) setJourneys(prev => prev.map(j => j.id === id ? { ...j, status: 'REJECTED' } : j));
+    } catch (e) { console.error(e); }
   };
 
-  const filteredData = tourism.filter(item =>
+  // Merge static tourism packages + approved community journeys into one list
+  const approvedJourneys: TourTrip[] = journeys
+    .filter(j => j.status === 'APPROVED')
+    .map(j => {
+      let description = j.description || '';
+      let image = j.image || "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?q=80&w=2000&auto=format&fit=crop";
+      let guide = j.guide || {
+        name: "Ramesh Kumar",
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=500&auto=format&fit=crop",
+        experience: "10+ Years",
+        languages: ["English", "Hindi"],
+        intro: "Verified Expert Guide for this custom trip.",
+        phone: "+919876543210",
+        email: "guide@example.com",
+        whatsapp: "+919876543210"
+      };
+      let timeline = j.timeline || [];
+      let galleryImages = j.galleryImages || [];
+      let quote = j.quote || "Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends.";
+      let category = j.category || '';
+      let companyName = j.companyName || j.author?.name || '';
+      let tripDuration = j.duration || j.tripDuration || '';
+      let highlights = j.highlights || [];
+      let includedServices = j.includedServices || [];
+      let excludedServices = j.excludedServices || [];
+      let googleMapsLink = j.googleMapsLink || '';
+      let userRating = j.userRating || 5;
+
+      if (j.description && j.description.startsWith('{"__isImmersivePackage"')) {
+        try {
+          const parsed = JSON.parse(j.description);
+          if (parsed.__isImmersivePackage) {
+            description = parsed.realDescription || '';
+            if (parsed.image) image = parsed.image;
+            if (parsed.guide) guide = parsed.guide;
+            if (parsed.timeline) timeline = parsed.timeline;
+            if (parsed.galleryImages) galleryImages = parsed.galleryImages;
+            if (parsed.quote) quote = parsed.quote;
+            if (parsed.category) category = parsed.category;
+            if (parsed.companyName) companyName = parsed.companyName;
+            if (parsed.tripDuration) tripDuration = parsed.tripDuration;
+            if (parsed.highlights) highlights = parsed.highlights;
+            if (parsed.includedServices) includedServices = parsed.includedServices;
+            if (parsed.excludedServices) excludedServices = parsed.excludedServices;
+            if (parsed.googleMapsLink) googleMapsLink = parsed.googleMapsLink;
+            if (parsed.userRating) userRating = parsed.userRating;
+          }
+        } catch (e) {
+          console.error("Failed to parse immersive package description JSON:", e);
+        }
+      }
+
+      return {
+        id: j.id,
+        title: j.title || '',
+        provider: companyName || j.author?.name || 'Community',
+        rating: j.rating || 5,
+        duration: tripDuration || j.duration || '',
+        departureCity: j.departureCity || j.district || '',
+        places: j.stops || [],
+        description,
+        overviewText: j.overviewText || description,
+        price: j.price || j.budget || 'Flexible',
+        phone: j.phone || '',
+        whatsapp: j.whatsapp || '',
+        email: j.email || '',
+        emergencyContact: '',
+        image,
+        difficulty: 'Easy' as const,
+        bestTime: j.bestTime || '',
+        groupSize: j.groupSize || '',
+        transportation: '',
+        startPoint: '',
+        endPoint: '',
+        guide,
+        placesCoveredDetails: [],
+        timeline,
+        galleryImages,
+        videos: [],
+        mapMarkers: [],
+        reviews: j.reviews || [],
+        quote,
+        category,
+        companyName,
+        tripDuration,
+        highlights,
+        includedServices,
+        excludedServices,
+        googleMapsLink,
+        userRating,
+        _isApprovedJourney: true,
+      } as any;
+    });
+
+  const allPackages: TourTrip[] = [
+    ...tourism,
+    ...approvedJourneys.filter(aj => !tourism.some(t => t.id === aj.id)),
+  ];
+
+  const filteredData = allPackages.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.provider.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -117,66 +214,207 @@ const AdminTourism = () => {
   const handleAdd = () => {
     setEditingItem(null);
     setFormData(emptyForm);
-    setActiveTab('basic');
+    setActiveTab('hero');
     setIsModalOpen(true);
   };
 
   const handleEdit = (item: TourTrip) => {
     setEditingItem(item);
-    setFormData(JSON.parse(JSON.stringify(item))); // Deep copy to avoid mutating state directly
-    setActiveTab('basic');
+    const fd: AdminFormState = {
+      id: item.id || '',
+      title: item.title || '',
+      description: item.description || '',
+      overviewText: item.overviewText || '',
+      image: item.image || '',
+      quote: (item as any).quote || '',
+      category: (item as any).category || '',
+      companyName: (item as any).companyName || item.provider || '',
+      tripDuration: (item as any).tripDuration || item.duration || '',
+      price: item.price || '',
+      departureCity: item.departureCity || '',
+      bestTime: item.bestTime || '',
+      groupSize: item.groupSize || '',
+      googleMapsLink: (item as any).googleMapsLink || '',
+      rating: item.rating || 5,
+      userRating: (item as any).userRating || 5,
+      highlights: (item as any).highlights?.length ? (item as any).highlights : ['', '', ''],
+      includedServices: (item as any).includedServices?.length ? (item as any).includedServices : ['', ''],
+      excludedServices: (item as any).excludedServices?.length ? (item as any).excludedServices : ['', ''],
+      galleryImages: item.galleryImages || [],
+      guide: item.guide ? {
+        name: item.guide.name || '',
+        image: item.guide.image || '',
+        experience: item.guide.experience || '',
+        languages: item.guide.languages || [],
+        intro: item.guide.intro || '',
+        phone: item.guide.phone || '',
+        email: item.guide.email || '',
+        whatsapp: item.guide.whatsapp || '',
+      } : emptyForm.guide,
+      timeline: item.timeline || [],
+      phone: item.phone || '',
+      whatsapp: item.whatsapp || '',
+      email: item.email || '',
+    };
+    setFormData(fd);
+    setActiveTab('hero');
     setIsModalOpen(true);
   };
 
-  const handleDeleteClick = (item: TourTrip) => {
-    setItemToDelete(item);
-    setIsDeleteOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (itemToDelete) {
+  const handleDeleteClick = (item: TourTrip) => { setItemToDelete(item); setIsDeleteOpen(true); };
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    if ((itemToDelete as any)._isApprovedJourney) {
+      // Reject the community journey via API (removes from approved list)
+      await handleRejectJourney(itemToDelete.id);
+    } else {
       updateTourism(tourism.filter(t => t.id !== itemToDelete.id));
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingItem) {
-      updateTourism(tourism.map(t => t.id === editingItem.id ? { ...t, ...formData as TourTrip } : t));
+    const merged = {
+      ...formData,
+      provider: formData.companyName || 'Admin',
+      duration: formData.tripDuration,
+      rating: Number(formData.rating),
+      userRating: Number(formData.userRating),
+      highlights: formData.highlights.filter(h => h.trim()),
+      includedServices: formData.includedServices.filter(s => s.trim()),
+      excludedServices: formData.excludedServices.filter(s => s.trim()),
+    } as unknown as TourTrip;
+
+    if (editingItem && (editingItem as any)._isApprovedJourney) {
+      // PATCH the community journey via API
+      try {
+        const user = auth.currentUser;
+        const token = user ? await user.getIdToken() : '';
+        await fetch(`http://localhost:5000/api/v1/journeys/${editingItem.id}`, {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(merged),
+        });
+        // Refresh journeys list to reflect changes
+        await fetchJourneys();
+      } catch (err) { console.error('Failed to update journey:', err); }
+    } else if (editingItem) {
+      updateTourism(tourism.map(t => t.id === editingItem.id ? { ...t, ...merged } : t));
     } else {
-      updateTourism([{ ...formData as TourTrip, id: Date.now().toString() }, ...tourism]);
+      updateTourism([{ ...merged, id: Date.now().toString() }, ...tourism]);
     }
     setIsModalOpen(false);
   };
 
-  // Helper arrays
-  const tabs = [
-    { id: 'basic', label: 'Basic Info', icon: Info },
-    { id: 'details', label: 'Overview', icon: LayoutList },
-    { id: 'contact', label: 'Contact & Guide', icon: Phone },
-    { id: 'itinerary', label: 'Itinerary', icon: Map },
-    { id: 'media', label: 'Media & Map', icon: ImageIcon },
+  // ── Helper: array field editors ──────────────────────────────────────────
+  const setArrayField = (key: 'highlights' | 'includedServices' | 'excludedServices', idx: number, val: string) => {
+    const arr = [...formData[key]];
+    arr[idx] = val;
+    setFormData({ ...formData, [key]: arr });
+  };
+  const addArrayItem = (key: 'highlights' | 'includedServices' | 'excludedServices') =>
+    setFormData({ ...formData, [key]: [...formData[key], ''] });
+  const removeArrayItem = (key: 'highlights' | 'includedServices' | 'excludedServices', idx: number) =>
+    setFormData({ ...formData, [key]: formData[key].filter((_, i) => i !== idx) });
+
+  // ── Timeline helpers ─────────────────────────────────────────────────────
+  const addTimelineDay = () => {
+    setFormData({
+      ...formData,
+      timeline: [...formData.timeline, { day: formData.timeline.length + 1, title: '', activities: [] }]
+    });
+  };
+  const removeTimelineDay = (idx: number) => {
+    const arr = formData.timeline.filter((_, i) => i !== idx).map((d, i) => ({ ...d, day: i + 1 }));
+    setFormData({ ...formData, timeline: arr });
+  };
+  const updateDayTitle = (idx: number, val: string) => {
+    const arr = [...formData.timeline];
+    arr[idx] = { ...arr[idx], title: val };
+    setFormData({ ...formData, timeline: arr });
+  };
+  const addActivity = (dayIdx: number) => {
+    const arr = [...formData.timeline];
+    arr[dayIdx] = { ...arr[dayIdx], activities: [...arr[dayIdx].activities, { time: '', activity: '', description: '' }] };
+    setFormData({ ...formData, timeline: arr });
+  };
+  const removeActivity = (dayIdx: number, actIdx: number) => {
+    const arr = [...formData.timeline];
+    arr[dayIdx] = { ...arr[dayIdx], activities: arr[dayIdx].activities.filter((_, i) => i !== actIdx) };
+    setFormData({ ...formData, timeline: arr });
+  };
+  const updateActivity = (dayIdx: number, actIdx: number, field: string, val: string) => {
+    const arr = [...formData.timeline];
+    const acts = [...arr[dayIdx].activities];
+    acts[actIdx] = { ...acts[actIdx], [field]: val };
+    arr[dayIdx] = { ...arr[dayIdx], activities: acts };
+    setFormData({ ...formData, timeline: arr });
+  };
+
+  // ── Tabs definition ──────────────────────────────────────────────────────
+  const tabs: { id: TabType; label: string; icon: any }[] = [
+    { id: 'hero',     label: 'Hero Banner',   icon: ImageIcon },
+    { id: 'intro',    label: 'Introduction',  icon: LayoutList },
+    { id: 'guide',    label: 'Guide & Contact', icon: Phone },
+    { id: 'details',  label: 'Journey Details', icon: Info },
+    { id: 'gallery',  label: 'Gallery',       icon: ImageIcon },
+    { id: 'timeline', label: 'Timeline',      icon: Map },
   ];
+
+  const InputField = ({ label, value, onChange, placeholder = '', required = false, type = 'text' }: any) => (
+    <div className="space-y-1">
+      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}{required && <span className="text-red-400 ml-1">*</span>}</label>
+      <input type={type} value={value} onChange={onChange} required={required} placeholder={placeholder}
+        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all placeholder-white/25" />
+    </div>
+  );
+
+  const SelectField = ({ label, value, onChange, options, placeholder = 'Select...', required = false }: any) => (
+    <div className="space-y-1">
+      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}{required && <span className="text-red-400 ml-1">*</span>}</label>
+      <select value={value} onChange={onChange} required={required}
+        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all">
+        <option value="">{placeholder}</option>
+        {options.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
+      </select>
+    </div>
+  );
+
+  const TextareaField = ({ label, value, onChange, rows = 3, placeholder = '' }: any) => (
+    <div className="space-y-1">
+      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}</label>
+      <textarea value={value} onChange={onChange} rows={rows} placeholder={placeholder}
+        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all resize-none placeholder-white/25" />
+    </div>
+  );
+
+  const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+    <h4 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
+      <span className="w-1 h-4 bg-brand-gold rounded-full" />
+      {children}
+    </h4>
+  );
+
+  const GoldBtn = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+    <button type="button" onClick={onClick}
+      className="text-xs flex items-center gap-1.5 bg-brand-gold/10 border border-brand-gold/30 text-brand-gold px-3 py-1.5 rounded-lg hover:bg-brand-gold/20 transition-colors font-semibold">
+      {children}
+    </button>
+  );
 
   return (
     <div className="space-y-6">
       {/* Sub-view Switcher */}
       <div className="flex gap-4 border-b border-white/10 pb-4">
-        <button
-          onClick={() => setSubView('packages')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${subView === 'packages' ? 'bg-[#F4A261] text-black font-sans' : 'text-white/60 hover:text-white bg-white/5 font-sans'
-            }`}
-        >
+        <button onClick={() => setSubView('packages')}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all font-sans ${subView === 'packages' ? 'bg-brand-gold text-black' : 'text-white/60 hover:text-white bg-white/5'}`}>
           Tour Packages
         </button>
-        <button
-          onClick={() => setSubView('journeys')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${subView === 'journeys' ? 'bg-[#F4A261] text-black font-sans' : 'text-white/60 hover:text-white bg-white/5 font-sans'
-            }`}
-        >
+        <button onClick={() => setSubView('journeys')}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 font-sans ${subView === 'journeys' ? 'bg-brand-gold text-black' : 'text-white/60 hover:text-white bg-white/5'}`}>
           Community Journeys
           {journeys.filter(j => j.status === 'PENDING').length > 0 && (
-            <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold ml-1">
+            <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
               {journeys.filter(j => j.status === 'PENDING').length}
             </span>
           )}
@@ -186,8 +424,8 @@ const AdminTourism = () => {
       {subView === 'packages' ? (
         <>
           <AdminTable
-            title="Tourism Packages"
-            description="Manage tour packages, providers, and itineraries."
+            title={`Tourism Packages (${filteredData.length})`}
+            description={`Static packages + ${approvedJourneys.length} approved community journeys. All entries are fully editable.`}
             data={filteredData}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
@@ -195,305 +433,389 @@ const AdminTourism = () => {
             onEdit={handleEdit}
             onDelete={handleDeleteClick}
             columns={[
-              {
-                header: 'Image',
-                accessor: (item) => (
-                  <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 shrink-0">
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                  </div>
-                )
-              },
-              { header: 'Title', accessor: 'title', className: 'font-semibold text-white' },
-              { header: 'Provider', accessor: 'provider' },
+              { header: 'Image', accessor: (item: any) => (
+                <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 shrink-0">
+                  {item.image
+                    ? <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    : <div className="w-full h-full flex items-center justify-center text-white/20 text-[10px]">No img</div>
+                  }
+                </div>
+              )},
+              { header: 'Title', accessor: (item: any) => (
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-white">{item.title}</span>
+                  {item._isApprovedJourney && (
+                    <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded-full">
+                      Community
+                    </span>
+                  )}
+                </div>
+              )},
+              { header: 'Provider / Author', accessor: 'provider' },
+              { header: 'Duration', accessor: (item: any) => (
+                <span className="text-white/60 text-xs">{item.duration || item.tripDuration || '—'}</span>
+              )},
             ]}
           />
 
-          <AdminModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            title={editingItem ? 'Edit Tour Package' : 'Add Tour Package'}
-            maxWidth="max-w-5xl"
-          >
+          <AdminModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}
+            title={editingItem ? 'Edit Tour Package' : 'Add Tour Package'} maxWidth="max-w-5xl">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Tabs Sidebar */}
-              <div className="w-full md:w-48 shrink-0 flex flex-row md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0">
+              <div className="w-full md:w-52 shrink-0 flex flex-row md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0">
                 {tabs.map(tab => {
                   const Icon = tab.icon;
                   return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id as TabType)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                        ? 'bg-[#F4A261] text-black'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                        }`}
-                    >
-                      <Icon size={16} />
+                    <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.id
+                        ? 'bg-brand-gold text-black shadow-lg shadow-brand-gold/20'
+                        : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'}`}>
+                      <Icon size={15} />
                       {tab.label}
                     </button>
-                  )
+                  );
                 })}
               </div>
 
               {/* Form Content */}
-              <form onSubmit={handleSubmit} className="flex-1 space-y-6 min-w-0">
-                <div className="bg-black/20 p-6 rounded-2xl border border-white/10 min-h-[500px]">
+              <form onSubmit={handleSubmit} className="flex-1 space-y-4 min-w-0">
+                <div className="bg-black/20 p-6 rounded-2xl border border-white/10 min-h-[520px] overflow-y-auto max-h-[65vh]">
 
-                  {/* TAB 1: BASIC */}
-                  {activeTab === 'basic' && (
-                    <div className="space-y-4 animate-fade-in">
+                  {/* ── TAB 1: HERO BANNER ─────────────────────────────────── */}
+                  {activeTab === 'hero' && (
+                    <div className="space-y-5">
+                      <SectionLabel>Hero Banner</SectionLabel>
+                      <InputField label="Journey Title" value={formData.title}
+                        onChange={(e: any) => setFormData({ ...formData, title: e.target.value })}
+                        placeholder="e.g. Mahabodhi Trail" required />
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <AdminInput
-                          label="Package Title"
-                          value={formData.title || ''}
-                          onChange={e => setFormData({ ...formData, title: e.target.value })}
-                          required
-                        />
-
+                        <SelectField label="Category" value={formData.category}
+                          onChange={(e: any) => setFormData({ ...formData, category: e.target.value })}
+                          options={CATEGORY_OPTIONS} placeholder="Select Category" required />
+                        <InputField label="Company / Provider Name" value={formData.companyName}
+                          onChange={(e: any) => setFormData({ ...formData, companyName: e.target.value })}
+                          placeholder="e.g. Bihar Tours Pvt Ltd" />
                       </div>
 
-                      <AdminInput
-                        label="Main Image URL"
-                        value={formData.image || ''}
-                        onChange={e => setFormData({ ...formData, image: e.target.value })}
-                        required
-                      />
-                      <AdminImagePreview url={formData.image || ''} />
-                    </div>
-                  )}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <SelectField label="Trip Duration" value={formData.tripDuration}
+                          onChange={(e: any) => setFormData({ ...formData, tripDuration: e.target.value })}
+                          options={TRIP_DURATION_OPTIONS} placeholder="Select Duration" required />
+                        <InputField label="Estimated Budget" value={formData.price}
+                          onChange={(e: any) => setFormData({ ...formData, price: e.target.value })}
+                          placeholder="e.g. ₹15,000" />
+                      </div>
 
-                  {/* TAB 2: OVERVIEW */}
-                  {activeTab === 'details' && (
-                    <div className="space-y-4 animate-fade-in">
-                      <AdminTextarea
-                        label="Journey Motto (Short Hook)"
-                        value={formData.description || ''}
-                        onChange={e => setFormData({ ...formData, description: e.target.value })}
-                        required
-                        rows={2}
-                      />
-                      <AdminTextarea
-                        label="Overview Text (Detailed Description)"
-                        value={formData.overviewText || ''}
-                        onChange={e => setFormData({ ...formData, overviewText: e.target.value })}
-                        rows={4}
-                      />
+                      <SelectField label="Departure District" value={formData.departureCity}
+                        onChange={(e: any) => setFormData({ ...formData, departureCity: e.target.value })}
+                        options={BIHAR_DISTRICTS} placeholder="Select District" required />
 
-                    </div>
-                  )}
+                      <TextareaField label="Short Description (Hook)" value={formData.description}
+                        onChange={(e: any) => setFormData({ ...formData, description: e.target.value })}
+                        rows={2} placeholder="A one-line captivating hook for this journey…" />
 
-                  {/* TAB 3: CONTACT & GUIDE */}
-                  {activeTab === 'contact' && (
-                    <div className="space-y-6 animate-fade-in">
-                      <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-4">
-                        <h4 className="text-white font-medium">Agency Contact Info</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <AdminInput
-                            label="Agency Phone Number"
-                            value={formData.phone || ''}
-                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                          />
-                          <AdminInput
-                            label="Agency WhatsApp Number"
-                            value={formData.whatsapp || ''}
-                            onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
-                          />
-                          <AdminInput
-                            label="Agency Email Address"
-                            value={formData.email || ''}
-                            onChange={e => setFormData({ ...formData, email: e.target.value })}
-                          />
-                          <AdminInput
-                            label="Emergency Contact"
-                            value={formData.emergencyContact || ''}
-                            onChange={e => setFormData({ ...formData, emergencyContact: e.target.value })}
-                          />
+                      <InputField label="Hero / Main Image URL" value={formData.image}
+                        onChange={(e: any) => setFormData({ ...formData, image: e.target.value })}
+                        placeholder="https://..." required />
+                      {formData.image && (
+                        <div className="rounded-xl overflow-hidden h-40 border border-white/10">
+                          <img src={formData.image} alt="preview" className="w-full h-full object-cover" />
                         </div>
-                      </div>
-
-                      <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-4">
-                        <h4 className="text-white font-medium">Tour Guide Profile</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <AdminInput
-                            label="Guide Name"
-                            value={formData.guide?.name || ''}
-                            onChange={e => setFormData({ ...formData, guide: { ...(formData.guide as any), name: e.target.value } })}
-                          />
-                          <AdminInput
-                            label="Guide Image URL"
-                            value={formData.guide?.image || ''}
-                            onChange={e => setFormData({ ...formData, guide: { ...(formData.guide as any), image: e.target.value } })}
-                          />
-                          <AdminInput
-                            label="Experience (e.g. 10+ Years)"
-                            value={formData.guide?.experience || ''}
-                            onChange={e => setFormData({ ...formData, guide: { ...(formData.guide as any), experience: e.target.value } })}
-                          />
-                          <AdminInput
-                            label="Languages (comma separated)"
-                            value={formData.guide?.languages?.join(', ') || ''}
-                            onChange={e => setFormData({ ...formData, guide: { ...(formData.guide as any), languages: e.target.value.split(',').map(s => s.trim()) } })}
-                          />
-                          <AdminInput
-                            label="Guide Cell Number"
-                            value={formData.guide?.phone || ''}
-                            onChange={e => setFormData({ ...formData, guide: { ...(formData.guide as any), phone: e.target.value } })}
-                          />
-                          <AdminInput
-                            label="Guide WhatsApp Number"
-                            value={formData.guide?.whatsapp || ''}
-                            onChange={e => setFormData({ ...formData, guide: { ...(formData.guide as any), whatsapp: e.target.value } })}
-                          />
-                        </div>
-
-                      </div>
+                      )}
                     </div>
                   )}
 
-                  {/* TAB 4: ITINERARY */}
-                  {activeTab === 'itinerary' && (
-                    <div className="space-y-6 animate-fade-in">
+                  {/* ── TAB 2: INTRODUCTION ────────────────────────────────── */}
+                  {activeTab === 'intro' && (
+                    <div className="space-y-6">
+                      <SectionLabel>Journey Introduction</SectionLabel>
 
-                      {/* Places Covered */}
+                      <InputField label="Journey Quote / Motto" value={formData.quote}
+                        onChange={(e: any) => setFormData({ ...formData, quote: e.target.value })}
+                        placeholder='e.g. "Not just a holiday, but a spiritual awakening…"' />
+
+                      <TextareaField label="Overview / Detailed Description" value={formData.overviewText}
+                        onChange={(e: any) => setFormData({ ...formData, overviewText: e.target.value })}
+                        rows={5} placeholder="Describe the journey in detail…" />
+
+                      {/* Highlights */}
                       <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <h4 className="text-white font-medium">Places Covered</h4>
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, placesCoveredDetails: [...(formData.placesCoveredDetails || []), { name: '', description: '', image: '', duration: '', importance: '' }] })}
-                            className="text-xs flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-lg text-white hover:bg-white/20"
-                          >
-                            <Plus size={14} /> Add Place
-                          </button>
+                        <div className="flex items-center justify-between mb-3">
+                          <SectionLabel>Journey Highlights</SectionLabel>
+                          <GoldBtn onClick={() => addArrayItem('highlights')}><Plus size={13} /> Add</GoldBtn>
                         </div>
-                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                          {(formData.placesCoveredDetails || []).map((place, index) => (
-                            <div key={index} className="p-4 bg-white/5 rounded-xl border border-white/10 relative group">
-                              <button type="button" onClick={() => {
-                                const newArr = [...(formData.placesCoveredDetails || [])];
-                                newArr.splice(index, 1);
-                                setFormData({ ...formData, placesCoveredDetails: newArr });
-                              }} className="absolute top-3 right-3 text-white/40 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                <Trash2 size={16} />
+                        <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                          {formData.highlights.map((h, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <input value={h} onChange={e => setArrayField('highlights', idx, e.target.value)}
+                                placeholder={`Highlight ${idx + 1}`}
+                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-gold/50 placeholder-white/25" />
+                              <button type="button" onClick={() => removeArrayItem('highlights', idx)}
+                                className="p-2 text-white/30 hover:text-red-400 bg-white/5 rounded-xl border border-white/10 transition-colors">
+                                <Trash2 size={15} />
                               </button>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-                                <AdminInput label="Place Name" value={place.name} onChange={e => { const arr = [...formData.placesCoveredDetails!]; arr[index].name = e.target.value; setFormData({ ...formData, placesCoveredDetails: arr }) }} />
-                                <AdminInput label="Image URL" value={place.image} onChange={e => { const arr = [...formData.placesCoveredDetails!]; arr[index].image = e.target.value; setFormData({ ...formData, placesCoveredDetails: arr }) }} />
-                              </div>
-                              <AdminTextarea label="Description" value={place.description} rows={2} onChange={e => { const arr = [...formData.placesCoveredDetails!]; arr[index].description = e.target.value; setFormData({ ...formData, placesCoveredDetails: arr }) }} />
                             </div>
                           ))}
                         </div>
                       </div>
-
-                      {/* Timeline */}
-                      <div className="pt-4 border-t border-white/10">
-                        <div className="flex justify-between items-center mb-2">
-                          <h4 className="text-white font-medium">Timeline (Days)</h4>
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, timeline: [...(formData.timeline || []), { day: (formData.timeline?.length || 0) + 1, title: '', activities: [] }] })}
-                            className="text-xs flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-lg text-white hover:bg-white/20"
-                          >
-                            <Plus size={14} /> Add Day
-                          </button>
-                        </div>
-                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                          {(formData.timeline || []).map((day, index) => (
-                            <div key={index} className="p-4 bg-white/5 rounded-xl border border-white/10 relative">
-                              <div className="flex justify-between items-start mb-3">
-                                <div className="flex-1 mr-4 grid grid-cols-2 gap-3">
-                                  <AdminInput label={`Day ${day.day} Title`} value={day.title} onChange={e => { const arr = [...formData.timeline!]; arr[index].title = e.target.value; setFormData({ ...formData, timeline: arr }) }} />
-                                </div>
-                                <button type="button" onClick={() => {
-                                  const newArr = [...(formData.timeline || [])];
-                                  newArr.splice(index, 1);
-                                  setFormData({ ...formData, timeline: newArr });
-                                }} className="text-white/40 hover:text-red-400 mt-6">
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                              <div className="pl-4 border-l-2 border-white/10 mt-2 space-y-3">
-                                {day.activities.map((act, actIdx) => (
-                                  <div key={actIdx} className="relative group p-3 bg-black/20 rounded-lg">
-                                    <button type="button" onClick={() => {
-                                      const arr = [...formData.timeline!]; arr[index].activities.splice(actIdx, 1); setFormData({ ...formData, timeline: arr });
-                                    }} className="absolute top-2 right-2 text-white/40 hover:text-red-400 opacity-0 group-hover:opacity-100 z-10"><Trash2 size={14} /></button>
-                                    <div className="grid grid-cols-2 gap-2 mb-2">
-                                      <AdminInput label="Time" value={act.time} onChange={e => { const arr = [...formData.timeline!]; arr[index].activities[actIdx].time = e.target.value; setFormData({ ...formData, timeline: arr }) }} />
-                                      <AdminInput label="Activity Name" value={act.activity} onChange={e => { const arr = [...formData.timeline!]; arr[index].activities[actIdx].activity = e.target.value; setFormData({ ...formData, timeline: arr }) }} />
-                                    </div>
-                                    <AdminTextarea label="Activity Desc" value={act.description} rows={1} onChange={e => { const arr = [...formData.timeline!]; arr[index].activities[actIdx].description = e.target.value; setFormData({ ...formData, timeline: arr }) }} />
-                                  </div>
-                                ))}
-                                <button type="button" onClick={() => {
-                                  const arr = [...formData.timeline!];
-                                  arr[index].activities.push({ time: '', activity: '', description: '' });
-                                  setFormData({ ...formData, timeline: arr });
-                                }} className="text-xs text-[#F4A261] hover:text-[#D4A017]">+ Add Activity</button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
                     </div>
                   )}
 
-                  {/* TAB 5: MEDIA & REVIEWS */}
-                  {activeTab === 'media' && (
-                    <div className="space-y-6 animate-fade-in">
-
-                      {/* Gallery */}
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <h4 className="text-white font-medium">Gallery Images</h4>
-                          <button type="button" onClick={() => setFormData({ ...formData, galleryImages: [...(formData.galleryImages || []), ''] })} className="text-xs flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-lg text-white hover:bg-white/20">
-                            <Plus size={14} /> Add Image
-                          </button>
+                  {/* ── TAB 3: GUIDE & CONTACT ─────────────────────────────── */}
+                  {activeTab === 'guide' && (
+                    <div className="space-y-6">
+                      {/* Guide Profile */}
+                      <div className="bg-white/5 rounded-2xl border border-white/10 p-5 space-y-4">
+                        <SectionLabel>Tour Guide Profile</SectionLabel>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <InputField label="Guide Name" value={formData.guide.name}
+                            onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, name: e.target.value } })}
+                            placeholder="e.g. Ramesh Kumar" />
+                          <InputField label="Guide Photo URL" value={formData.guide.image}
+                            onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, image: e.target.value } })}
+                            placeholder="https://..." />
+                          <InputField label="Experience" value={formData.guide.experience}
+                            onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, experience: e.target.value } })}
+                            placeholder="e.g. 10+ Years" />
+                          <InputField label="Languages (comma-separated)" value={formData.guide.languages.join(', ')}
+                            onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, languages: e.target.value.split(',').map((s: string) => s.trim()) } })}
+                            placeholder="Hindi, English, Magahi" />
                         </div>
-                        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-                          {(formData.galleryImages || []).map((url, index) => (
-                            <div key={index} className="flex gap-2 relative">
-                              <input type="text" value={url} onChange={e => { const arr = [...formData.galleryImages!]; arr[index] = e.target.value; setFormData({ ...formData, galleryImages: arr }) }} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-[#F4A261]/50 focus:ring-1 focus:ring-[#F4A261]/50" placeholder="Image URL" />
-                              <button type="button" onClick={() => { const arr = [...formData.galleryImages!]; arr.splice(index, 1); setFormData({ ...formData, galleryImages: arr }) }} className="p-2 text-white/40 hover:text-red-400 bg-white/5 rounded-lg border border-white/10"><Trash2 size={16} /></button>
+                        <TextareaField label="Guide Introduction / Bio" value={formData.guide.intro}
+                          onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, intro: e.target.value } })}
+                          rows={2} placeholder="A short intro about the guide…" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <InputField label="Guide Phone Number" value={formData.guide.phone}
+                            onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, phone: e.target.value } })}
+                            placeholder="+919876543210" />
+                          <InputField label="Guide WhatsApp Number" value={formData.guide.whatsapp}
+                            onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, whatsapp: e.target.value } })}
+                            placeholder="+919876543210" />
+                        </div>
+                      </div>
+
+                      {/* Ratings */}
+                      <div className="bg-white/5 rounded-2xl border border-white/10 p-5 space-y-4">
+                        <SectionLabel>Ratings</SectionLabel>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <SelectField label="Guide / Trip Rating (1–5 ★)" value={String(formData.rating)}
+                            onChange={(e: any) => setFormData({ ...formData, rating: Number(e.target.value) })}
+                            options={RATING_OPTIONS} placeholder="Select Rating" />
+                          <SelectField label="Your Own Rating (1–5 ★)" value={String(formData.userRating)}
+                            onChange={(e: any) => setFormData({ ...formData, userRating: Number(e.target.value) })}
+                            options={RATING_OPTIONS} placeholder="Select Rating" />
+                        </div>
+                      </div>
+
+                      {/* Agency Contact */}
+                      <div className="bg-white/5 rounded-2xl border border-white/10 p-5 space-y-4">
+                        <SectionLabel>Agency Contact Info</SectionLabel>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <InputField label="Agency Phone" value={formData.phone}
+                            onChange={(e: any) => setFormData({ ...formData, phone: e.target.value })}
+                            placeholder="+919876543210" />
+                          <InputField label="Agency WhatsApp" value={formData.whatsapp}
+                            onChange={(e: any) => setFormData({ ...formData, whatsapp: e.target.value })}
+                            placeholder="+919876543210" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── TAB 4: JOURNEY DETAILS ─────────────────────────────── */}
+                  {activeTab === 'details' && (
+                    <div className="space-y-6">
+                      <SectionLabel>Journey Details</SectionLabel>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <SelectField label="Best Time to Visit" value={formData.bestTime}
+                          onChange={(e: any) => setFormData({ ...formData, bestTime: e.target.value })}
+                          options={BEST_TIME_OPTIONS} placeholder="Select Best Time" />
+                        <InputField label="Group Size" value={formData.groupSize}
+                          onChange={(e: any) => setFormData({ ...formData, groupSize: e.target.value })}
+                          placeholder="e.g. 2–15 people" />
+                      </div>
+
+                      <InputField label="Google Maps Link" value={formData.googleMapsLink}
+                        onChange={(e: any) => setFormData({ ...formData, googleMapsLink: e.target.value })}
+                        placeholder="https://maps.google.com/..." />
+
+                      {/* Included Services */}
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <SectionLabel>Included Services ✅</SectionLabel>
+                          <GoldBtn onClick={() => addArrayItem('includedServices')}><Plus size={13} /> Add</GoldBtn>
+                        </div>
+                        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                          {formData.includedServices.map((s, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <input value={s} onChange={e => setArrayField('includedServices', idx, e.target.value)}
+                                placeholder={`Included service ${idx + 1}`}
+                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-gold/50 placeholder-white/25" />
+                              <button type="button" onClick={() => removeArrayItem('includedServices', idx)}
+                                className="p-2 text-white/30 hover:text-red-400 bg-white/5 rounded-xl border border-white/10 transition-colors">
+                                <Trash2 size={15} />
+                              </button>
                             </div>
                           ))}
                         </div>
                       </div>
 
+                      {/* Excluded Services */}
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <SectionLabel>Excluded Services ❌</SectionLabel>
+                          <GoldBtn onClick={() => addArrayItem('excludedServices')}><Plus size={13} /> Add</GoldBtn>
+                        </div>
+                        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                          {formData.excludedServices.map((s, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <input value={s} onChange={e => setArrayField('excludedServices', idx, e.target.value)}
+                                placeholder={`Not included ${idx + 1}`}
+                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-gold/50 placeholder-white/25" />
+                              <button type="button" onClick={() => removeArrayItem('excludedServices', idx)}
+                                className="p-2 text-white/30 hover:text-red-400 bg-white/5 rounded-xl border border-white/10 transition-colors">
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── TAB 5: GALLERY ─────────────────────────────────────── */}
+                  {activeTab === 'gallery' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <SectionLabel>Gallery Images</SectionLabel>
+                        <GoldBtn onClick={() => setFormData({ ...formData, galleryImages: [...formData.galleryImages, ''] })}>
+                          <Plus size={13} /> Add Image URL
+                        </GoldBtn>
+                      </div>
+                      <p className="text-white/40 text-xs">Add image URLs for the gallery. The first image is used as the cover if no hero image is set.</p>
+                      <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+                        {formData.galleryImages.map((url, idx) => (
+                          <div key={idx} className="space-y-2">
+                            <div className="flex gap-2">
+                              <input value={url} onChange={e => { const arr = [...formData.galleryImages]; arr[idx] = e.target.value; setFormData({ ...formData, galleryImages: arr }); }}
+                                placeholder={`Image URL ${idx + 1}`}
+                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-gold/50 placeholder-white/25" />
+                              <button type="button" onClick={() => { const arr = [...formData.galleryImages]; arr.splice(idx, 1); setFormData({ ...formData, galleryImages: arr }); }}
+                                className="p-2 text-white/30 hover:text-red-400 bg-white/5 rounded-xl border border-white/10 transition-colors">
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                            {url && (
+                              <div className="h-24 rounded-xl overflow-hidden border border-white/10">
+                                <img src={url} alt="" className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        {formData.galleryImages.length === 0 && (
+                          <p className="text-white/30 text-sm text-center py-8">No gallery images yet. Click "Add Image URL" to start.</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── TAB 6: TIMELINE ────────────────────────────────────── */}
+                  {activeTab === 'timeline' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <SectionLabel>Journey Timeline (Day by Day)</SectionLabel>
+                        <GoldBtn onClick={addTimelineDay}><Plus size={13} /> Add Day</GoldBtn>
+                      </div>
+                      <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
+                        {formData.timeline.map((day, dayIdx) => (
+                          <div key={dayIdx} className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                            {/* Day Header */}
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-9 h-9 rounded-xl bg-brand-gold flex items-center justify-center text-black font-black text-sm shrink-0">
+                                {day.day}
+                              </div>
+                              <input value={day.title} onChange={e => updateDayTitle(dayIdx, e.target.value)}
+                                placeholder={`Day ${day.day} title (e.g. Arrival & Sightseeing)`}
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-gold/50" />
+                              <button type="button" onClick={() => removeTimelineDay(dayIdx)}
+                                className="p-2 text-white/30 hover:text-red-400 transition-colors">
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+
+                            {/* Activities */}
+                            <div className="pl-3 border-l-2 border-brand-gold/30 space-y-3 ml-4">
+                              {day.activities.map((act, actIdx) => (
+                                <div key={actIdx} className="relative bg-black/20 rounded-xl p-3 group">
+                                  <button type="button" onClick={() => removeActivity(dayIdx, actIdx)}
+                                    className="absolute top-2 right-2 text-white/30 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
+                                    <Trash2 size={13} />
+                                  </button>
+                                  <div className="grid grid-cols-2 gap-2 mb-2">
+                                    <input value={act.time} onChange={e => updateActivity(dayIdx, actIdx, 'time', e.target.value)}
+                                      placeholder="Time (e.g. 9:00 AM)"
+                                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-brand-gold/50 placeholder-white/25" />
+                                    <input value={act.activity} onChange={e => updateActivity(dayIdx, actIdx, 'activity', e.target.value)}
+                                      placeholder="Activity name"
+                                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-brand-gold/50 placeholder-white/25" />
+                                  </div>
+                                  <textarea value={act.description} onChange={e => updateActivity(dayIdx, actIdx, 'description', e.target.value)}
+                                    placeholder="Activity description…" rows={2}
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-brand-gold/50 resize-none placeholder-white/25" />
+                                </div>
+                              ))}
+                              <button type="button" onClick={() => addActivity(dayIdx)}
+                                className="text-xs text-brand-gold hover:text-yellow-400 font-semibold transition-colors">
+                                + Add Activity
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        {formData.timeline.length === 0 && (
+                          <p className="text-white/30 text-sm text-center py-8">No timeline days yet. Click "Add Day" to start building the itinerary.</p>
+                        )}
+                      </div>
                     </div>
                   )}
 
                 </div>
 
-                <div className="flex justify-end gap-3 pt-2">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-white font-medium hover:bg-white/5 transition-colors">
-                    Cancel
-                  </button>
-                  <button type="submit" className="px-5 py-2.5 rounded-xl bg-[#F4A261] text-black font-bold hover:bg-[#D4A017] transition-colors">
-                    {editingItem ? 'Save Changes' : 'Add Package'}
-                  </button>
+                {/* Form Actions */}
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex gap-2">
+                    {tabs.map((t, idx) => (
+                      <button key={t.id} type="button" onClick={() => setActiveTab(t.id)}
+                        className={`w-2 h-2 rounded-full transition-all ${activeTab === t.id ? 'bg-brand-gold scale-125' : 'bg-white/20 hover:bg-white/40'}`}
+                        title={t.label} />
+                    ))}
+                  </div>
+                  <div className="flex gap-3">
+                    <button type="button" onClick={() => setIsModalOpen(false)}
+                      className="px-5 py-2.5 rounded-xl text-white font-medium hover:bg-white/5 transition-colors">
+                      Cancel
+                    </button>
+                    <button type="submit"
+                      className="px-6 py-2.5 rounded-xl bg-brand-gold text-black font-bold hover:bg-yellow-400 transition-all shadow-lg shadow-brand-gold/20 hover:scale-[1.02]">
+                      {editingItem ? 'Save Changes' : 'Add Package'}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
           </AdminModal>
 
-          <AdminDeleteConfirm
-            isOpen={isDeleteOpen}
-            onClose={() => setIsDeleteOpen(false)}
-            onConfirm={confirmDelete}
-            itemName={itemToDelete?.title || ''}
-          />
+          <AdminDeleteConfirm isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)}
+            onConfirm={confirmDelete} itemName={itemToDelete?.title || ''} />
         </>
       ) : (
+        /* ── COMMUNITY JOURNEYS MODERATION ────────────────────────────────── */
         <div className="space-y-6 animate-fade-in font-sans">
-          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-white font-display tracking-tight">Community Journeys</h2>
-              <p className="text-white/40 text-sm mt-1">Review and approve customer-created itineraries and custom trips.</p>
+              <p className="text-white/40 text-sm mt-1">Review and approve customer-created itineraries.</p>
             </div>
             <div className="flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/20 rounded-xl px-4 py-2.5">
               <Clock size={16} className="text-yellow-400" />
@@ -501,120 +823,73 @@ const AdminTourism = () => {
             </div>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-2 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-1.5 font-sans">
-            {(['PENDING', 'APPROVED', 'REJECTED'] as const).map((key) => {
+          <div className="flex gap-2 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-1.5">
+            {(['PENDING', 'APPROVED', 'REJECTED'] as const).map(key => {
               const count = journeys.filter(j => j.status === key).length;
               return (
-                <button
-                  key={key}
-                  onClick={() => setJourneysTab(key)}
+                <button key={key} onClick={() => setJourneysTab(key)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 ${journeysTab === key
-                    ? 'bg-[#F4A261] text-black shadow-lg shadow-[#F4A261]/20'
-                    : 'text-white/50 hover:text-white hover:bg-white/5'
-                    }`}
-                >
+                    ? 'bg-brand-gold text-black shadow-lg shadow-brand-gold/20'
+                    : 'text-white/50 hover:text-white hover:bg-white/5'}`}>
                   {key === 'PENDING' && <Clock size={15} />}
                   {key === 'APPROVED' && <CheckCircle size={15} />}
                   {key === 'REJECTED' && <XCircle size={15} />}
-                  <span className="hidden sm:inline">{key === 'PENDING' ? 'Pending Approval' : key === 'APPROVED' ? 'Approved' : 'Rejected'}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${journeysTab === key ? 'bg-black/20 text-black' : 'bg-white/10 text-white/60'
-                    }`}>{count}</span>
+                  <span className="hidden sm:inline">{key === 'PENDING' ? 'Pending' : key === 'APPROVED' ? 'Approved' : 'Rejected'}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${journeysTab === key ? 'bg-black/20 text-black' : 'bg-white/10 text-white/60'}`}>{count}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* Search */}
-          <div className="relative">
-            <input
-              type="text"
-              value={journeysSearch}
-              onChange={e => setJourneysSearch(e.target.value)}
-              placeholder="Search journeys..."
-              className="w-full bg-[#1E1E1E]/40 border border-white/10 rounded-xl pl-4 pr-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#F4A261]/40 transition-colors"
-            />
-          </div>
+          <input type="text" value={journeysSearch} onChange={e => setJourneysSearch(e.target.value)} placeholder="Search journeys…"
+            className="w-full bg-[#1E1E1E]/40 border border-white/10 rounded-xl pl-4 pr-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-brand-gold/40 transition-colors" />
 
-          {/* List of Journeys */}
           <div className="space-y-4">
             {journeys
               .filter(j => j.status === journeysTab && j.title.toLowerCase().includes(journeysSearch.toLowerCase()))
-              .map((journey) => (
-                <div key={journey.id} className="bg-[#1E1E1E]/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md relative overflow-hidden">
+              .map(journey => (
+                <div key={journey.id} className="bg-[#1E1E1E]/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div className="space-y-2 flex-1">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-wrap">
                         <h3 className="text-xl font-bold text-white font-serif">{journey.title}</h3>
                         <span className="text-xs bg-brand-gold/10 text-brand-gold px-2 py-0.5 rounded border border-brand-gold/20 font-bold uppercase tracking-wider">{journey.duration || 'Flexible'}</span>
                       </div>
                       {(() => {
                         let desc = journey.description || '';
                         if (desc.startsWith('{"__isImmersivePackage"')) {
-                          try {
-                            const parsed = JSON.parse(desc);
-                            if (parsed.__isImmersivePackage) {
-                              desc = parsed.realDescription || '';
-                            }
-                          } catch (e) { }
+                          try { const p = JSON.parse(desc); if (p.__isImmersivePackage) desc = p.realDescription || ''; } catch (_) {}
                         }
                         return <p className="text-white/75 text-sm max-w-3xl leading-relaxed">{desc}</p>;
                       })()}
-
-                      {journey.stops && journey.stops.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-2 pt-2">
-                          <span className="text-xs text-white/40 font-semibold uppercase tracking-wider font-sans">Stops:</span>
-                          {journey.stops.map((stop: string, idx: number) => (
-                            <span key={idx} className="bg-white/5 text-white/70 text-xs px-2.5 py-1 rounded-full border border-white/10 font-sans">{stop}</span>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-white/50 pt-2 font-mono">
-                        {journey.author && (
-                          <span>Submitted by: <strong className="text-white/80">{journey.author.name}</strong></span>
-                        )}
-                        {journey.budget && (
-                          <span>Budget: <strong className="text-white/80">{journey.budget}</strong></span>
-                        )}
-                        {journey.district && (
-                          <span>District: <strong className="text-white/80">{journey.district}</strong></span>
-                        )}
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-white/50 pt-1 font-mono">
+                        {journey.author && <span>By: <strong className="text-white/80">{journey.author.name}</strong></span>}
+                        {journey.budget && <span>Budget: <strong className="text-white/80">{journey.budget}</strong></span>}
+                        {journey.district && <span>District: <strong className="text-white/80">{journey.district}</strong></span>}
                       </div>
                     </div>
-
-                    <div className="flex gap-2 self-stretch md:self-auto justify-end md:justify-start items-center">
+                    <div className="flex gap-2">
                       {journeysTab === 'PENDING' && (
                         <>
-                          <button
-                            onClick={() => handleRejectJourney(journey.id)}
-                            className="bg-red-500/10 border border-red-500/20 text-red-400 p-2.5 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 text-sm font-semibold"
-                          >
+                          <button onClick={() => handleRejectJourney(journey.id)}
+                            className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-2.5 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 text-sm font-semibold">
                             <XCircle size={16} /> Reject
                           </button>
-                          <button
-                            onClick={() => handleApproveJourney(journey.id)}
-                            className="bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 px-4 py-2.5 rounded-xl hover:bg-emerald-500/25 shadow-lg shadow-emerald-500/10 transition-all flex items-center gap-2 text-sm font-semibold"
-                          >
+                          <button onClick={() => handleApproveJourney(journey.id)}
+                            className="bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 px-4 py-2.5 rounded-xl hover:bg-emerald-500/25 transition-all flex items-center gap-2 text-sm font-semibold">
                             <CheckCircle size={16} /> Approve
                           </button>
                         </>
                       )}
-
                       {journeysTab === 'APPROVED' && (
-                        <button
-                          onClick={() => handleRejectJourney(journey.id)}
-                          className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-2.5 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 text-sm font-semibold"
-                        >
-                          <XCircle size={16} /> Revoke / Reject
+                        <button onClick={() => handleRejectJourney(journey.id)}
+                          className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-2.5 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 text-sm font-semibold">
+                          <XCircle size={16} /> Revoke
                         </button>
                       )}
-
                       {journeysTab === 'REJECTED' && (
-                        <button
-                          onClick={() => handleApproveJourney(journey.id)}
-                          className="bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 px-4 py-2.5 rounded-xl hover:bg-emerald-500/25 transition-all flex items-center gap-2 text-sm font-semibold"
-                        >
+                        <button onClick={() => handleApproveJourney(journey.id)}
+                          className="bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 px-4 py-2.5 rounded-xl hover:bg-emerald-500/25 transition-all flex items-center gap-2 text-sm font-semibold">
                           <CheckCircle size={16} /> Re-Approve
                         </button>
                       )}
@@ -622,9 +897,8 @@ const AdminTourism = () => {
                   </div>
                 </div>
               ))}
-
             {journeys.filter(j => j.status === journeysTab && j.title.toLowerCase().includes(journeysSearch.toLowerCase())).length === 0 && (
-              <div className="text-center py-12 bg-white/[0.02] border border-white/[0.05] rounded-3xl backdrop-blur-md">
+              <div className="text-center py-12 bg-white/[0.02] border border-white/[0.05] rounded-3xl">
                 <Clock className="mx-auto text-white/20 mb-3" size={40} />
                 <p className="text-white/40 font-medium font-sans">No journeys found in this tab.</p>
               </div>

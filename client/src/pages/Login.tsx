@@ -1,15 +1,59 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+
+const BACKEND_URL = 'http://localhost:5000';
+
+/** Attempt to sync user with the backend. Does NOT throw — returns success flag. */
+const syncWithBackend = async (token: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/v1/auth/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    return res.ok;
+  } catch {
+    // Backend is unreachable — log but don't block the user
+    console.warn('Backend sync unavailable; proceeding with Firebase auth only.');
+    return false;
+  }
+};
+
+/** Map Firebase error codes to friendly messages */
+const getFirebaseErrorMessage = (code: string): string => {
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+      return 'Invalid email or password. Please try again.';
+    case 'auth/email-already-in-use':
+      return 'This email is already registered. Please sign in instead.';
+    case 'auth/weak-password':
+      return 'Password must be at least 6 characters.';
+    case 'auth/too-many-requests':
+      return 'Too many failed attempts. Please wait a few minutes and try again.';
+    case 'auth/network-request-failed':
+      return 'Network error. Please check your internet connection.';
+    case 'auth/popup-closed-by-user':
+      return 'Sign-in popup was closed. Please try again.';
+    case 'auth/cancelled-popup-request':
+      return '';
+    default:
+      return 'Authentication failed. Please try again.';
+  }
+};
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -25,11 +69,14 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
     if (!isLogin && formData.newPassword !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError('Passwords do not match!');
       return;
     }
 
+    setIsLoading(true);
     try {
       let userCredential;
       if (isLogin) {
@@ -41,41 +88,41 @@ const LoginPage: React.FC = () => {
           await updateProfile(userCredential.user, { displayName });
         }
       }
-      
+
+      // Firebase auth succeeded — get token and sync with backend
       const token = await userCredential.user.getIdToken();
-      const res = await fetch('http://localhost:5000/api/v1/auth/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
-      });
-      if (!res.ok) throw new Error('Backend sync failed');
+      await syncWithBackend(token); // non-blocking: failure is logged, not thrown
 
       localStorage.setItem('isAuthenticated', 'true');
       navigate('/profile');
-    } catch (error: any) {
-      console.error("Auth error", error);
-      alert(error.message || "Failed to authenticate");
+    } catch (err: any) {
+      console.error('Auth error:', err);
+      const message = err.code ? getFirebaseErrorMessage(err.code) : (err.message || 'Authentication failed.');
+      if (message) setError(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setError('');
+    setIsLoading(true);
     try {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
-      
+
+      // Firebase auth succeeded — sync with backend (non-blocking)
       const token = await userCredential.user.getIdToken();
-      const res = await fetch('http://localhost:5000/api/v1/auth/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
-      });
-      if (!res.ok) throw new Error('Backend sync failed');
+      await syncWithBackend(token);
 
       localStorage.setItem('isAuthenticated', 'true');
       navigate('/profile');
-    } catch (error: any) {
-      console.error("Error signing in with Google", error);
-      alert(error.message || "Failed to sign in with Google. Please try again.");
+    } catch (err: any) {
+      console.error('Google sign-in error:', err);
+      const message = err.code ? getFirebaseErrorMessage(err.code) : (err.message || 'Google sign-in failed. Please try again.');
+      if (message) setError(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -109,6 +156,14 @@ const LoginPage: React.FC = () => {
               {isLogin ? 'Sign in to your account' : 'Create an account to explore Bihar'}
             </p>
           </div>
+
+          {/* Inline Error Banner */}
+          {error && (
+            <div className="flex items-start gap-3 bg-red-500/15 border border-red-500/30 text-red-300 text-sm rounded-xl px-4 py-3 mb-4 animate-in fade-in slide-in-from-top-1 duration-200">
+              <AlertCircle size={16} className="mt-0.5 shrink-0 text-red-400" />
+              <span>{error}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -208,9 +263,14 @@ const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-4 px-4 bg-gold-dark hover:bg-accent-brown text-white font-bold rounded-2xl shadow-xl shadow-amber-950/40 transition-all active:scale-[0.97] mt-4 uppercase tracking-widest text-sm cursor-pointer"
+              disabled={isLoading}
+              className="w-full py-4 px-4 bg-gold-dark hover:bg-accent-brown text-white font-bold rounded-2xl shadow-xl shadow-amber-950/40 transition-all active:scale-[0.97] mt-4 uppercase tracking-widest text-sm cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {isLogin ? 'Sign In' : 'Create Account'}
+              {isLoading ? (
+                <><Loader2 size={18} className="animate-spin" /> {isLogin ? 'Signing In...' : 'Creating Account...'}</>
+              ) : (
+                isLogin ? 'Sign In' : 'Create Account'
+              )}
             </button>
 
             <div className="relative flex items-center py-5">
@@ -222,7 +282,8 @@ const LoginPage: React.FC = () => {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full py-3.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-2xl transition-all active:scale-[0.97] flex items-center justify-center gap-3 cursor-pointer"
+              disabled={isLoading}
+              className="w-full py-3.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-2xl transition-all active:scale-[0.97] flex items-center justify-center gap-3 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -239,7 +300,7 @@ const LoginPage: React.FC = () => {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
             </span>
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => { setIsLogin(!isLogin); setError(''); }}
               className="text-brand-gold font-bold hover:underline decoration-2 underline-offset-4 bg-transparent border-none cursor-pointer"
             >
               {isLogin ? 'Register now' : 'Sign in instead'}

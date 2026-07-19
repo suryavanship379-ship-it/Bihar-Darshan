@@ -133,7 +133,7 @@ const AdminCommunity = () => {
             key={key}
             onClick={() => setTab(key)}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 ${tab === key
-              ? 'bg-[#F4A261] text-black shadow-lg shadow-[#F4A261]/20'
+              ? 'bg-[#EAB308] text-black shadow-lg shadow-[#EAB308]/20'
               : 'text-white/50 hover:text-white hover:bg-white/5'
               }`}
           >
@@ -152,7 +152,7 @@ const AdminCommunity = () => {
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search communities..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl pl-4 pr-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#F4A261]/40 transition-colors"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl pl-4 pr-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#EAB308]/40 transition-colors"
         />
       </div>
 

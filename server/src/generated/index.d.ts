@@ -17712,17 +17712,57 @@ export namespace Prisma {
 
   export type AggregateJourney = {
     _count: JourneyCountAggregateOutputType | null
+    _avg: JourneyAvgAggregateOutputType | null
+    _sum: JourneySumAggregateOutputType | null
     _min: JourneyMinAggregateOutputType | null
     _max: JourneyMaxAggregateOutputType | null
+  }
+
+  export type JourneyAvgAggregateOutputType = {
+    rating: number | null
+    userRating: number | null
+  }
+
+  export type JourneySumAggregateOutputType = {
+    rating: number | null
+    userRating: number | null
   }
 
   export type JourneyMinAggregateOutputType = {
     id: string | null
     title: string | null
+    shortDesc: string | null
     description: string | null
+    overviewText: string | null
+    image: string | null
     duration: string | null
+    tripDuration: string | null
     budget: string | null
+    price: string | null
     district: string | null
+    phone: string | null
+    whatsapp: string | null
+    difficulty: string | null
+    bestTime: string | null
+    groupSize: string | null
+    transportation: string | null
+    startPoint: string | null
+    endPoint: string | null
+    emergencyContact: string | null
+    email: string | null
+    quote: string | null
+    category: string | null
+    companyName: string | null
+    rating: number | null
+    userRating: number | null
+    googleMapsLink: string | null
+    guideName: string | null
+    guideImage: string | null
+    guideExperience: string | null
+    guideIntro: string | null
+    guidePhone: string | null
+    guideEmail: string | null
+    guideWhatsapp: string | null
     authorId: string | null
     status: $Enums.ApprovalStatus | null
     createdAt: Date | null
@@ -17732,10 +17772,38 @@ export namespace Prisma {
   export type JourneyMaxAggregateOutputType = {
     id: string | null
     title: string | null
+    shortDesc: string | null
     description: string | null
+    overviewText: string | null
+    image: string | null
     duration: string | null
+    tripDuration: string | null
     budget: string | null
+    price: string | null
     district: string | null
+    phone: string | null
+    whatsapp: string | null
+    difficulty: string | null
+    bestTime: string | null
+    groupSize: string | null
+    transportation: string | null
+    startPoint: string | null
+    endPoint: string | null
+    emergencyContact: string | null
+    email: string | null
+    quote: string | null
+    category: string | null
+    companyName: string | null
+    rating: number | null
+    userRating: number | null
+    googleMapsLink: string | null
+    guideName: string | null
+    guideImage: string | null
+    guideExperience: string | null
+    guideIntro: string | null
+    guidePhone: string | null
+    guideEmail: string | null
+    guideWhatsapp: string | null
     authorId: string | null
     status: $Enums.ApprovalStatus | null
     createdAt: Date | null
@@ -17745,11 +17813,45 @@ export namespace Prisma {
   export type JourneyCountAggregateOutputType = {
     id: number
     title: number
+    shortDesc: number
     description: number
+    overviewText: number
+    image: number
     duration: number
+    tripDuration: number
     budget: number
+    price: number
     district: number
     stops: number
+    phone: number
+    whatsapp: number
+    difficulty: number
+    bestTime: number
+    groupSize: number
+    transportation: number
+    startPoint: number
+    endPoint: number
+    emergencyContact: number
+    email: number
+    quote: number
+    galleryImages: number
+    timeline: number
+    category: number
+    companyName: number
+    rating: number
+    userRating: number
+    highlights: number
+    includedServices: number
+    excludedServices: number
+    googleMapsLink: number
+    guideName: number
+    guideImage: number
+    guideExperience: number
+    guideLanguages: number
+    guideIntro: number
+    guidePhone: number
+    guideEmail: number
+    guideWhatsapp: number
     authorId: number
     status: number
     createdAt: number
@@ -17758,13 +17860,51 @@ export namespace Prisma {
   }
 
 
+  export type JourneyAvgAggregateInputType = {
+    rating?: true
+    userRating?: true
+  }
+
+  export type JourneySumAggregateInputType = {
+    rating?: true
+    userRating?: true
+  }
+
   export type JourneyMinAggregateInputType = {
     id?: true
     title?: true
+    shortDesc?: true
     description?: true
+    overviewText?: true
+    image?: true
     duration?: true
+    tripDuration?: true
     budget?: true
+    price?: true
     district?: true
+    phone?: true
+    whatsapp?: true
+    difficulty?: true
+    bestTime?: true
+    groupSize?: true
+    transportation?: true
+    startPoint?: true
+    endPoint?: true
+    emergencyContact?: true
+    email?: true
+    quote?: true
+    category?: true
+    companyName?: true
+    rating?: true
+    userRating?: true
+    googleMapsLink?: true
+    guideName?: true
+    guideImage?: true
+    guideExperience?: true
+    guideIntro?: true
+    guidePhone?: true
+    guideEmail?: true
+    guideWhatsapp?: true
     authorId?: true
     status?: true
     createdAt?: true
@@ -17774,10 +17914,38 @@ export namespace Prisma {
   export type JourneyMaxAggregateInputType = {
     id?: true
     title?: true
+    shortDesc?: true
     description?: true
+    overviewText?: true
+    image?: true
     duration?: true
+    tripDuration?: true
     budget?: true
+    price?: true
     district?: true
+    phone?: true
+    whatsapp?: true
+    difficulty?: true
+    bestTime?: true
+    groupSize?: true
+    transportation?: true
+    startPoint?: true
+    endPoint?: true
+    emergencyContact?: true
+    email?: true
+    quote?: true
+    category?: true
+    companyName?: true
+    rating?: true
+    userRating?: true
+    googleMapsLink?: true
+    guideName?: true
+    guideImage?: true
+    guideExperience?: true
+    guideIntro?: true
+    guidePhone?: true
+    guideEmail?: true
+    guideWhatsapp?: true
     authorId?: true
     status?: true
     createdAt?: true
@@ -17787,11 +17955,45 @@ export namespace Prisma {
   export type JourneyCountAggregateInputType = {
     id?: true
     title?: true
+    shortDesc?: true
     description?: true
+    overviewText?: true
+    image?: true
     duration?: true
+    tripDuration?: true
     budget?: true
+    price?: true
     district?: true
     stops?: true
+    phone?: true
+    whatsapp?: true
+    difficulty?: true
+    bestTime?: true
+    groupSize?: true
+    transportation?: true
+    startPoint?: true
+    endPoint?: true
+    emergencyContact?: true
+    email?: true
+    quote?: true
+    galleryImages?: true
+    timeline?: true
+    category?: true
+    companyName?: true
+    rating?: true
+    userRating?: true
+    highlights?: true
+    includedServices?: true
+    excludedServices?: true
+    googleMapsLink?: true
+    guideName?: true
+    guideImage?: true
+    guideExperience?: true
+    guideLanguages?: true
+    guideIntro?: true
+    guidePhone?: true
+    guideEmail?: true
+    guideWhatsapp?: true
     authorId?: true
     status?: true
     createdAt?: true
@@ -17837,6 +18039,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: JourneyAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: JourneySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: JourneyMinAggregateInputType
@@ -17867,6 +18081,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: JourneyCountAggregateInputType | true
+    _avg?: JourneyAvgAggregateInputType
+    _sum?: JourneySumAggregateInputType
     _min?: JourneyMinAggregateInputType
     _max?: JourneyMaxAggregateInputType
   }
@@ -17874,16 +18090,52 @@ export namespace Prisma {
   export type JourneyGroupByOutputType = {
     id: string
     title: string
+    shortDesc: string | null
     description: string
+    overviewText: string | null
+    image: string | null
     duration: string | null
+    tripDuration: string | null
     budget: string | null
+    price: string | null
     district: string | null
     stops: string[]
+    phone: string | null
+    whatsapp: string | null
+    difficulty: string | null
+    bestTime: string | null
+    groupSize: string | null
+    transportation: string | null
+    startPoint: string | null
+    endPoint: string | null
+    emergencyContact: string | null
+    email: string | null
+    quote: string | null
+    galleryImages: string[]
+    timeline: JsonValue | null
+    category: string | null
+    companyName: string | null
+    rating: number | null
+    userRating: number | null
+    highlights: string[]
+    includedServices: string[]
+    excludedServices: string[]
+    googleMapsLink: string | null
+    guideName: string | null
+    guideImage: string | null
+    guideExperience: string | null
+    guideLanguages: string[]
+    guideIntro: string | null
+    guidePhone: string | null
+    guideEmail: string | null
+    guideWhatsapp: string | null
     authorId: string
     status: $Enums.ApprovalStatus
     createdAt: Date
     updatedAt: Date
     _count: JourneyCountAggregateOutputType | null
+    _avg: JourneyAvgAggregateOutputType | null
+    _sum: JourneySumAggregateOutputType | null
     _min: JourneyMinAggregateOutputType | null
     _max: JourneyMaxAggregateOutputType | null
   }
@@ -17905,11 +18157,45 @@ export namespace Prisma {
   export type JourneySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    shortDesc?: boolean
     description?: boolean
+    overviewText?: boolean
+    image?: boolean
     duration?: boolean
+    tripDuration?: boolean
     budget?: boolean
+    price?: boolean
     district?: boolean
     stops?: boolean
+    phone?: boolean
+    whatsapp?: boolean
+    difficulty?: boolean
+    bestTime?: boolean
+    groupSize?: boolean
+    transportation?: boolean
+    startPoint?: boolean
+    endPoint?: boolean
+    emergencyContact?: boolean
+    email?: boolean
+    quote?: boolean
+    galleryImages?: boolean
+    timeline?: boolean
+    category?: boolean
+    companyName?: boolean
+    rating?: boolean
+    userRating?: boolean
+    highlights?: boolean
+    includedServices?: boolean
+    excludedServices?: boolean
+    googleMapsLink?: boolean
+    guideName?: boolean
+    guideImage?: boolean
+    guideExperience?: boolean
+    guideLanguages?: boolean
+    guideIntro?: boolean
+    guidePhone?: boolean
+    guideEmail?: boolean
+    guideWhatsapp?: boolean
     authorId?: boolean
     status?: boolean
     createdAt?: boolean
@@ -17920,11 +18206,45 @@ export namespace Prisma {
   export type JourneySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    shortDesc?: boolean
     description?: boolean
+    overviewText?: boolean
+    image?: boolean
     duration?: boolean
+    tripDuration?: boolean
     budget?: boolean
+    price?: boolean
     district?: boolean
     stops?: boolean
+    phone?: boolean
+    whatsapp?: boolean
+    difficulty?: boolean
+    bestTime?: boolean
+    groupSize?: boolean
+    transportation?: boolean
+    startPoint?: boolean
+    endPoint?: boolean
+    emergencyContact?: boolean
+    email?: boolean
+    quote?: boolean
+    galleryImages?: boolean
+    timeline?: boolean
+    category?: boolean
+    companyName?: boolean
+    rating?: boolean
+    userRating?: boolean
+    highlights?: boolean
+    includedServices?: boolean
+    excludedServices?: boolean
+    googleMapsLink?: boolean
+    guideName?: boolean
+    guideImage?: boolean
+    guideExperience?: boolean
+    guideLanguages?: boolean
+    guideIntro?: boolean
+    guidePhone?: boolean
+    guideEmail?: boolean
+    guideWhatsapp?: boolean
     authorId?: boolean
     status?: boolean
     createdAt?: boolean
@@ -17935,11 +18255,45 @@ export namespace Prisma {
   export type JourneySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    shortDesc?: boolean
     description?: boolean
+    overviewText?: boolean
+    image?: boolean
     duration?: boolean
+    tripDuration?: boolean
     budget?: boolean
+    price?: boolean
     district?: boolean
     stops?: boolean
+    phone?: boolean
+    whatsapp?: boolean
+    difficulty?: boolean
+    bestTime?: boolean
+    groupSize?: boolean
+    transportation?: boolean
+    startPoint?: boolean
+    endPoint?: boolean
+    emergencyContact?: boolean
+    email?: boolean
+    quote?: boolean
+    galleryImages?: boolean
+    timeline?: boolean
+    category?: boolean
+    companyName?: boolean
+    rating?: boolean
+    userRating?: boolean
+    highlights?: boolean
+    includedServices?: boolean
+    excludedServices?: boolean
+    googleMapsLink?: boolean
+    guideName?: boolean
+    guideImage?: boolean
+    guideExperience?: boolean
+    guideLanguages?: boolean
+    guideIntro?: boolean
+    guidePhone?: boolean
+    guideEmail?: boolean
+    guideWhatsapp?: boolean
     authorId?: boolean
     status?: boolean
     createdAt?: boolean
@@ -17950,18 +18304,52 @@ export namespace Prisma {
   export type JourneySelectScalar = {
     id?: boolean
     title?: boolean
+    shortDesc?: boolean
     description?: boolean
+    overviewText?: boolean
+    image?: boolean
     duration?: boolean
+    tripDuration?: boolean
     budget?: boolean
+    price?: boolean
     district?: boolean
     stops?: boolean
+    phone?: boolean
+    whatsapp?: boolean
+    difficulty?: boolean
+    bestTime?: boolean
+    groupSize?: boolean
+    transportation?: boolean
+    startPoint?: boolean
+    endPoint?: boolean
+    emergencyContact?: boolean
+    email?: boolean
+    quote?: boolean
+    galleryImages?: boolean
+    timeline?: boolean
+    category?: boolean
+    companyName?: boolean
+    rating?: boolean
+    userRating?: boolean
+    highlights?: boolean
+    includedServices?: boolean
+    excludedServices?: boolean
+    googleMapsLink?: boolean
+    guideName?: boolean
+    guideImage?: boolean
+    guideExperience?: boolean
+    guideLanguages?: boolean
+    guideIntro?: boolean
+    guidePhone?: boolean
+    guideEmail?: boolean
+    guideWhatsapp?: boolean
     authorId?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type JourneyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "duration" | "budget" | "district" | "stops" | "authorId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["journey"]>
+  export type JourneyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "shortDesc" | "description" | "overviewText" | "image" | "duration" | "tripDuration" | "budget" | "price" | "district" | "stops" | "phone" | "whatsapp" | "difficulty" | "bestTime" | "groupSize" | "transportation" | "startPoint" | "endPoint" | "emergencyContact" | "email" | "quote" | "galleryImages" | "timeline" | "category" | "companyName" | "rating" | "userRating" | "highlights" | "includedServices" | "excludedServices" | "googleMapsLink" | "guideName" | "guideImage" | "guideExperience" | "guideLanguages" | "guideIntro" | "guidePhone" | "guideEmail" | "guideWhatsapp" | "authorId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["journey"]>
   export type JourneyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -17980,11 +18368,45 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
+      shortDesc: string | null
       description: string
+      overviewText: string | null
+      image: string | null
       duration: string | null
+      tripDuration: string | null
       budget: string | null
+      price: string | null
       district: string | null
       stops: string[]
+      phone: string | null
+      whatsapp: string | null
+      difficulty: string | null
+      bestTime: string | null
+      groupSize: string | null
+      transportation: string | null
+      startPoint: string | null
+      endPoint: string | null
+      emergencyContact: string | null
+      email: string | null
+      quote: string | null
+      galleryImages: string[]
+      timeline: Prisma.JsonValue | null
+      category: string | null
+      companyName: string | null
+      rating: number | null
+      userRating: number | null
+      highlights: string[]
+      includedServices: string[]
+      excludedServices: string[]
+      googleMapsLink: string | null
+      guideName: string | null
+      guideImage: string | null
+      guideExperience: string | null
+      guideLanguages: string[]
+      guideIntro: string | null
+      guidePhone: string | null
+      guideEmail: string | null
+      guideWhatsapp: string | null
       authorId: string
       status: $Enums.ApprovalStatus
       createdAt: Date
@@ -18415,11 +18837,45 @@ export namespace Prisma {
   interface JourneyFieldRefs {
     readonly id: FieldRef<"Journey", 'String'>
     readonly title: FieldRef<"Journey", 'String'>
+    readonly shortDesc: FieldRef<"Journey", 'String'>
     readonly description: FieldRef<"Journey", 'String'>
+    readonly overviewText: FieldRef<"Journey", 'String'>
+    readonly image: FieldRef<"Journey", 'String'>
     readonly duration: FieldRef<"Journey", 'String'>
+    readonly tripDuration: FieldRef<"Journey", 'String'>
     readonly budget: FieldRef<"Journey", 'String'>
+    readonly price: FieldRef<"Journey", 'String'>
     readonly district: FieldRef<"Journey", 'String'>
     readonly stops: FieldRef<"Journey", 'String[]'>
+    readonly phone: FieldRef<"Journey", 'String'>
+    readonly whatsapp: FieldRef<"Journey", 'String'>
+    readonly difficulty: FieldRef<"Journey", 'String'>
+    readonly bestTime: FieldRef<"Journey", 'String'>
+    readonly groupSize: FieldRef<"Journey", 'String'>
+    readonly transportation: FieldRef<"Journey", 'String'>
+    readonly startPoint: FieldRef<"Journey", 'String'>
+    readonly endPoint: FieldRef<"Journey", 'String'>
+    readonly emergencyContact: FieldRef<"Journey", 'String'>
+    readonly email: FieldRef<"Journey", 'String'>
+    readonly quote: FieldRef<"Journey", 'String'>
+    readonly galleryImages: FieldRef<"Journey", 'String[]'>
+    readonly timeline: FieldRef<"Journey", 'Json'>
+    readonly category: FieldRef<"Journey", 'String'>
+    readonly companyName: FieldRef<"Journey", 'String'>
+    readonly rating: FieldRef<"Journey", 'Float'>
+    readonly userRating: FieldRef<"Journey", 'Float'>
+    readonly highlights: FieldRef<"Journey", 'String[]'>
+    readonly includedServices: FieldRef<"Journey", 'String[]'>
+    readonly excludedServices: FieldRef<"Journey", 'String[]'>
+    readonly googleMapsLink: FieldRef<"Journey", 'String'>
+    readonly guideName: FieldRef<"Journey", 'String'>
+    readonly guideImage: FieldRef<"Journey", 'String'>
+    readonly guideExperience: FieldRef<"Journey", 'String'>
+    readonly guideLanguages: FieldRef<"Journey", 'String[]'>
+    readonly guideIntro: FieldRef<"Journey", 'String'>
+    readonly guidePhone: FieldRef<"Journey", 'String'>
+    readonly guideEmail: FieldRef<"Journey", 'String'>
+    readonly guideWhatsapp: FieldRef<"Journey", 'String'>
     readonly authorId: FieldRef<"Journey", 'String'>
     readonly status: FieldRef<"Journey", 'ApprovalStatus'>
     readonly createdAt: FieldRef<"Journey", 'DateTime'>
@@ -22492,11 +22948,45 @@ export namespace Prisma {
   export const JourneyScalarFieldEnum: {
     id: 'id',
     title: 'title',
+    shortDesc: 'shortDesc',
     description: 'description',
+    overviewText: 'overviewText',
+    image: 'image',
     duration: 'duration',
+    tripDuration: 'tripDuration',
     budget: 'budget',
+    price: 'price',
     district: 'district',
     stops: 'stops',
+    phone: 'phone',
+    whatsapp: 'whatsapp',
+    difficulty: 'difficulty',
+    bestTime: 'bestTime',
+    groupSize: 'groupSize',
+    transportation: 'transportation',
+    startPoint: 'startPoint',
+    endPoint: 'endPoint',
+    emergencyContact: 'emergencyContact',
+    email: 'email',
+    quote: 'quote',
+    galleryImages: 'galleryImages',
+    timeline: 'timeline',
+    category: 'category',
+    companyName: 'companyName',
+    rating: 'rating',
+    userRating: 'userRating',
+    highlights: 'highlights',
+    includedServices: 'includedServices',
+    excludedServices: 'excludedServices',
+    googleMapsLink: 'googleMapsLink',
+    guideName: 'guideName',
+    guideImage: 'guideImage',
+    guideExperience: 'guideExperience',
+    guideLanguages: 'guideLanguages',
+    guideIntro: 'guideIntro',
+    guidePhone: 'guidePhone',
+    guideEmail: 'guideEmail',
+    guideWhatsapp: 'guideWhatsapp',
     authorId: 'authorId',
     status: 'status',
     createdAt: 'createdAt',
@@ -23896,11 +24386,45 @@ export namespace Prisma {
     NOT?: JourneyWhereInput | JourneyWhereInput[]
     id?: StringFilter<"Journey"> | string
     title?: StringFilter<"Journey"> | string
+    shortDesc?: StringNullableFilter<"Journey"> | string | null
     description?: StringFilter<"Journey"> | string
+    overviewText?: StringNullableFilter<"Journey"> | string | null
+    image?: StringNullableFilter<"Journey"> | string | null
     duration?: StringNullableFilter<"Journey"> | string | null
+    tripDuration?: StringNullableFilter<"Journey"> | string | null
     budget?: StringNullableFilter<"Journey"> | string | null
+    price?: StringNullableFilter<"Journey"> | string | null
     district?: StringNullableFilter<"Journey"> | string | null
     stops?: StringNullableListFilter<"Journey">
+    phone?: StringNullableFilter<"Journey"> | string | null
+    whatsapp?: StringNullableFilter<"Journey"> | string | null
+    difficulty?: StringNullableFilter<"Journey"> | string | null
+    bestTime?: StringNullableFilter<"Journey"> | string | null
+    groupSize?: StringNullableFilter<"Journey"> | string | null
+    transportation?: StringNullableFilter<"Journey"> | string | null
+    startPoint?: StringNullableFilter<"Journey"> | string | null
+    endPoint?: StringNullableFilter<"Journey"> | string | null
+    emergencyContact?: StringNullableFilter<"Journey"> | string | null
+    email?: StringNullableFilter<"Journey"> | string | null
+    quote?: StringNullableFilter<"Journey"> | string | null
+    galleryImages?: StringNullableListFilter<"Journey">
+    timeline?: JsonNullableFilter<"Journey">
+    category?: StringNullableFilter<"Journey"> | string | null
+    companyName?: StringNullableFilter<"Journey"> | string | null
+    rating?: FloatNullableFilter<"Journey"> | number | null
+    userRating?: FloatNullableFilter<"Journey"> | number | null
+    highlights?: StringNullableListFilter<"Journey">
+    includedServices?: StringNullableListFilter<"Journey">
+    excludedServices?: StringNullableListFilter<"Journey">
+    googleMapsLink?: StringNullableFilter<"Journey"> | string | null
+    guideName?: StringNullableFilter<"Journey"> | string | null
+    guideImage?: StringNullableFilter<"Journey"> | string | null
+    guideExperience?: StringNullableFilter<"Journey"> | string | null
+    guideLanguages?: StringNullableListFilter<"Journey">
+    guideIntro?: StringNullableFilter<"Journey"> | string | null
+    guidePhone?: StringNullableFilter<"Journey"> | string | null
+    guideEmail?: StringNullableFilter<"Journey"> | string | null
+    guideWhatsapp?: StringNullableFilter<"Journey"> | string | null
     authorId?: StringFilter<"Journey"> | string
     status?: EnumApprovalStatusFilter<"Journey"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Journey"> | Date | string
@@ -23911,11 +24435,45 @@ export namespace Prisma {
   export type JourneyOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
+    shortDesc?: SortOrderInput | SortOrder
     description?: SortOrder
+    overviewText?: SortOrderInput | SortOrder
+    image?: SortOrderInput | SortOrder
     duration?: SortOrderInput | SortOrder
+    tripDuration?: SortOrderInput | SortOrder
     budget?: SortOrderInput | SortOrder
+    price?: SortOrderInput | SortOrder
     district?: SortOrderInput | SortOrder
     stops?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    whatsapp?: SortOrderInput | SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    bestTime?: SortOrderInput | SortOrder
+    groupSize?: SortOrderInput | SortOrder
+    transportation?: SortOrderInput | SortOrder
+    startPoint?: SortOrderInput | SortOrder
+    endPoint?: SortOrderInput | SortOrder
+    emergencyContact?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    quote?: SortOrderInput | SortOrder
+    galleryImages?: SortOrder
+    timeline?: SortOrderInput | SortOrder
+    category?: SortOrderInput | SortOrder
+    companyName?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
+    userRating?: SortOrderInput | SortOrder
+    highlights?: SortOrder
+    includedServices?: SortOrder
+    excludedServices?: SortOrder
+    googleMapsLink?: SortOrderInput | SortOrder
+    guideName?: SortOrderInput | SortOrder
+    guideImage?: SortOrderInput | SortOrder
+    guideExperience?: SortOrderInput | SortOrder
+    guideLanguages?: SortOrder
+    guideIntro?: SortOrderInput | SortOrder
+    guidePhone?: SortOrderInput | SortOrder
+    guideEmail?: SortOrderInput | SortOrder
+    guideWhatsapp?: SortOrderInput | SortOrder
     authorId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
@@ -23929,11 +24487,45 @@ export namespace Prisma {
     OR?: JourneyWhereInput[]
     NOT?: JourneyWhereInput | JourneyWhereInput[]
     title?: StringFilter<"Journey"> | string
+    shortDesc?: StringNullableFilter<"Journey"> | string | null
     description?: StringFilter<"Journey"> | string
+    overviewText?: StringNullableFilter<"Journey"> | string | null
+    image?: StringNullableFilter<"Journey"> | string | null
     duration?: StringNullableFilter<"Journey"> | string | null
+    tripDuration?: StringNullableFilter<"Journey"> | string | null
     budget?: StringNullableFilter<"Journey"> | string | null
+    price?: StringNullableFilter<"Journey"> | string | null
     district?: StringNullableFilter<"Journey"> | string | null
     stops?: StringNullableListFilter<"Journey">
+    phone?: StringNullableFilter<"Journey"> | string | null
+    whatsapp?: StringNullableFilter<"Journey"> | string | null
+    difficulty?: StringNullableFilter<"Journey"> | string | null
+    bestTime?: StringNullableFilter<"Journey"> | string | null
+    groupSize?: StringNullableFilter<"Journey"> | string | null
+    transportation?: StringNullableFilter<"Journey"> | string | null
+    startPoint?: StringNullableFilter<"Journey"> | string | null
+    endPoint?: StringNullableFilter<"Journey"> | string | null
+    emergencyContact?: StringNullableFilter<"Journey"> | string | null
+    email?: StringNullableFilter<"Journey"> | string | null
+    quote?: StringNullableFilter<"Journey"> | string | null
+    galleryImages?: StringNullableListFilter<"Journey">
+    timeline?: JsonNullableFilter<"Journey">
+    category?: StringNullableFilter<"Journey"> | string | null
+    companyName?: StringNullableFilter<"Journey"> | string | null
+    rating?: FloatNullableFilter<"Journey"> | number | null
+    userRating?: FloatNullableFilter<"Journey"> | number | null
+    highlights?: StringNullableListFilter<"Journey">
+    includedServices?: StringNullableListFilter<"Journey">
+    excludedServices?: StringNullableListFilter<"Journey">
+    googleMapsLink?: StringNullableFilter<"Journey"> | string | null
+    guideName?: StringNullableFilter<"Journey"> | string | null
+    guideImage?: StringNullableFilter<"Journey"> | string | null
+    guideExperience?: StringNullableFilter<"Journey"> | string | null
+    guideLanguages?: StringNullableListFilter<"Journey">
+    guideIntro?: StringNullableFilter<"Journey"> | string | null
+    guidePhone?: StringNullableFilter<"Journey"> | string | null
+    guideEmail?: StringNullableFilter<"Journey"> | string | null
+    guideWhatsapp?: StringNullableFilter<"Journey"> | string | null
     authorId?: StringFilter<"Journey"> | string
     status?: EnumApprovalStatusFilter<"Journey"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Journey"> | Date | string
@@ -23944,18 +24536,54 @@ export namespace Prisma {
   export type JourneyOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
+    shortDesc?: SortOrderInput | SortOrder
     description?: SortOrder
+    overviewText?: SortOrderInput | SortOrder
+    image?: SortOrderInput | SortOrder
     duration?: SortOrderInput | SortOrder
+    tripDuration?: SortOrderInput | SortOrder
     budget?: SortOrderInput | SortOrder
+    price?: SortOrderInput | SortOrder
     district?: SortOrderInput | SortOrder
     stops?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    whatsapp?: SortOrderInput | SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    bestTime?: SortOrderInput | SortOrder
+    groupSize?: SortOrderInput | SortOrder
+    transportation?: SortOrderInput | SortOrder
+    startPoint?: SortOrderInput | SortOrder
+    endPoint?: SortOrderInput | SortOrder
+    emergencyContact?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    quote?: SortOrderInput | SortOrder
+    galleryImages?: SortOrder
+    timeline?: SortOrderInput | SortOrder
+    category?: SortOrderInput | SortOrder
+    companyName?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
+    userRating?: SortOrderInput | SortOrder
+    highlights?: SortOrder
+    includedServices?: SortOrder
+    excludedServices?: SortOrder
+    googleMapsLink?: SortOrderInput | SortOrder
+    guideName?: SortOrderInput | SortOrder
+    guideImage?: SortOrderInput | SortOrder
+    guideExperience?: SortOrderInput | SortOrder
+    guideLanguages?: SortOrder
+    guideIntro?: SortOrderInput | SortOrder
+    guidePhone?: SortOrderInput | SortOrder
+    guideEmail?: SortOrderInput | SortOrder
+    guideWhatsapp?: SortOrderInput | SortOrder
     authorId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: JourneyCountOrderByAggregateInput
+    _avg?: JourneyAvgOrderByAggregateInput
     _max?: JourneyMaxOrderByAggregateInput
     _min?: JourneyMinOrderByAggregateInput
+    _sum?: JourneySumOrderByAggregateInput
   }
 
   export type JourneyScalarWhereWithAggregatesInput = {
@@ -23964,11 +24592,45 @@ export namespace Prisma {
     NOT?: JourneyScalarWhereWithAggregatesInput | JourneyScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Journey"> | string
     title?: StringWithAggregatesFilter<"Journey"> | string
+    shortDesc?: StringNullableWithAggregatesFilter<"Journey"> | string | null
     description?: StringWithAggregatesFilter<"Journey"> | string
+    overviewText?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    image?: StringNullableWithAggregatesFilter<"Journey"> | string | null
     duration?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    tripDuration?: StringNullableWithAggregatesFilter<"Journey"> | string | null
     budget?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    price?: StringNullableWithAggregatesFilter<"Journey"> | string | null
     district?: StringNullableWithAggregatesFilter<"Journey"> | string | null
     stops?: StringNullableListFilter<"Journey">
+    phone?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    whatsapp?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    difficulty?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    bestTime?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    groupSize?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    transportation?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    startPoint?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    endPoint?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    emergencyContact?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    quote?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    galleryImages?: StringNullableListFilter<"Journey">
+    timeline?: JsonNullableWithAggregatesFilter<"Journey">
+    category?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    companyName?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    rating?: FloatNullableWithAggregatesFilter<"Journey"> | number | null
+    userRating?: FloatNullableWithAggregatesFilter<"Journey"> | number | null
+    highlights?: StringNullableListFilter<"Journey">
+    includedServices?: StringNullableListFilter<"Journey">
+    excludedServices?: StringNullableListFilter<"Journey">
+    googleMapsLink?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    guideName?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    guideImage?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    guideExperience?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    guideLanguages?: StringNullableListFilter<"Journey">
+    guideIntro?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    guidePhone?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    guideEmail?: StringNullableWithAggregatesFilter<"Journey"> | string | null
+    guideWhatsapp?: StringNullableWithAggregatesFilter<"Journey"> | string | null
     authorId?: StringWithAggregatesFilter<"Journey"> | string
     status?: EnumApprovalStatusWithAggregatesFilter<"Journey"> | $Enums.ApprovalStatus
     createdAt?: DateTimeWithAggregatesFilter<"Journey"> | Date | string
@@ -25524,11 +26186,45 @@ export namespace Prisma {
   export type JourneyCreateInput = {
     id?: string
     title: string
+    shortDesc?: string | null
     description: string
+    overviewText?: string | null
+    image?: string | null
     duration?: string | null
+    tripDuration?: string | null
     budget?: string | null
+    price?: string | null
     district?: string | null
     stops?: JourneyCreatestopsInput | string[]
+    phone?: string | null
+    whatsapp?: string | null
+    difficulty?: string | null
+    bestTime?: string | null
+    groupSize?: string | null
+    transportation?: string | null
+    startPoint?: string | null
+    endPoint?: string | null
+    emergencyContact?: string | null
+    email?: string | null
+    quote?: string | null
+    galleryImages?: JourneyCreategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: string | null
+    companyName?: string | null
+    rating?: number | null
+    userRating?: number | null
+    highlights?: JourneyCreatehighlightsInput | string[]
+    includedServices?: JourneyCreateincludedServicesInput | string[]
+    excludedServices?: JourneyCreateexcludedServicesInput | string[]
+    googleMapsLink?: string | null
+    guideName?: string | null
+    guideImage?: string | null
+    guideExperience?: string | null
+    guideLanguages?: JourneyCreateguideLanguagesInput | string[]
+    guideIntro?: string | null
+    guidePhone?: string | null
+    guideEmail?: string | null
+    guideWhatsapp?: string | null
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25538,11 +26234,45 @@ export namespace Prisma {
   export type JourneyUncheckedCreateInput = {
     id?: string
     title: string
+    shortDesc?: string | null
     description: string
+    overviewText?: string | null
+    image?: string | null
     duration?: string | null
+    tripDuration?: string | null
     budget?: string | null
+    price?: string | null
     district?: string | null
     stops?: JourneyCreatestopsInput | string[]
+    phone?: string | null
+    whatsapp?: string | null
+    difficulty?: string | null
+    bestTime?: string | null
+    groupSize?: string | null
+    transportation?: string | null
+    startPoint?: string | null
+    endPoint?: string | null
+    emergencyContact?: string | null
+    email?: string | null
+    quote?: string | null
+    galleryImages?: JourneyCreategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: string | null
+    companyName?: string | null
+    rating?: number | null
+    userRating?: number | null
+    highlights?: JourneyCreatehighlightsInput | string[]
+    includedServices?: JourneyCreateincludedServicesInput | string[]
+    excludedServices?: JourneyCreateexcludedServicesInput | string[]
+    googleMapsLink?: string | null
+    guideName?: string | null
+    guideImage?: string | null
+    guideExperience?: string | null
+    guideLanguages?: JourneyCreateguideLanguagesInput | string[]
+    guideIntro?: string | null
+    guidePhone?: string | null
+    guideEmail?: string | null
+    guideWhatsapp?: string | null
     authorId: string
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
@@ -25552,11 +26282,45 @@ export namespace Prisma {
   export type JourneyUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    shortDesc?: NullableStringFieldUpdateOperationsInput | string | null
     description?: StringFieldUpdateOperationsInput | string
+    overviewText?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: NullableStringFieldUpdateOperationsInput | string | null
+    tripDuration?: NullableStringFieldUpdateOperationsInput | string | null
     budget?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     stops?: JourneyUpdatestopsInput | string[]
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    bestTime?: NullableStringFieldUpdateOperationsInput | string | null
+    groupSize?: NullableStringFieldUpdateOperationsInput | string | null
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    startPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    endPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    quote?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: JourneyUpdategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    highlights?: JourneyUpdatehighlightsInput | string[]
+    includedServices?: JourneyUpdateincludedServicesInput | string[]
+    excludedServices?: JourneyUpdateexcludedServicesInput | string[]
+    googleMapsLink?: NullableStringFieldUpdateOperationsInput | string | null
+    guideName?: NullableStringFieldUpdateOperationsInput | string | null
+    guideImage?: NullableStringFieldUpdateOperationsInput | string | null
+    guideExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    guideLanguages?: JourneyUpdateguideLanguagesInput | string[]
+    guideIntro?: NullableStringFieldUpdateOperationsInput | string | null
+    guidePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    guideEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    guideWhatsapp?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25566,11 +26330,45 @@ export namespace Prisma {
   export type JourneyUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    shortDesc?: NullableStringFieldUpdateOperationsInput | string | null
     description?: StringFieldUpdateOperationsInput | string
+    overviewText?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: NullableStringFieldUpdateOperationsInput | string | null
+    tripDuration?: NullableStringFieldUpdateOperationsInput | string | null
     budget?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     stops?: JourneyUpdatestopsInput | string[]
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    bestTime?: NullableStringFieldUpdateOperationsInput | string | null
+    groupSize?: NullableStringFieldUpdateOperationsInput | string | null
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    startPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    endPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    quote?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: JourneyUpdategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    highlights?: JourneyUpdatehighlightsInput | string[]
+    includedServices?: JourneyUpdateincludedServicesInput | string[]
+    excludedServices?: JourneyUpdateexcludedServicesInput | string[]
+    googleMapsLink?: NullableStringFieldUpdateOperationsInput | string | null
+    guideName?: NullableStringFieldUpdateOperationsInput | string | null
+    guideImage?: NullableStringFieldUpdateOperationsInput | string | null
+    guideExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    guideLanguages?: JourneyUpdateguideLanguagesInput | string[]
+    guideIntro?: NullableStringFieldUpdateOperationsInput | string | null
+    guidePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    guideEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    guideWhatsapp?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25580,11 +26378,45 @@ export namespace Prisma {
   export type JourneyCreateManyInput = {
     id?: string
     title: string
+    shortDesc?: string | null
     description: string
+    overviewText?: string | null
+    image?: string | null
     duration?: string | null
+    tripDuration?: string | null
     budget?: string | null
+    price?: string | null
     district?: string | null
     stops?: JourneyCreatestopsInput | string[]
+    phone?: string | null
+    whatsapp?: string | null
+    difficulty?: string | null
+    bestTime?: string | null
+    groupSize?: string | null
+    transportation?: string | null
+    startPoint?: string | null
+    endPoint?: string | null
+    emergencyContact?: string | null
+    email?: string | null
+    quote?: string | null
+    galleryImages?: JourneyCreategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: string | null
+    companyName?: string | null
+    rating?: number | null
+    userRating?: number | null
+    highlights?: JourneyCreatehighlightsInput | string[]
+    includedServices?: JourneyCreateincludedServicesInput | string[]
+    excludedServices?: JourneyCreateexcludedServicesInput | string[]
+    googleMapsLink?: string | null
+    guideName?: string | null
+    guideImage?: string | null
+    guideExperience?: string | null
+    guideLanguages?: JourneyCreateguideLanguagesInput | string[]
+    guideIntro?: string | null
+    guidePhone?: string | null
+    guideEmail?: string | null
+    guideWhatsapp?: string | null
     authorId: string
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
@@ -25594,11 +26426,45 @@ export namespace Prisma {
   export type JourneyUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    shortDesc?: NullableStringFieldUpdateOperationsInput | string | null
     description?: StringFieldUpdateOperationsInput | string
+    overviewText?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: NullableStringFieldUpdateOperationsInput | string | null
+    tripDuration?: NullableStringFieldUpdateOperationsInput | string | null
     budget?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     stops?: JourneyUpdatestopsInput | string[]
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    bestTime?: NullableStringFieldUpdateOperationsInput | string | null
+    groupSize?: NullableStringFieldUpdateOperationsInput | string | null
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    startPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    endPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    quote?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: JourneyUpdategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    highlights?: JourneyUpdatehighlightsInput | string[]
+    includedServices?: JourneyUpdateincludedServicesInput | string[]
+    excludedServices?: JourneyUpdateexcludedServicesInput | string[]
+    googleMapsLink?: NullableStringFieldUpdateOperationsInput | string | null
+    guideName?: NullableStringFieldUpdateOperationsInput | string | null
+    guideImage?: NullableStringFieldUpdateOperationsInput | string | null
+    guideExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    guideLanguages?: JourneyUpdateguideLanguagesInput | string[]
+    guideIntro?: NullableStringFieldUpdateOperationsInput | string | null
+    guidePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    guideEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    guideWhatsapp?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25607,11 +26473,45 @@ export namespace Prisma {
   export type JourneyUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    shortDesc?: NullableStringFieldUpdateOperationsInput | string | null
     description?: StringFieldUpdateOperationsInput | string
+    overviewText?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: NullableStringFieldUpdateOperationsInput | string | null
+    tripDuration?: NullableStringFieldUpdateOperationsInput | string | null
     budget?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     stops?: JourneyUpdatestopsInput | string[]
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    bestTime?: NullableStringFieldUpdateOperationsInput | string | null
+    groupSize?: NullableStringFieldUpdateOperationsInput | string | null
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    startPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    endPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    quote?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: JourneyUpdategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    highlights?: JourneyUpdatehighlightsInput | string[]
+    includedServices?: JourneyUpdateincludedServicesInput | string[]
+    excludedServices?: JourneyUpdateexcludedServicesInput | string[]
+    googleMapsLink?: NullableStringFieldUpdateOperationsInput | string | null
+    guideName?: NullableStringFieldUpdateOperationsInput | string | null
+    guideImage?: NullableStringFieldUpdateOperationsInput | string | null
+    guideExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    guideLanguages?: JourneyUpdateguideLanguagesInput | string[]
+    guideIntro?: NullableStringFieldUpdateOperationsInput | string | null
+    guidePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    guideEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    guideWhatsapp?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26980,24 +27880,91 @@ export namespace Prisma {
   export type JourneyCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    shortDesc?: SortOrder
     description?: SortOrder
+    overviewText?: SortOrder
+    image?: SortOrder
     duration?: SortOrder
+    tripDuration?: SortOrder
     budget?: SortOrder
+    price?: SortOrder
     district?: SortOrder
     stops?: SortOrder
+    phone?: SortOrder
+    whatsapp?: SortOrder
+    difficulty?: SortOrder
+    bestTime?: SortOrder
+    groupSize?: SortOrder
+    transportation?: SortOrder
+    startPoint?: SortOrder
+    endPoint?: SortOrder
+    emergencyContact?: SortOrder
+    email?: SortOrder
+    quote?: SortOrder
+    galleryImages?: SortOrder
+    timeline?: SortOrder
+    category?: SortOrder
+    companyName?: SortOrder
+    rating?: SortOrder
+    userRating?: SortOrder
+    highlights?: SortOrder
+    includedServices?: SortOrder
+    excludedServices?: SortOrder
+    googleMapsLink?: SortOrder
+    guideName?: SortOrder
+    guideImage?: SortOrder
+    guideExperience?: SortOrder
+    guideLanguages?: SortOrder
+    guideIntro?: SortOrder
+    guidePhone?: SortOrder
+    guideEmail?: SortOrder
+    guideWhatsapp?: SortOrder
     authorId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
+  export type JourneyAvgOrderByAggregateInput = {
+    rating?: SortOrder
+    userRating?: SortOrder
+  }
+
   export type JourneyMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    shortDesc?: SortOrder
     description?: SortOrder
+    overviewText?: SortOrder
+    image?: SortOrder
     duration?: SortOrder
+    tripDuration?: SortOrder
     budget?: SortOrder
+    price?: SortOrder
     district?: SortOrder
+    phone?: SortOrder
+    whatsapp?: SortOrder
+    difficulty?: SortOrder
+    bestTime?: SortOrder
+    groupSize?: SortOrder
+    transportation?: SortOrder
+    startPoint?: SortOrder
+    endPoint?: SortOrder
+    emergencyContact?: SortOrder
+    email?: SortOrder
+    quote?: SortOrder
+    category?: SortOrder
+    companyName?: SortOrder
+    rating?: SortOrder
+    userRating?: SortOrder
+    googleMapsLink?: SortOrder
+    guideName?: SortOrder
+    guideImage?: SortOrder
+    guideExperience?: SortOrder
+    guideIntro?: SortOrder
+    guidePhone?: SortOrder
+    guideEmail?: SortOrder
+    guideWhatsapp?: SortOrder
     authorId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
@@ -27007,14 +27974,47 @@ export namespace Prisma {
   export type JourneyMinOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    shortDesc?: SortOrder
     description?: SortOrder
+    overviewText?: SortOrder
+    image?: SortOrder
     duration?: SortOrder
+    tripDuration?: SortOrder
     budget?: SortOrder
+    price?: SortOrder
     district?: SortOrder
+    phone?: SortOrder
+    whatsapp?: SortOrder
+    difficulty?: SortOrder
+    bestTime?: SortOrder
+    groupSize?: SortOrder
+    transportation?: SortOrder
+    startPoint?: SortOrder
+    endPoint?: SortOrder
+    emergencyContact?: SortOrder
+    email?: SortOrder
+    quote?: SortOrder
+    category?: SortOrder
+    companyName?: SortOrder
+    rating?: SortOrder
+    userRating?: SortOrder
+    googleMapsLink?: SortOrder
+    guideName?: SortOrder
+    guideImage?: SortOrder
+    guideExperience?: SortOrder
+    guideIntro?: SortOrder
+    guidePhone?: SortOrder
+    guideEmail?: SortOrder
+    guideWhatsapp?: SortOrder
     authorId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type JourneySumOrderByAggregateInput = {
+    rating?: SortOrder
+    userRating?: SortOrder
   }
 
   export type GalleryItemCountOrderByAggregateInput = {
@@ -27979,6 +28979,26 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type JourneyCreategalleryImagesInput = {
+    set: string[]
+  }
+
+  export type JourneyCreatehighlightsInput = {
+    set: string[]
+  }
+
+  export type JourneyCreateincludedServicesInput = {
+    set: string[]
+  }
+
+  export type JourneyCreateexcludedServicesInput = {
+    set: string[]
+  }
+
+  export type JourneyCreateguideLanguagesInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutJourneysInput = {
     create?: XOR<UserCreateWithoutJourneysInput, UserUncheckedCreateWithoutJourneysInput>
     connectOrCreate?: UserCreateOrConnectWithoutJourneysInput
@@ -27986,6 +29006,31 @@ export namespace Prisma {
   }
 
   export type JourneyUpdatestopsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type JourneyUpdategalleryImagesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type JourneyUpdatehighlightsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type JourneyUpdateincludedServicesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type JourneyUpdateexcludedServicesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type JourneyUpdateguideLanguagesInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -28415,11 +29460,45 @@ export namespace Prisma {
   export type JourneyCreateWithoutAuthorInput = {
     id?: string
     title: string
+    shortDesc?: string | null
     description: string
+    overviewText?: string | null
+    image?: string | null
     duration?: string | null
+    tripDuration?: string | null
     budget?: string | null
+    price?: string | null
     district?: string | null
     stops?: JourneyCreatestopsInput | string[]
+    phone?: string | null
+    whatsapp?: string | null
+    difficulty?: string | null
+    bestTime?: string | null
+    groupSize?: string | null
+    transportation?: string | null
+    startPoint?: string | null
+    endPoint?: string | null
+    emergencyContact?: string | null
+    email?: string | null
+    quote?: string | null
+    galleryImages?: JourneyCreategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: string | null
+    companyName?: string | null
+    rating?: number | null
+    userRating?: number | null
+    highlights?: JourneyCreatehighlightsInput | string[]
+    includedServices?: JourneyCreateincludedServicesInput | string[]
+    excludedServices?: JourneyCreateexcludedServicesInput | string[]
+    googleMapsLink?: string | null
+    guideName?: string | null
+    guideImage?: string | null
+    guideExperience?: string | null
+    guideLanguages?: JourneyCreateguideLanguagesInput | string[]
+    guideIntro?: string | null
+    guidePhone?: string | null
+    guideEmail?: string | null
+    guideWhatsapp?: string | null
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28428,11 +29507,45 @@ export namespace Prisma {
   export type JourneyUncheckedCreateWithoutAuthorInput = {
     id?: string
     title: string
+    shortDesc?: string | null
     description: string
+    overviewText?: string | null
+    image?: string | null
     duration?: string | null
+    tripDuration?: string | null
     budget?: string | null
+    price?: string | null
     district?: string | null
     stops?: JourneyCreatestopsInput | string[]
+    phone?: string | null
+    whatsapp?: string | null
+    difficulty?: string | null
+    bestTime?: string | null
+    groupSize?: string | null
+    transportation?: string | null
+    startPoint?: string | null
+    endPoint?: string | null
+    emergencyContact?: string | null
+    email?: string | null
+    quote?: string | null
+    galleryImages?: JourneyCreategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: string | null
+    companyName?: string | null
+    rating?: number | null
+    userRating?: number | null
+    highlights?: JourneyCreatehighlightsInput | string[]
+    includedServices?: JourneyCreateincludedServicesInput | string[]
+    excludedServices?: JourneyCreateexcludedServicesInput | string[]
+    googleMapsLink?: string | null
+    guideName?: string | null
+    guideImage?: string | null
+    guideExperience?: string | null
+    guideLanguages?: JourneyCreateguideLanguagesInput | string[]
+    guideIntro?: string | null
+    guidePhone?: string | null
+    guideEmail?: string | null
+    guideWhatsapp?: string | null
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28677,11 +29790,45 @@ export namespace Prisma {
     NOT?: JourneyScalarWhereInput | JourneyScalarWhereInput[]
     id?: StringFilter<"Journey"> | string
     title?: StringFilter<"Journey"> | string
+    shortDesc?: StringNullableFilter<"Journey"> | string | null
     description?: StringFilter<"Journey"> | string
+    overviewText?: StringNullableFilter<"Journey"> | string | null
+    image?: StringNullableFilter<"Journey"> | string | null
     duration?: StringNullableFilter<"Journey"> | string | null
+    tripDuration?: StringNullableFilter<"Journey"> | string | null
     budget?: StringNullableFilter<"Journey"> | string | null
+    price?: StringNullableFilter<"Journey"> | string | null
     district?: StringNullableFilter<"Journey"> | string | null
     stops?: StringNullableListFilter<"Journey">
+    phone?: StringNullableFilter<"Journey"> | string | null
+    whatsapp?: StringNullableFilter<"Journey"> | string | null
+    difficulty?: StringNullableFilter<"Journey"> | string | null
+    bestTime?: StringNullableFilter<"Journey"> | string | null
+    groupSize?: StringNullableFilter<"Journey"> | string | null
+    transportation?: StringNullableFilter<"Journey"> | string | null
+    startPoint?: StringNullableFilter<"Journey"> | string | null
+    endPoint?: StringNullableFilter<"Journey"> | string | null
+    emergencyContact?: StringNullableFilter<"Journey"> | string | null
+    email?: StringNullableFilter<"Journey"> | string | null
+    quote?: StringNullableFilter<"Journey"> | string | null
+    galleryImages?: StringNullableListFilter<"Journey">
+    timeline?: JsonNullableFilter<"Journey">
+    category?: StringNullableFilter<"Journey"> | string | null
+    companyName?: StringNullableFilter<"Journey"> | string | null
+    rating?: FloatNullableFilter<"Journey"> | number | null
+    userRating?: FloatNullableFilter<"Journey"> | number | null
+    highlights?: StringNullableListFilter<"Journey">
+    includedServices?: StringNullableListFilter<"Journey">
+    excludedServices?: StringNullableListFilter<"Journey">
+    googleMapsLink?: StringNullableFilter<"Journey"> | string | null
+    guideName?: StringNullableFilter<"Journey"> | string | null
+    guideImage?: StringNullableFilter<"Journey"> | string | null
+    guideExperience?: StringNullableFilter<"Journey"> | string | null
+    guideLanguages?: StringNullableListFilter<"Journey">
+    guideIntro?: StringNullableFilter<"Journey"> | string | null
+    guidePhone?: StringNullableFilter<"Journey"> | string | null
+    guideEmail?: StringNullableFilter<"Journey"> | string | null
+    guideWhatsapp?: StringNullableFilter<"Journey"> | string | null
     authorId?: StringFilter<"Journey"> | string
     status?: EnumApprovalStatusFilter<"Journey"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Journey"> | Date | string
@@ -30395,11 +31542,45 @@ export namespace Prisma {
   export type JourneyCreateManyAuthorInput = {
     id?: string
     title: string
+    shortDesc?: string | null
     description: string
+    overviewText?: string | null
+    image?: string | null
     duration?: string | null
+    tripDuration?: string | null
     budget?: string | null
+    price?: string | null
     district?: string | null
     stops?: JourneyCreatestopsInput | string[]
+    phone?: string | null
+    whatsapp?: string | null
+    difficulty?: string | null
+    bestTime?: string | null
+    groupSize?: string | null
+    transportation?: string | null
+    startPoint?: string | null
+    endPoint?: string | null
+    emergencyContact?: string | null
+    email?: string | null
+    quote?: string | null
+    galleryImages?: JourneyCreategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: string | null
+    companyName?: string | null
+    rating?: number | null
+    userRating?: number | null
+    highlights?: JourneyCreatehighlightsInput | string[]
+    includedServices?: JourneyCreateincludedServicesInput | string[]
+    excludedServices?: JourneyCreateexcludedServicesInput | string[]
+    googleMapsLink?: string | null
+    guideName?: string | null
+    guideImage?: string | null
+    guideExperience?: string | null
+    guideLanguages?: JourneyCreateguideLanguagesInput | string[]
+    guideIntro?: string | null
+    guidePhone?: string | null
+    guideEmail?: string | null
+    guideWhatsapp?: string | null
     status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30536,11 +31717,45 @@ export namespace Prisma {
   export type JourneyUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    shortDesc?: NullableStringFieldUpdateOperationsInput | string | null
     description?: StringFieldUpdateOperationsInput | string
+    overviewText?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: NullableStringFieldUpdateOperationsInput | string | null
+    tripDuration?: NullableStringFieldUpdateOperationsInput | string | null
     budget?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     stops?: JourneyUpdatestopsInput | string[]
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    bestTime?: NullableStringFieldUpdateOperationsInput | string | null
+    groupSize?: NullableStringFieldUpdateOperationsInput | string | null
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    startPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    endPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    quote?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: JourneyUpdategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    highlights?: JourneyUpdatehighlightsInput | string[]
+    includedServices?: JourneyUpdateincludedServicesInput | string[]
+    excludedServices?: JourneyUpdateexcludedServicesInput | string[]
+    googleMapsLink?: NullableStringFieldUpdateOperationsInput | string | null
+    guideName?: NullableStringFieldUpdateOperationsInput | string | null
+    guideImage?: NullableStringFieldUpdateOperationsInput | string | null
+    guideExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    guideLanguages?: JourneyUpdateguideLanguagesInput | string[]
+    guideIntro?: NullableStringFieldUpdateOperationsInput | string | null
+    guidePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    guideEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    guideWhatsapp?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30549,11 +31764,45 @@ export namespace Prisma {
   export type JourneyUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    shortDesc?: NullableStringFieldUpdateOperationsInput | string | null
     description?: StringFieldUpdateOperationsInput | string
+    overviewText?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: NullableStringFieldUpdateOperationsInput | string | null
+    tripDuration?: NullableStringFieldUpdateOperationsInput | string | null
     budget?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     stops?: JourneyUpdatestopsInput | string[]
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    bestTime?: NullableStringFieldUpdateOperationsInput | string | null
+    groupSize?: NullableStringFieldUpdateOperationsInput | string | null
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    startPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    endPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    quote?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: JourneyUpdategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    highlights?: JourneyUpdatehighlightsInput | string[]
+    includedServices?: JourneyUpdateincludedServicesInput | string[]
+    excludedServices?: JourneyUpdateexcludedServicesInput | string[]
+    googleMapsLink?: NullableStringFieldUpdateOperationsInput | string | null
+    guideName?: NullableStringFieldUpdateOperationsInput | string | null
+    guideImage?: NullableStringFieldUpdateOperationsInput | string | null
+    guideExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    guideLanguages?: JourneyUpdateguideLanguagesInput | string[]
+    guideIntro?: NullableStringFieldUpdateOperationsInput | string | null
+    guidePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    guideEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    guideWhatsapp?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30562,11 +31811,45 @@ export namespace Prisma {
   export type JourneyUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    shortDesc?: NullableStringFieldUpdateOperationsInput | string | null
     description?: StringFieldUpdateOperationsInput | string
+    overviewText?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: NullableStringFieldUpdateOperationsInput | string | null
+    tripDuration?: NullableStringFieldUpdateOperationsInput | string | null
     budget?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     stops?: JourneyUpdatestopsInput | string[]
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    bestTime?: NullableStringFieldUpdateOperationsInput | string | null
+    groupSize?: NullableStringFieldUpdateOperationsInput | string | null
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    startPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    endPoint?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    quote?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryImages?: JourneyUpdategalleryImagesInput | string[]
+    timeline?: NullableJsonNullValueInput | InputJsonValue
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    highlights?: JourneyUpdatehighlightsInput | string[]
+    includedServices?: JourneyUpdateincludedServicesInput | string[]
+    excludedServices?: JourneyUpdateexcludedServicesInput | string[]
+    googleMapsLink?: NullableStringFieldUpdateOperationsInput | string | null
+    guideName?: NullableStringFieldUpdateOperationsInput | string | null
+    guideImage?: NullableStringFieldUpdateOperationsInput | string | null
+    guideExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    guideLanguages?: JourneyUpdateguideLanguagesInput | string[]
+    guideIntro?: NullableStringFieldUpdateOperationsInput | string | null
+    guidePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    guideEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    guideWhatsapp?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

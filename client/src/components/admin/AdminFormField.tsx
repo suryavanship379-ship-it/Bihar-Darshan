@@ -11,7 +11,7 @@ export const AdminInput = ({ label, error, className = '', ...props }: AdminForm
     <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">{label}</label>
     <input
       {...props}
-      className={`bg-white/[0.02] border ${error ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-[#F4A261]/50'} rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 ${error ? 'focus:ring-red-500/20' : 'focus:ring-[#F4A261]/20'} transition-all w-full`}
+      className={`bg-white/[0.02] border ${error ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-[#EAB308]/50'} rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 ${error ? 'focus:ring-red-500/20' : 'focus:ring-[#EAB308]/20'} transition-all w-full`}
     />
     {error && <span className="text-xs text-red-400 mt-1">{error}</span>}
   </div>
@@ -22,7 +22,7 @@ export const AdminTextarea = ({ label, error, className = '', ...props }: AdminF
     <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">{label}</label>
     <textarea
       {...props}
-      className={`bg-white/[0.02] border ${error ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-[#F4A261]/50'} rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 ${error ? 'focus:ring-red-500/20' : 'focus:ring-[#F4A261]/20'} transition-all w-full min-h-[100px] resize-y`}
+      className={`bg-white/[0.02] border ${error ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-[#EAB308]/50'} rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 ${error ? 'focus:ring-red-500/20' : 'focus:ring-[#EAB308]/20'} transition-all w-full min-h-[100px] resize-y`}
     />
     {error && <span className="text-xs text-red-400 mt-1">{error}</span>}
   </div>
@@ -33,7 +33,7 @@ export const AdminSelect = ({ label, error, className = '', children, ...props }
     <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">{label}</label>
     <select
       {...props}
-      className={`bg-[#0f0f18] border ${error ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-[#F4A261]/50'} rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 ${error ? 'focus:ring-red-500/20' : 'focus:ring-[#F4A261]/20'} transition-all w-full appearance-none`}
+      className={`bg-[#0f0f18] border ${error ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-[#EAB308]/50'} rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 ${error ? 'focus:ring-red-500/20' : 'focus:ring-[#EAB308]/20'} transition-all w-full appearance-none`}
     >
       {children}
     </select>

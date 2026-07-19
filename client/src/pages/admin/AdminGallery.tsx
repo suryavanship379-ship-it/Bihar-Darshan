@@ -146,7 +146,7 @@ const AdminGallery = () => {
             <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-white font-medium hover:bg-white/5 transition-colors">
               Cancel
             </button>
-            <button type="submit" className="px-5 py-2.5 rounded-xl bg-[#F4A261] text-black font-bold hover:bg-[#F4A261] transition-colors">
+            <button type="submit" className="px-5 py-2.5 rounded-xl bg-[#EAB308] text-black font-bold hover:bg-[#EAB308] transition-colors">
               {editingItem ? 'Save Changes' : 'Add Media'}
             </button>
           </div>

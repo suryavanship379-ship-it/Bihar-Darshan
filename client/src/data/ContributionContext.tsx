@@ -46,8 +46,8 @@ interface ContributionContextValue {
   addCultureSubmission: (submission: Omit<CultureItem, 'id' | 'featured'>) => void;
   addGallerySubmission: (submission: Omit<GalleryItem, 'id' | 'likes' | 'views' | 'comments' | 'uploadDate'>) => void;
   addPersonalitySubmission: (submission: Omit<PersonalityItem, 'id'>) => void;
-  addJourneySubmission: (submission: Omit<JourneySubmissionItem, 'id'>) => void;
-  updateJourneySubmission: (id: string, submission: Omit<JourneySubmissionItem, 'id'>) => Promise<void>;
+  addJourneySubmission: (submission: any) => void;
+  updateJourneySubmission: (id: string, submission: any) => Promise<void>;
   addCommunitySubmission: (submission: Omit<Community, 'id' | 'members' | 'posts' | 'online' | 'verified' | 'createdOn'>) => void;
   addProductSubmission: (submission: Omit<ProductItem, 'id'>) => void;
   refreshJourneys: () => Promise<void>;
@@ -84,76 +84,69 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
       const result = await res.json();
       if (result.success && result.data && result.data.journeys) {
         const dbJourneys = result.data.journeys.map((j: any) => {
-          let description = j.description || '';
+          let description = j.description || j.overviewText || '';
           let image = j.image || "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?q=80&w=2000&auto=format&fit=crop";
+          
           let guide = {
-            name: "Ramesh Kumar",
-            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=500&auto=format&fit=crop",
-            experience: "10+ Years",
-            languages: ["English", "Hindi"],
-            intro: "Verified Expert Guide for this custom trip.",
-            phone: "+919876543210",
-            email: "guide@example.com",
-            whatsapp: "+919876543210"
+            name: j.guideName || "Ramesh Kumar",
+            image: j.guideImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=500&auto=format&fit=crop",
+            experience: j.guideExperience || "10+ Years",
+            languages: j.guideLanguages || ["English", "Hindi"],
+            intro: j.guideIntro || "Verified Expert Guide for this custom trip.",
+            phone: j.guidePhone || "+919876543210",
+            email: j.guideEmail || "guide@example.com",
+            whatsapp: j.guideWhatsapp || "+919876543210"
           };
-          let timeline: any[] = [];
-          let galleryImages: string[] = [];
-          let quote = "Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends.";
-
-          if (j.description && j.description.startsWith('{"__isImmersivePackage"')) {
-            try {
-              const parsed = JSON.parse(j.description);
-              if (parsed.__isImmersivePackage) {
-                description = parsed.realDescription || '';
-                if (parsed.image) image = parsed.image;
-                if (parsed.guide) guide = parsed.guide;
-                if (parsed.timeline) timeline = parsed.timeline;
-                if (parsed.galleryImages) galleryImages = parsed.galleryImages;
-                if (parsed.quote) quote = parsed.quote;
-              }
-            } catch (e) {
-              console.error("Failed to parse immersive package description JSON:", e);
-            }
-          }
 
           return {
             id: j.id,
             title: j.title,
-            desc: description.slice(0, 100) + '...',
+            desc: j.shortDesc || description.slice(0, 100) + '...',
             description,
             image,
-            duration: j.duration || "1 Day Trip",
+            duration: j.tripDuration || j.duration || "1 Day Trip",
             authorId: j.authorId,
-            overviewText: description,
-            provider: "Community Contributor",
+            overviewText: j.overviewText || description,
+            provider: j.companyName || "Community Contributor",
             providerLogo: "https://cdn-icons-png.flaticon.com/512/3233/3233481.png",
             departureCity: j.district || "Patna",
             places: j.stops || [],
-            price: j.budget || "Flexible",
+            price: j.price || j.budget || "Flexible",
             phone: j.phone || "+919876543210",
             whatsapp: j.whatsapp || "+919876543210",
-            difficulty: "Easy" as const,
-            bestTime: "October to March",
-            groupSize: "Flexible",
-            transportation: "Custom Arranged",
-            startPoint: "Patna",
-            endPoint: "Patna",
-            emergencyContact: "+919876543210",
-            email: "contributor@example.com",
+            difficulty: j.difficulty || "Easy",
+            bestTime: j.bestTime || "October to March",
+            groupSize: j.groupSize || "Flexible",
+            transportation: j.transportation || "Custom Arranged",
+            startPoint: j.startPoint || "Patna",
+            endPoint: j.endPoint || "Patna",
+            emergencyContact: j.emergencyContact || "+919876543210",
+            email: j.email || "contributor@example.com",
             guide,
             placesCoveredDetails: [],
-            timeline,
-            galleryImages,
+            timeline: j.timeline || [],
+            galleryImages: j.galleryImages || [],
             videos: [],
             mapMarkers: [],
             reviews: [],
-            quote
+            quote: j.quote || "Not just a holiday, but a journey aligned with the rich soil, spiritual structures, and legends.",
+            category: j.category || '',
+            companyName: j.companyName || '',
+            tripDuration: j.tripDuration || j.duration || '',
+            highlights: j.highlights || [],
+            includedServices: j.includedServices || [],
+            excludedServices: j.excludedServices || [],
+            googleMapsLink: j.googleMapsLink || '',
+            rating: j.rating || 5,
+            userRating: j.userRating || 5
           };
         });
         setJourneySubmissions(dbJourneys);
       }
     } catch (err) {
       console.error('Failed to fetch journeys:', err);
+      // Set empty array on failure instead of loading from local storage
+      setJourneySubmissions([]);
     }
   }, []);
 
@@ -249,75 +242,66 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  const addJourneySubmission = useCallback(async (submission: Omit<JourneySubmissionItem, 'id'>) => {
+  const addJourneySubmission = useCallback(async (submission: any) => {
     try {
       const user = auth.currentUser;
-      const token = user ? await user.getIdToken() : '';
-      const descriptionPayload = JSON.stringify({
-        __isImmersivePackage: true,
-        realDescription: submission.description,
-        image: submission.image,
-        guide: submission.guide,
-        timeline: submission.timeline,
-        galleryImages: submission.galleryImages,
-        quote: submission.quote
-      });
+      if (!user) throw new Error("Must be logged in to submit a journey");
+      
+      const token = await user.getIdToken();
+      
+      // The API uses 'description' as the main field; if the frontend passes 'desc' or 'overviewText', we'll map it to 'description'.
+      // The CreateJourney form passes both. Let's pass the whole payload directly.
       const response = await fetch('http://localhost:5000/api/v1/journeys', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          title: submission.title,
-          description: descriptionPayload,
-          duration: submission.duration,
-          budget: submission.price,
-          district: submission.departureCity,
-          stops: submission.places
-        })
+        body: JSON.stringify(submission)
       });
+      
       if (!response.ok) {
-        throw new Error(`Failed to submit journey: ${await response.text()}`);
+        throw new Error(`Failed to create journey: ${await response.text()}`);
       }
+      
+      const result = await response.json();
+      setJourneySubmissions((prev) => [result.data.journey, ...prev]);
+
     } catch (error) {
-      console.error('Failed to submit journey:', error);
+      console.error('Failed to submit journey to backend:', error);
       throw error;
     }
   }, []);
 
-  const updateJourneySubmission = useCallback(async (id: string, submission: Omit<JourneySubmissionItem, 'id'>) => {
+  const updateJourneySubmission = useCallback(async (id: string, submission: any) => {
     try {
       const user = auth.currentUser;
       const token = user ? await user.getIdToken() : '';
-      const descriptionPayload = JSON.stringify({
-        __isImmersivePackage: true,
-        realDescription: submission.description,
-        image: submission.image,
-        guide: submission.guide,
-        timeline: submission.timeline,
-        galleryImages: submission.galleryImages,
-        quote: submission.quote
-      });
+      
       const response = await fetch(`http://localhost:5000/api/v1/journeys/${id}`, {
-        method: 'PUT',
+        method: 'PUT', // The backend currently expects PUT for author updates
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          title: submission.title,
-          description: descriptionPayload,
-          duration: submission.duration,
-          budget: submission.price,
-          district: submission.departureCity,
-          stops: submission.places
-        })
+        body: JSON.stringify(submission)
       });
+      
       if (!response.ok) {
         throw new Error(`Failed to update journey: ${await response.text()}`);
       }
-      setJourneySubmissions(prev => prev.filter(j => j.id !== id));
+      
+      const result = await response.json();
+
+      setJourneySubmissions((prev) => {
+        return prev.map((j) => {
+          if (j.id === id) {
+            return result.data.journey;
+          }
+          return j;
+        });
+      });
+
     } catch (error) {
       console.error('Failed to update journey on backend:', error);
       throw error;

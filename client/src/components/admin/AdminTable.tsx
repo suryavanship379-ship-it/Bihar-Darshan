@@ -48,13 +48,13 @@ export function AdminTable<T>({
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={searchPlaceholder}
-              className="bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#F4A261]/50 focus:ring-1 focus:ring-[#F4A261]/20 w-full sm:w-64 transition-all"
+              className="bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#EAB308]/50 focus:ring-1 focus:ring-[#EAB308]/20 w-full sm:w-64 transition-all"
             />
           </div>
           {onAdd && (
             <button
               onClick={onAdd}
-              className="flex items-center gap-2 bg-[#F4A261] hover:bg-[#F4A261] text-black px-4 py-2 rounded-xl text-sm font-bold transition-colors shrink-0"
+              className="flex items-center gap-2 bg-[#EAB308] hover:bg-[#EAB308] text-black px-4 py-2 rounded-xl text-sm font-bold transition-colors shrink-0"
             >
               <Plus size={16} />
               <span className="hidden sm:inline">Add New</span>
@@ -95,7 +95,7 @@ export function AdminTable<T>({
                         {onEdit && (
                           <button
                             onClick={() => onEdit(item)}
-                            className="px-3 py-1.5 text-xs font-medium text-[#F4A261] hover:bg-[#F4A261]/10 rounded-lg transition-colors border border-transparent hover:border-[#F4A261]/20"
+                            className="px-3 py-1.5 text-xs font-medium text-[#EAB308] hover:bg-[#EAB308]/10 rounded-lg transition-colors border border-transparent hover:border-[#EAB308]/20"
                           >
                             Edit
                           </button>

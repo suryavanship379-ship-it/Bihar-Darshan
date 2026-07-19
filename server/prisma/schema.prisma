@@ -299,9 +299,12 @@ model Journey {
   title            String
   shortDesc        String?
   description      String
+  overviewText     String?
   image            String?
   duration         String?
+  tripDuration     String?
   budget           String?
+  price            String?
   district         String?
   stops            String[]
   phone            String?
@@ -317,6 +320,16 @@ model Journey {
   quote            String?
   galleryImages    String[]
   timeline         Json?
+
+  // New fields from CreateJourney form
+  category         String?
+  companyName      String?
+  rating           Float?
+  userRating       Float?
+  highlights       String[]
+  includedServices String[]
+  excludedServices String[]
+  googleMapsLink   String?
   
   // Guide fields
   guideName        String?
