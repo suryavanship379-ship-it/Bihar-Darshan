@@ -3,289 +3,42 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import ShareStorySection from '../components/cta/ShareStorySection';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, ChevronRight } from 'lucide-react';
+import { mockTribes } from '../data/mockTribes';
 
-export const tribesList = [
-  {
-    id: "santhal",
-    hindiName: "संथाल",
-    englishName: "Santhal Tribe",
-    shortDesc: "The largest indigenous tribe of India, known for their deep connection to nature.",
-    image: "/images/tribals/santhal.png",
-    leftTitle: "Cultural Roots",
-    leftDesc: "Santhal culture is deeply rooted in nature. They revere \"Marang Buru\" (the supreme deity) and celebrate agricultural festivals like \"Sohrai\" and \"Baha\" with vibrant rhythmic dances, accompanied by traditional instruments like the Madal and Tiriao (flute).",
-    rightTitle: "Attire & Art",
-    rightDesc: "Traditional Santhal women wear the 'Santhali Sari', draped elegantly, while men wear the 'Panche'. They are renowned for \"Jadopatia\" paintings and intricate wall art (Bhitti Chitra), using natural dyes to depict folklore and daily tribal life.",
-    bottomDesc: "\"Their society is famously egalitarian. Santhal villages are governed by a unique council system led by a 'Manjhi Haram' (village headman), emphasizing community consensus.\""
-  },
-  {
-    id: "oraon",
-    hindiName: "उरांव",
-    englishName: "Oraon Tribe",
-    shortDesc: "Celebrated for progressive agricultural practices and dynamic community life.",
-    image: "/images/tribals/oraon_nobg.png",
-    leftTitle: "Dharmes & Sarnaism",
-    leftDesc: "The Oraon traditionally follow Sarnaism, centering around the worship of nature. Their supreme deity is \"Dharmes,\" associated with the sun. Sacred groves called \"Sarna\" serve as their central places of worship.",
-    rightTitle: "Youth Dormitories",
-    rightDesc: "A distinct feature of Oraon society is the \"Dhumkuria\" (youth dormitory). It acts as a training ground where unmarried youth learn traditional songs, dances, folklore, and the social and religious customs of the tribe.",
-    bottomDesc: "\"Festivals like 'Karam' and 'Sarhul' are celebrated with massive communal dances. The traditional Oraon dance often features rhythmic footwork perfectly synchronized to the beat of the 'Mandar' drum.\""
-  },
-  {
-    id: "munda",
-    hindiName: "मुंडा",
-    englishName: "Munda Tribe",
-    shortDesc: "Famous for their rich history of rebellion and vibrant hunting and agricultural festivals.",
-    image: "/images/tribals/munda.png",
-    leftTitle: "Sarna & Singbonga",
-    leftDesc: "The Mundas believe in 'Singbonga', the Sun God. Their religious practices are deeply intertwined with nature, centered around sacred groves called 'Sarna' where they perform rituals.",
-    rightTitle: "Akhra & Music",
-    rightDesc: "The 'Akhra' is the village dancing ground and meeting place. Munda culture is rich in folk songs and dances like 'Jadur' and 'Mage', accompanied by traditional instruments like the Nagara.",
-    bottomDesc: "\"The Munda rebellion, known as the 'Ulgulan' (The Great Tumult) led by Birsa Munda in the late 19th century, is a defining moment in India's struggle against British colonial rule.\""
-  },
-  {
-    id: "kharwar",
-    hindiName: "खरवार",
-    englishName: "Kharwar Tribe",
-    shortDesc: "A martial tribe known for their resilience and deep connection to the land.",
-    image: "/images/tribals/kharwar.png",
-    leftTitle: "Martial Heritage",
-    leftDesc: "Historically, the Kharwars were known for their martial skills and bravery. They claim descent from the Suryavanshi Rajputs and have a strong code of honor and truthfulness.",
-    rightTitle: "Baiga & Rituals",
-    rightDesc: "Their religious life involves worshipping nature spirits and ancestors. The 'Baiga' (village priest) plays a crucial role in performing rituals and appeasing local deities to protect the village.",
-    bottomDesc: "\"Despite their martial past, modern Kharwars are primarily peaceful agriculturists, though they retain their fierce independence and strong community bonds.\""
-  },
-  {
-    id: "tharu",
-    hindiName: "थारू",
-    englishName: "Tharu Tribe",
-    shortDesc: "Residing in the Champaran region, known for their unique architecture and malaria resistance.",
-    image: "/images/tribals/tharu.png",
-    leftTitle: "Forest Dwellers",
-    leftDesc: "The Tharu people have lived in the malarial Terai region for centuries. They have developed a unique genetic resistance to malaria, allowing them to thrive in these dense forests.",
-    rightTitle: "Matriarchal Influence",
-    rightDesc: "Tharu society has strong matriarchal elements. Women hold significant decision-making power within the household and play a crucial role in agriculture and the local economy.",
-    bottomDesc: "\"Their traditional mud houses, adorned with beautiful murals, are designed to be cool in the sweltering heat of the Terai, reflecting their deep understanding of their environment.\""
-  },
-  {
-    id: "gond",
-    hindiName: "गोंड",
-    englishName: "Gond Tribe",
-    shortDesc: "Found in Siwan and Kaimur, world-renowned for their vibrant, nature-inspired dot art.",
-    image: "/images/tribals/gond.png",
-    leftTitle: "Gond Art & Creativity",
-    leftDesc: "Gond art is a famous tribal art form featuring intricate patterns and vibrant colors. It vividly depicts flora, fauna, and their deep spiritual connection with nature.",
-    rightTitle: "Spiritual Beliefs",
-    rightDesc: "The Gond people worship 'Bara Deo' as their supreme deity. They strongly believe that viewing good images brings good luck, which inspires their extensive wall and floor paintings.",
-    bottomDesc: "\"Their rich oral traditions include the Gondi language and fascinating folk tales that are passed down through generations by community storytellers called Pardhans.\""
-  },
-  {
-    id: "asur",
-    hindiName: "आदिवासी",
-    englishName: "Asur Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/asur.png",
-    leftTitle: "Ancient Iron Smelters",
-    leftDesc: "The Asur tribe has a fascinating history as traditional iron smelters. For centuries, they extracted iron from laterite rocks using indigenous, highly advanced techniques.",
-    rightTitle: "Cultural Identity",
-    rightDesc: "Though their traditional occupation is declining, they maintain a distinct cultural identity through their unique language, Asuri, and specific animistic rituals.",
-    bottomDesc: "\"Preserving their ancient metallurgical knowledge and distinct folklore remains a critical challenge for the Asur community in the modern era.\""
-  },
-  {
-    id: "baiga",
-    hindiName: "आदिवासी",
-    englishName: "Baiga Tribe",
-    shortDesc: "A forest-dwelling community with immense knowledge of medicinal plants and herbs.",
-    image: "/images/tribals/baiga.png",
-    leftTitle: "Masters of the Forest",
-    leftDesc: "The Baiga are deeply connected to the forest ecosystems. They are renowned for their exceptional knowledge of medicinal herbs and traditional healing practices.",
-    rightTitle: "Shifting Cultivation",
-    rightDesc: "Traditionally, they practiced 'Bewar' (shifting cultivation) and avoided ploughing the earth out of respect, though modern restrictions have forced changes in their lifestyle.",
-    bottomDesc: "\"Tattooing is a vital part of Baiga culture, especially for women, who receive elaborate geometric tattoos throughout different stages of their lives.\""
-  },
-  {
-    id: "banjara",
-    hindiName: "आदिवासी",
-    englishName: "Banjara Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/banjara.png"
-  },
-  {
-    id: "bathudi",
-    hindiName: "आदिवासी",
-    englishName: "Bathudi Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/bathudi.png"
-  },
-  {
-    id: "beriya",
-    hindiName: "आदिवासी",
-    englishName: "Beriya Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/beriya.png"
-  },
-  {
-    id: "bhejiya",
-    hindiName: "आदिवासी",
-    englishName: "Bhejiya Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/bhejiya.png"
-  },
-  {
-    id: "bhumij",
-    hindiName: "आदिवासी",
-    englishName: "Bhumij Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/bhumij.png"
-  },
-  {
-    id: "binjhia",
-    hindiName: "आदिवासी",
-    englishName: "Binjhia Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/binjhia.png"
-  },
-  {
-    id: "birhor",
-    hindiName: "आदिवासी",
-    englishName: "Birhor Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/birhor.png"
-  },
-  {
-    id: "birjia",
-    hindiName: "आदिवासी",
-    englishName: "Birjia Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/birjia.png"
-  },
-  {
-    id: "chero",
-    hindiName: "आदिवासी",
-    englishName: "Chero Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/chero.png"
-  },
-  {
-    id: "chickbaraik",
-    hindiName: "आदिवासी",
-    englishName: "Chick Baraik Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/chickbaraik.png"
-  },
-  {
-    id: "gorait",
-    hindiName: "आदिवासी",
-    englishName: "Gorait Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/gorait.png"
-  },
-  {
-    id: "ho",
-    hindiName: "आदिवासी",
-    englishName: "Ho Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/ho.png"
-  },
-  {
-    id: "karmali",
-    hindiName: "आदिवासी",
-    englishName: "Karmali Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/karmali.png"
-  },
-  {
-    id: "kharia",
-    hindiName: "आदिवासी",
-    englishName: "Kharia Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/kharia.png"
-  },
-  {
-    id: "khond",
-    hindiName: "आदिवासी",
-    englishName: "Khond Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/khond.png"
-  },
-  {
-    id: "kisan",
-    hindiName: "आदिवासी",
-    englishName: "Kisan Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/kisan.png"
-  },
-  {
-    id: "kora",
-    hindiName: "आदिवासी",
-    englishName: "Kora Tribe",
-    shortDesc: "Known for their rich folklore and traditional earth-working skills in rural areas.",
-    image: "/images/tribals/kora.png",
-    leftTitle: "Earth Workers",
-    leftDesc: "Historically, the Kora tribe specialized in earth-working, digging tanks, and constructing embankments. They have a profound, practical understanding of the local soil and terrain.",
-    rightTitle: "Festivals & Deities",
-    rightDesc: "Their religious calendar is filled with festivals honoring local deities and nature spirits, accompanied by communal feasts and traditional music.",
-    bottomDesc: "\"The Kora community relies strongly on community cohesion and continues to celebrate their rich oral folklore despite modern economic challenges.\""
-  },
-  {
-    id: "korba",
-    hindiName: "आदिवासी",
-    englishName: "Korba Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/korba.png"
-  },
-  {
-    id: "loharalohra",
-    hindiName: "आदिवासी",
-    englishName: "Lohara/Lohra Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/loharalohra.png"
-  },
-  {
-    id: "mahli",
-    hindiName: "आदिवासी",
-    englishName: "Mahli Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/mahli.png"
-  },
-  {
-    id: "malpahariya",
-    hindiName: "आदिवासी",
-    englishName: "Mal Pahariya Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/malpahariya.png"
-  },
-  {
-    id: "parhaiya",
-    hindiName: "आदिवासी",
-    englishName: "Parhaiya Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/parhaiya.png"
-  },
-  {
-    id: "sauriapaharia",
-    hindiName: "आदिवासी",
-    englishName: "Sauria Paharia Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/sauriapaharia.png"
-  },
-  {
-    id: "savar",
-    hindiName: "आदिवासी",
-    englishName: "Savar Tribe",
-    shortDesc: "One of the recognized Scheduled Tribes contributing to the diverse heritage of Bihar.",
-    image: "/images/tribals/savar.png"
-  }
-];
-
-
-
-const Tribals = () => {
+export const Tribals = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [tribes, setTribes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredTribes = tribesList.filter(tribe =>
-    tribe.englishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tribe.hindiName.includes(searchTerm)
+  useEffect(() => {
+    const fetchTribes = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/v1/tribes');
+        const data = await res.json();
+        if (data.success && data.data.tribes) {
+          const dbTribes = data.data.tribes;
+          const merged = [...mockTribes];
+          dbTribes.forEach((dbT: any) => {
+            const idx = merged.findIndex(t => t.id === dbT.id);
+            if (idx >= 0) merged[idx] = { ...merged[idx], ...dbT };
+            else merged.push(dbT);
+          });
+          setTribes(merged);
+        }
+      } catch (error) {
+        console.error('Error fetching tribes:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTribes();
+  }, []);
+
+  const filteredTribes = tribes.filter(tribe =>
+    (tribe.englishName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (tribe.hindiName || '').includes(searchTerm)
   );
 
   return (
@@ -391,7 +144,11 @@ const Tribals = () => {
 
         {/* Directory Grid */}
         <section className="px-6 sm:px-12 lg:px-24 max-w-7xl mx-auto pb-32">
-          {filteredTribes.length > 0 ? (
+              {isLoading ? (
+                <div className="col-span-full py-20 flex justify-center">
+                  <div className="w-8 h-8 border-4 border-[#8B3E2F] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : filteredTribes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredTribes.map((tribe, index) => (
                 <motion.div
