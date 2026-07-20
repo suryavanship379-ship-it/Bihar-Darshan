@@ -178,6 +178,9 @@ model Tribe {
   bottomDesc      String?
   cultureSections Json? // Rich JSON structure for Traditions, Personalities, Food, etc.
 
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -209,6 +212,8 @@ model TribalArticle {
   readTime      Int?
   tags          String[]
   location      String
+
+  status ApprovalStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

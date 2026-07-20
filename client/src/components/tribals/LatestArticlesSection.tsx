@@ -132,7 +132,7 @@ const ArticleCard = ({
 
 /* ── Empty State ─────────────────────────────────────────────────── */
 
-const EmptyState = ({ tribeName }: { tribeName?: string }) => (
+const EmptyState = ({ tribeName, onContribute }: { tribeName?: string, onContribute: () => void }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -142,11 +142,18 @@ const EmptyState = ({ tribeName }: { tribeName?: string }) => (
       <Newspaper className="w-7 h-7 text-[#F4A261]" />
     </div>
     <h3 className="text-xl font-serif font-bold text-[#8B3E2F] mb-2">No Articles Yet</h3>
-    <p className="text-[#8B3E2F] text-sm max-w-md mx-auto">
+    <p className="text-[#8B3E2F] text-sm max-w-md mx-auto mb-6">
       {tribeName
         ? `Stories and articles about the ${tribeName} will appear here. Be the first to share!`
         : "Stories and articles about Bihar's tribal communities will appear here soon."}
     </p>
+    <button
+      onClick={onContribute}
+      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#F4A261] hover:bg-[#F4A261]/90 text-white font-bold text-sm tracking-wider uppercase transition-all duration-300 shadow-md hover:shadow-lg"
+    >
+      <PenLine className="w-4 h-4" />
+      Contribute an Article
+    </button>
   </motion.div>
 );
 
@@ -229,7 +236,7 @@ const LatestArticlesSection = ({ tribeName }: LatestArticlesSectionProps) => {
             {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : displayArticles.length === 0 ? (
-          <EmptyState tribeName={tribeName} />
+          <EmptyState tribeName={tribeName} onContribute={() => setIsModalOpen(true)} />
         ) : (
           <>
             {/* Articles Grid */}

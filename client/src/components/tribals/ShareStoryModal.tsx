@@ -91,18 +91,18 @@ const ShareStoryModal = ({ isOpen, onClose, defaultTribe }: ShareStoryModalProps
   };
 
   const handleImagesChange = (files: FileList | File[]) => {
-    const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-    const totalFiles = formData.images.length + validFiles.length;
+    const newFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
     
-    if (totalFiles > 4) {
-      setErrors(prev => ({ ...prev, images: 'Maximum 4 images allowed' }));
+    if (imagePreviews.length + newFiles.length > 5) {
+      setErrors(prev => ({ ...prev, images: 'You can upload a maximum of 5 images' }));
       return;
     }
 
-    if (validFiles.length > 0) {
-      setFormData(prev => ({ ...prev, images: [...prev.images, ...validFiles] }));
-      
-      validFiles.forEach(file => {
+    const allowedFiles = newFiles.slice(0, 5 - imagePreviews.length);
+    if (allowedFiles.length > 0) {
+      setFormData(prev => ({ ...prev, images: [...prev.images, ...allowedFiles] }));
+
+      allowedFiles.forEach(file => {
         const reader = new FileReader();
         reader.onloadend = () => {
           setImagePreviews(prev => [...prev, reader.result as string]);
@@ -265,9 +265,9 @@ const ShareStoryModal = ({ isOpen, onClose, defaultTribe }: ShareStoryModalProps
               {/* Featured Images */}
               <div>
                 <label className={labelClass}>
-                  Featured Images (Max 4) <span className="text-[#b71c1c]">*</span>
+                  Featured Images (Max 5) <span className="text-[#b71c1c]">*</span>
                 </label>
-                
+
                 {imagePreviews.length > 0 && (
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
                     {imagePreviews.map((src, idx) => (
@@ -290,15 +290,14 @@ const ShareStoryModal = ({ isOpen, onClose, defaultTribe }: ShareStoryModalProps
                   </div>
                 )}
 
-                {imagePreviews.length < 4 && (
+                {imagePreviews.length < 5 && (
                   <div
-                    className={`relative border-2 border-dashed rounded-xl transition-all cursor-pointer overflow-hidden ${
-                      isDragging
+                    className={`relative border-2 border-dashed rounded-xl transition-all cursor-pointer overflow-hidden ${isDragging
                         ? 'border-[#F4A261] bg-[#F4A261]/10'
                         : errors.images
                           ? 'border-[#b71c1c]/40 bg-[#b71c1c]/5'
                           : 'border-[#8B3E2F]/20 bg-[#FCEBD3]/40 hover:border-[#F4A261]/60'
-                    }`}
+                      }`}
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleDrop}

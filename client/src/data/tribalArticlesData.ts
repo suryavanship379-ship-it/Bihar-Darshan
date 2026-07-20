@@ -10,6 +10,9 @@ export interface TribalArticle {
   readTime: number;
   tags: string[];
   location: string;
+  /** 'admin' = created by admin, 'user' = submitted by a user */
+  source?: 'admin' | 'user';
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
 export const tribalArticles: TribalArticle[] = [
@@ -23,7 +26,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-05-12",
     readTime: 5,
     tags: ["Art", "Culture", "Revival"],
-    location: "Ranchi, Bihar"
+    location: "Ranchi, Bihar",
+    source: "admin"
   },
   {
     id: "art-002",
@@ -35,7 +39,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-05-11",
     readTime: 4,
     tags: ["Livelihood", "Art", "Economy"],
-    location: "Hazaribagh, Bihar"
+    location: "Hazaribagh, Bihar",
+    source: "admin"
   },
   {
     id: "art-003",
@@ -47,7 +52,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-05-10",
     readTime: 6,
     tags: ["Heritage", "Art", "Preservation"],
-    location: "Gumla, Bihar"
+    location: "Gumla, Bihar",
+    source: "admin"
   },
   {
     id: "art-004",
@@ -59,7 +65,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-05-09",
     readTime: 5,
     tags: ["Transformation", "Art", "Community"],
-    location: "Dumka, Bihar"
+    location: "Dumka, Bihar",
+    source: "admin"
   },
   {
     id: "art-005",
@@ -71,7 +78,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-04-28",
     readTime: 7,
     tags: ["Festival", "Culture", "Nature"],
-    location: "Palamu, Bihar"
+    location: "Palamu, Bihar",
+    source: "admin"
   },
   {
     id: "art-006",
@@ -83,7 +91,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-04-22",
     readTime: 5,
     tags: ["Handicraft", "Women", "Sustainability"],
-    location: "West Champaran, Bihar"
+    location: "West Champaran, Bihar",
+    source: "admin"
   },
   {
     id: "art-007",
@@ -95,7 +104,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-04-15",
     readTime: 8,
     tags: ["Environment", "Religion", "Conservation"],
-    location: "Lohardaga, Bihar"
+    location: "Lohardaga, Bihar",
+    source: "admin"
   },
   {
     id: "art-008",
@@ -107,7 +117,8 @@ export const tribalArticles: TribalArticle[] = [
     publishedDate: "2024-04-08",
     readTime: 6,
     tags: ["Music", "Heritage", "Revival"],
-    location: "Kaimur, Bihar"
+    location: "Kaimur, Bihar",
+    source: "admin"
   }
 ];
 

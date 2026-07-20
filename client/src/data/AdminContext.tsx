@@ -18,9 +18,8 @@ import type { District } from './districtsData';
 import { staticDistrictDetails } from './districtDetailsData';
 import type { DistrictDetail } from './districtDetailsData';
 
-import { personalities as defaultPersonalities } from '../pages/Personalities';
-import { tribesList } from '../pages/Tribals';
 import { type SiteSettings, defaultSiteSettings } from './siteSettingsDefaults';
+import { mockTribes } from './mockTribes';
 
 // ── Tribe type (extracted from Tribals.tsx inline data) ──
 export interface TribeItem {
@@ -139,6 +138,11 @@ interface AdminContextValue {
   // Refresh methods
   refreshCulture: () => Promise<void>;
   refreshPersonalities: () => Promise<void>;
+  refreshTribes: () => Promise<void>;
+  refreshTribalArticles: () => Promise<void>;
+  updateArticleStatus: (id: string, status: string) => Promise<void>;
+  addTribalArticle: (article: any) => Promise<void>;
+  deleteTribalArticle: (id: string) => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextValue | null>(null);
@@ -156,7 +160,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
   });
   const [discussionsState, setDiscussionsState] = useState<Discussion[]>(() => loadFromStorage(KEYS.discussions, defaultDiscussions));
   const [products, setProducts] = useState<ProductItem[]>(() => loadFromStorage(KEYS.products, defaultProducts as ProductItem[]));
-  const [tribes, setTribes] = useState<TribeItem[]>(() => loadFromStorage(KEYS.tribes, tribesList));
+  const [tribes, setTribes] = useState<TribeItem[]>(() => loadFromStorage(KEYS.tribes, mockTribes as any[]));
   const [tribalArticlesState, setTribalArticlesState] = useState<TribalArticle[]>(() => loadFromStorage(KEYS.tribalArticles, tribalArticles));
   const [personalities, setPersonalities] = useState<PersonalityItem[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => loadFromStorage(KEYS.siteSettings, defaultSiteSettings));
@@ -251,6 +255,129 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
     }
   }, []);
 
+  const fetchTribes = useCallback(async () => {
+    try {
+      const user = auth.currentUser;
+      const headers: any = {};
+      let url = 'http://localhost:5000/api/v1/tribes';
+      if (user) {
+        const token = await user.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+        
+        const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const profileResult = await profileRes.json();
+        if (profileResult.success && profileResult.data?.user?.role === 'ADMIN') {
+          url = 'http://localhost:5000/api/v1/tribes/admin/all';
+        }
+      }
+      const res = await fetch(url, { headers });
+      const result = await res.json();
+      if (result.success && result.data?.tribes) {
+        const dbTribes = result.data.tribes;
+        const merged = [...mockTribes];
+        dbTribes.forEach((dbT: any) => {
+          const idx = merged.findIndex(t => t.id === dbT.id);
+          if (idx >= 0) merged[idx] = { ...merged[idx], ...dbT };
+          else merged.push(dbT);
+        });
+        setTribes(merged as any[]);
+      }
+    } catch (e) {
+      console.error('Failed to fetch tribes:', e);
+    }
+  }, []);
+
+  const fetchTribalArticles = useCallback(async () => {
+    try {
+      const user = auth.currentUser;
+      const headers: any = {};
+      let url = 'http://localhost:5000/api/v1/tribes/articles';
+      if (user) {
+        const token = await user.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+        
+        const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const profileResult = await profileRes.json();
+        if (profileResult.success && profileResult.data?.user?.role === 'ADMIN') {
+          url = 'http://localhost:5000/api/v1/tribes/admin/articles/all';
+        }
+      }
+      const res = await fetch(url, { headers });
+      const result = await res.json();
+      if (result.success && result.data?.articles) {
+        setTribalArticlesState(result.data.articles);
+      }
+    } catch (e) {
+      console.error('Failed to fetch tribal articles:', e);
+    }
+  }, []);
+
+  const updateArticleStatus = async (id: string, status: string) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+      const action = status === 'APPROVED' ? 'approve' : 'reject';
+      const res = await fetch(`http://localhost:5000/api/v1/tribes/articles/${id}/${action}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to update article status');
+      await fetchTribalArticles();
+    } catch (error) {
+      console.error('Error updating article status:', error);
+      throw error;
+    }
+  };
+
+  const addTribalArticle = async (article: any) => {
+    try {
+      const user = auth.currentUser;
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (user) {
+        const token = await user.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const res = await fetch('http://localhost:5000/api/v1/tribes/articles', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(article)
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchTribalArticles();
+      }
+    } catch (e) {
+      console.error('Failed to add article:', e);
+    }
+  };
+
+  const deleteTribalArticle = async (id: string) => {
+    try {
+      const user = auth.currentUser;
+      const headers: any = {};
+      if (user) {
+        const token = await user.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const res = await fetch(`http://localhost:5000/api/v1/tribes/admin/articles/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchTribalArticles();
+      }
+    } catch (e) {
+      console.error('Failed to delete article:', e);
+    }
+  };
+
   // Fetch communities, discover items, and personalities from backend database on mount matching auth status
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -317,10 +444,12 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
 
       fetchCulture();
       fetchPersonalities();
+      fetchTribes();
+      fetchTribalArticles();
     });
 
     return () => unsubscribe();
-  }, [fetchCulture, fetchPersonalities]);
+  }, [fetchCulture, fetchPersonalities, fetchTribes, fetchTribalArticles]);
 
   // Auto-save on change
   const createUpdater = <T,>(key: string, setter: React.Dispatch<React.SetStateAction<T>>) =>
@@ -353,7 +482,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
       communities: () => setCommunitiesState(defaultCommunities),
       discussions: () => setDiscussionsState(defaultDiscussions),
       products: () => setProducts(defaultProducts as ProductItem[]),
-      tribes: () => setTribes(tribesList),
+      tribes: () => setTribes(mockTribes as any[]),
       tribalArticles: () => setTribalArticlesState(tribalArticles),
       personalities: () => setPersonalities([]),
       siteSettings: () => setSiteSettings(defaultSiteSettings),
@@ -391,6 +520,11 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
         resetSection,
         refreshCulture: fetchCulture,
         refreshPersonalities: fetchPersonalities,
+        refreshTribes: fetchTribes,
+        refreshTribalArticles: fetchTribalArticles,
+        updateArticleStatus,
+        addTribalArticle,
+        deleteTribalArticle
       }}
     >
       {children}

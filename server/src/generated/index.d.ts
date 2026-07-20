@@ -9691,6 +9691,8 @@ export namespace Prisma {
     rightTitle: string | null
     rightDesc: string | null
     bottomDesc: string | null
+    isActive: boolean | null
+    isFeatured: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9706,6 +9708,8 @@ export namespace Prisma {
     rightTitle: string | null
     rightDesc: string | null
     bottomDesc: string | null
+    isActive: boolean | null
+    isFeatured: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9722,6 +9726,8 @@ export namespace Prisma {
     rightDesc: number
     bottomDesc: number
     cultureSections: number
+    isActive: number
+    isFeatured: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -9739,6 +9745,8 @@ export namespace Prisma {
     rightTitle?: true
     rightDesc?: true
     bottomDesc?: true
+    isActive?: true
+    isFeatured?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9754,6 +9762,8 @@ export namespace Prisma {
     rightTitle?: true
     rightDesc?: true
     bottomDesc?: true
+    isActive?: true
+    isFeatured?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9770,6 +9780,8 @@ export namespace Prisma {
     rightDesc?: true
     bottomDesc?: true
     cultureSections?: true
+    isActive?: true
+    isFeatured?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9859,6 +9871,8 @@ export namespace Prisma {
     rightDesc: string | null
     bottomDesc: string | null
     cultureSections: JsonValue | null
+    isActive: boolean
+    isFeatured: boolean
     createdAt: Date
     updatedAt: Date
     _count: TribeCountAggregateOutputType | null
@@ -9892,6 +9906,8 @@ export namespace Prisma {
     rightDesc?: boolean
     bottomDesc?: boolean
     cultureSections?: boolean
+    isActive?: boolean
+    isFeatured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tribe"]>
@@ -9908,6 +9924,8 @@ export namespace Prisma {
     rightDesc?: boolean
     bottomDesc?: boolean
     cultureSections?: boolean
+    isActive?: boolean
+    isFeatured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tribe"]>
@@ -9924,6 +9942,8 @@ export namespace Prisma {
     rightDesc?: boolean
     bottomDesc?: boolean
     cultureSections?: boolean
+    isActive?: boolean
+    isFeatured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tribe"]>
@@ -9940,11 +9960,13 @@ export namespace Prisma {
     rightDesc?: boolean
     bottomDesc?: boolean
     cultureSections?: boolean
+    isActive?: boolean
+    isFeatured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TribeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "hindiName" | "englishName" | "shortDesc" | "image" | "leftTitle" | "leftDesc" | "rightTitle" | "rightDesc" | "bottomDesc" | "cultureSections" | "createdAt" | "updatedAt", ExtArgs["result"]["tribe"]>
+  export type TribeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "hindiName" | "englishName" | "shortDesc" | "image" | "leftTitle" | "leftDesc" | "rightTitle" | "rightDesc" | "bottomDesc" | "cultureSections" | "isActive" | "isFeatured" | "createdAt" | "updatedAt", ExtArgs["result"]["tribe"]>
 
   export type $TribePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Tribe"
@@ -9961,6 +9983,8 @@ export namespace Prisma {
       rightDesc: string | null
       bottomDesc: string | null
       cultureSections: Prisma.JsonValue | null
+      isActive: boolean
+      isFeatured: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["tribe"]>
@@ -10397,6 +10421,8 @@ export namespace Prisma {
     readonly rightDesc: FieldRef<"Tribe", 'String'>
     readonly bottomDesc: FieldRef<"Tribe", 'String'>
     readonly cultureSections: FieldRef<"Tribe", 'Json'>
+    readonly isActive: FieldRef<"Tribe", 'Boolean'>
+    readonly isFeatured: FieldRef<"Tribe", 'Boolean'>
     readonly createdAt: FieldRef<"Tribe", 'DateTime'>
     readonly updatedAt: FieldRef<"Tribe", 'DateTime'>
   }
@@ -11878,6 +11904,7 @@ export namespace Prisma {
     publishedDate: string | null
     readTime: number | null
     location: string | null
+    status: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11892,6 +11919,7 @@ export namespace Prisma {
     publishedDate: string | null
     readTime: number | null
     location: string | null
+    status: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11908,6 +11936,7 @@ export namespace Prisma {
     readTime: number
     tags: number
     location: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -11932,6 +11961,7 @@ export namespace Prisma {
     publishedDate?: true
     readTime?: true
     location?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11946,6 +11976,7 @@ export namespace Prisma {
     publishedDate?: true
     readTime?: true
     location?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11962,6 +11993,7 @@ export namespace Prisma {
     readTime?: true
     tags?: true
     location?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -12065,6 +12097,7 @@ export namespace Prisma {
     readTime: number | null
     tags: string[]
     location: string
+    status: $Enums.ApprovalStatus
     createdAt: Date
     updatedAt: Date
     _count: TribalArticleCountAggregateOutputType | null
@@ -12100,6 +12133,7 @@ export namespace Prisma {
     readTime?: boolean
     tags?: boolean
     location?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tribalArticle"]>
@@ -12116,6 +12150,7 @@ export namespace Prisma {
     readTime?: boolean
     tags?: boolean
     location?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tribalArticle"]>
@@ -12132,6 +12167,7 @@ export namespace Prisma {
     readTime?: boolean
     tags?: boolean
     location?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tribalArticle"]>
@@ -12148,11 +12184,12 @@ export namespace Prisma {
     readTime?: boolean
     tags?: boolean
     location?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TribalArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "headline" | "description" | "image" | "images" | "author" | "tribe" | "publishedDate" | "readTime" | "tags" | "location" | "createdAt" | "updatedAt", ExtArgs["result"]["tribalArticle"]>
+  export type TribalArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "headline" | "description" | "image" | "images" | "author" | "tribe" | "publishedDate" | "readTime" | "tags" | "location" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["tribalArticle"]>
 
   export type $TribalArticlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TribalArticle"
@@ -12169,6 +12206,7 @@ export namespace Prisma {
       readTime: number | null
       tags: string[]
       location: string
+      status: $Enums.ApprovalStatus
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["tribalArticle"]>
@@ -12605,6 +12643,7 @@ export namespace Prisma {
     readonly readTime: FieldRef<"TribalArticle", 'Int'>
     readonly tags: FieldRef<"TribalArticle", 'String[]'>
     readonly location: FieldRef<"TribalArticle", 'String'>
+    readonly status: FieldRef<"TribalArticle", 'ApprovalStatus'>
     readonly createdAt: FieldRef<"TribalArticle", 'DateTime'>
     readonly updatedAt: FieldRef<"TribalArticle", 'DateTime'>
   }
@@ -22925,6 +22964,8 @@ export namespace Prisma {
     rightDesc: 'rightDesc',
     bottomDesc: 'bottomDesc',
     cultureSections: 'cultureSections',
+    isActive: 'isActive',
+    isFeatured: 'isFeatured',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -22961,6 +23002,7 @@ export namespace Prisma {
     readTime: 'readTime',
     tags: 'tags',
     location: 'location',
+    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -23888,6 +23930,8 @@ export namespace Prisma {
     rightDesc?: StringNullableFilter<"Tribe"> | string | null
     bottomDesc?: StringNullableFilter<"Tribe"> | string | null
     cultureSections?: JsonNullableFilter<"Tribe">
+    isActive?: BoolFilter<"Tribe"> | boolean
+    isFeatured?: BoolFilter<"Tribe"> | boolean
     createdAt?: DateTimeFilter<"Tribe"> | Date | string
     updatedAt?: DateTimeFilter<"Tribe"> | Date | string
   }
@@ -23904,6 +23948,8 @@ export namespace Prisma {
     rightDesc?: SortOrderInput | SortOrder
     bottomDesc?: SortOrderInput | SortOrder
     cultureSections?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    isFeatured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -23923,6 +23969,8 @@ export namespace Prisma {
     rightDesc?: StringNullableFilter<"Tribe"> | string | null
     bottomDesc?: StringNullableFilter<"Tribe"> | string | null
     cultureSections?: JsonNullableFilter<"Tribe">
+    isActive?: BoolFilter<"Tribe"> | boolean
+    isFeatured?: BoolFilter<"Tribe"> | boolean
     createdAt?: DateTimeFilter<"Tribe"> | Date | string
     updatedAt?: DateTimeFilter<"Tribe"> | Date | string
   }, "id">
@@ -23939,6 +23987,8 @@ export namespace Prisma {
     rightDesc?: SortOrderInput | SortOrder
     bottomDesc?: SortOrderInput | SortOrder
     cultureSections?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    isFeatured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TribeCountOrderByAggregateInput
@@ -23961,6 +24011,8 @@ export namespace Prisma {
     rightDesc?: StringNullableWithAggregatesFilter<"Tribe"> | string | null
     bottomDesc?: StringNullableWithAggregatesFilter<"Tribe"> | string | null
     cultureSections?: JsonNullableWithAggregatesFilter<"Tribe">
+    isActive?: BoolWithAggregatesFilter<"Tribe"> | boolean
+    isFeatured?: BoolWithAggregatesFilter<"Tribe"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Tribe"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Tribe"> | Date | string
   }
@@ -24062,6 +24114,7 @@ export namespace Prisma {
     readTime?: IntNullableFilter<"TribalArticle"> | number | null
     tags?: StringNullableListFilter<"TribalArticle">
     location?: StringFilter<"TribalArticle"> | string
+    status?: EnumApprovalStatusFilter<"TribalArticle"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"TribalArticle"> | Date | string
     updatedAt?: DateTimeFilter<"TribalArticle"> | Date | string
   }
@@ -24078,6 +24131,7 @@ export namespace Prisma {
     readTime?: SortOrderInput | SortOrder
     tags?: SortOrder
     location?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24097,6 +24151,7 @@ export namespace Prisma {
     readTime?: IntNullableFilter<"TribalArticle"> | number | null
     tags?: StringNullableListFilter<"TribalArticle">
     location?: StringFilter<"TribalArticle"> | string
+    status?: EnumApprovalStatusFilter<"TribalArticle"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"TribalArticle"> | Date | string
     updatedAt?: DateTimeFilter<"TribalArticle"> | Date | string
   }, "id">
@@ -24113,6 +24168,7 @@ export namespace Prisma {
     readTime?: SortOrderInput | SortOrder
     tags?: SortOrder
     location?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TribalArticleCountOrderByAggregateInput
@@ -24137,6 +24193,7 @@ export namespace Prisma {
     readTime?: IntNullableWithAggregatesFilter<"TribalArticle"> | number | null
     tags?: StringNullableListFilter<"TribalArticle">
     location?: StringWithAggregatesFilter<"TribalArticle"> | string
+    status?: EnumApprovalStatusWithAggregatesFilter<"TribalArticle"> | $Enums.ApprovalStatus
     createdAt?: DateTimeWithAggregatesFilter<"TribalArticle"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TribalArticle"> | Date | string
   }
@@ -25654,6 +25711,8 @@ export namespace Prisma {
     rightDesc?: string | null
     bottomDesc?: string | null
     cultureSections?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    isFeatured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25670,6 +25729,8 @@ export namespace Prisma {
     rightDesc?: string | null
     bottomDesc?: string | null
     cultureSections?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    isFeatured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25686,6 +25747,8 @@ export namespace Prisma {
     rightDesc?: NullableStringFieldUpdateOperationsInput | string | null
     bottomDesc?: NullableStringFieldUpdateOperationsInput | string | null
     cultureSections?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25702,6 +25765,8 @@ export namespace Prisma {
     rightDesc?: NullableStringFieldUpdateOperationsInput | string | null
     bottomDesc?: NullableStringFieldUpdateOperationsInput | string | null
     cultureSections?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25718,6 +25783,8 @@ export namespace Prisma {
     rightDesc?: string | null
     bottomDesc?: string | null
     cultureSections?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    isFeatured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25734,6 +25801,8 @@ export namespace Prisma {
     rightDesc?: NullableStringFieldUpdateOperationsInput | string | null
     bottomDesc?: NullableStringFieldUpdateOperationsInput | string | null
     cultureSections?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25750,6 +25819,8 @@ export namespace Prisma {
     rightDesc?: NullableStringFieldUpdateOperationsInput | string | null
     bottomDesc?: NullableStringFieldUpdateOperationsInput | string | null
     cultureSections?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25864,6 +25935,7 @@ export namespace Prisma {
     readTime?: number | null
     tags?: TribalArticleCreatetagsInput | string[]
     location: string
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25880,6 +25952,7 @@ export namespace Prisma {
     readTime?: number | null
     tags?: TribalArticleCreatetagsInput | string[]
     location: string
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25896,6 +25969,7 @@ export namespace Prisma {
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: TribalArticleUpdatetagsInput | string[]
     location?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25912,6 +25986,7 @@ export namespace Prisma {
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: TribalArticleUpdatetagsInput | string[]
     location?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25928,6 +26003,7 @@ export namespace Prisma {
     readTime?: number | null
     tags?: TribalArticleCreatetagsInput | string[]
     location: string
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25944,6 +26020,7 @@ export namespace Prisma {
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: TribalArticleUpdatetagsInput | string[]
     location?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25960,6 +26037,7 @@ export namespace Prisma {
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: TribalArticleUpdatetagsInput | string[]
     location?: StringFieldUpdateOperationsInput | string
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27645,6 +27723,8 @@ export namespace Prisma {
     rightDesc?: SortOrder
     bottomDesc?: SortOrder
     cultureSections?: SortOrder
+    isActive?: SortOrder
+    isFeatured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27660,6 +27740,8 @@ export namespace Prisma {
     rightTitle?: SortOrder
     rightDesc?: SortOrder
     bottomDesc?: SortOrder
+    isActive?: SortOrder
+    isFeatured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27675,6 +27757,8 @@ export namespace Prisma {
     rightTitle?: SortOrder
     rightDesc?: SortOrder
     bottomDesc?: SortOrder
+    isActive?: SortOrder
+    isFeatured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27770,6 +27854,7 @@ export namespace Prisma {
     readTime?: SortOrder
     tags?: SortOrder
     location?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27788,6 +27873,7 @@ export namespace Prisma {
     publishedDate?: SortOrder
     readTime?: SortOrder
     location?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27802,6 +27888,7 @@ export namespace Prisma {
     publishedDate?: SortOrder
     readTime?: SortOrder
     location?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }

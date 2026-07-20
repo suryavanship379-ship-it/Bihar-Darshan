@@ -55,6 +55,47 @@ type AdminFormState = typeof emptyForm;
 type SubView = 'packages' | 'journeys';
 type JourneyTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
+const InputField = ({ label, value, onChange, placeholder = '', required = false, type = 'text' }: any) => (
+  <div className="space-y-1">
+    <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}{required && <span className="text-red-400 ml-1">*</span>}</label>
+    <input type={type} value={value} onChange={onChange} required={required} placeholder={placeholder}
+      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all placeholder-white/25" />
+  </div>
+);
+
+const SelectField = ({ label, value, onChange, options, placeholder = 'Select...', required = false }: any) => (
+  <div className="space-y-1">
+    <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}{required && <span className="text-red-400 ml-1">*</span>}</label>
+    <select value={value} onChange={onChange} required={required}
+      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all">
+      <option value="" className="bg-[#1a1a24] text-white">{placeholder}</option>
+      {options.map((opt: string) => <option key={opt} value={opt} className="bg-[#1a1a24] text-white">{opt}</option>)}
+    </select>
+  </div>
+);
+
+const TextareaField = ({ label, value, onChange, rows = 3, placeholder = '' }: any) => (
+  <div className="space-y-1">
+    <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}</label>
+    <textarea value={value} onChange={onChange} rows={rows} placeholder={placeholder}
+      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all resize-none placeholder-white/25" />
+  </div>
+);
+
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <h4 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
+    <span className="w-1 h-4 bg-brand-gold rounded-full" />
+    {children}
+  </h4>
+);
+
+const GoldBtn = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+  <button type="button" onClick={onClick}
+    className="text-xs flex items-center gap-1.5 bg-brand-gold/10 border border-brand-gold/30 text-brand-gold px-3 py-1.5 rounded-lg hover:bg-brand-gold/20 transition-colors font-semibold">
+    {children}
+  </button>
+);
+
 const AdminTourism = () => {
   const { tourism, updateTourism } = useAdminData();
   const [searchTerm, setSearchTerm] = useState('');
@@ -361,46 +402,6 @@ const AdminTourism = () => {
     { id: 'timeline', label: 'Timeline',      icon: Map },
   ];
 
-  const InputField = ({ label, value, onChange, placeholder = '', required = false, type = 'text' }: any) => (
-    <div className="space-y-1">
-      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}{required && <span className="text-red-400 ml-1">*</span>}</label>
-      <input type={type} value={value} onChange={onChange} required={required} placeholder={placeholder}
-        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all placeholder-white/25" />
-    </div>
-  );
-
-  const SelectField = ({ label, value, onChange, options, placeholder = 'Select...', required = false }: any) => (
-    <div className="space-y-1">
-      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}{required && <span className="text-red-400 ml-1">*</span>}</label>
-      <select value={value} onChange={onChange} required={required}
-        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all">
-        <option value="">{placeholder}</option>
-        {options.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
-      </select>
-    </div>
-  );
-
-  const TextareaField = ({ label, value, onChange, rows = 3, placeholder = '' }: any) => (
-    <div className="space-y-1">
-      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">{label}</label>
-      <textarea value={value} onChange={onChange} rows={rows} placeholder={placeholder}
-        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/30 transition-all resize-none placeholder-white/25" />
-    </div>
-  );
-
-  const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-    <h4 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
-      <span className="w-1 h-4 bg-brand-gold rounded-full" />
-      {children}
-    </h4>
-  );
-
-  const GoldBtn = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
-    <button type="button" onClick={onClick}
-      className="text-xs flex items-center gap-1.5 bg-brand-gold/10 border border-brand-gold/30 text-brand-gold px-3 py-1.5 rounded-lg hover:bg-brand-gold/20 transition-colors font-semibold">
-      {children}
-    </button>
-  );
 
   return (
     <div className="space-y-6">

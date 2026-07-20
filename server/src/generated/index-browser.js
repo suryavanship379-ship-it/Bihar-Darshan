@@ -214,6 +214,8 @@ exports.Prisma.TribeScalarFieldEnum = {
   rightDesc: 'rightDesc',
   bottomDesc: 'bottomDesc',
   cultureSections: 'cultureSections',
+  isActive: 'isActive',
+  isFeatured: 'isFeatured',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -244,6 +246,7 @@ exports.Prisma.TribalArticleScalarFieldEnum = {
   readTime: 'readTime',
   tags: 'tags',
   location: 'location',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
