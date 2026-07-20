@@ -3,7 +3,7 @@ import { useAdminData } from '../../data/AdminContext';
 import type { PersonalityItem } from '../../data/AdminContext';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
-import { AdminInput, AdminTextarea, AdminSelect, AdminImagePreview } from '../../components/admin/AdminFormField';
+import { AdminInput, AdminTextarea, AdminSelect, AdminImagePreview, AdminImageUpload } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
 import { CheckCircle, XCircle, LayoutList, ListChecks } from 'lucide-react';
 import { auth } from '../../lib/firebase';
@@ -275,15 +275,12 @@ const AdminPersonalities = () => {
             ))}
           </AdminSelect>
 
-          <AdminInput
-            label="Portrait Image URL"
+          <AdminImageUpload
+            label="Portrait Image"
             value={formData.imageUrl || ''}
-            onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
+            onChange={val => setFormData({ ...formData, imageUrl: val })}
             required
           />
-          <div className="w-32 h-32 rounded-full overflow-hidden mt-2 border-2 border-white/10">
-            <img src={formData.imageUrl || ''} alt="Preview" className="w-full h-full object-cover bg-white/5" />
-          </div>
 
           <AdminTextarea
             label="Biography / Description (Short Summary)"

@@ -13,12 +13,13 @@ import { communities as defaultCommunities, discussions as defaultDiscussions } 
 import { product as defaultProducts } from './product';
 import { tribalArticles } from './tribalArticlesData';
 import type { TribalArticle } from './tribalArticlesData';
-import { allDistricts } from './districtsData';
+import { allDistricts, resolveDistrictImage } from './districtsData';
 import type { District } from './districtsData';
 import { staticDistrictDetails } from './districtDetailsData';
 import type { DistrictDetail } from './districtDetailsData';
 
 import { type SiteSettings, defaultSiteSettings } from './siteSettingsDefaults';
+import { type PopularPlaceItem, defaultPopularPlaces } from './popularPlacesDefaults';
 import { mockTribes } from './mockTribes';
 
 // ── Tribe type (extracted from Tribals.tsx inline data) ──
@@ -50,7 +51,7 @@ export interface PersonalityItem {
 
 // ── Product type ──
 export interface ProductItem {
-  id: number;
+  id: string | number;
   businessName: string;
   productName: string;
   category: string;
@@ -62,6 +63,7 @@ export interface ProductItem {
   mapLink: string;
   contact: string;
   email: string;
+  status?: string;
 }
 
 // ── Site Settings (imported from siteSettingsDefaults.ts) ──
@@ -81,6 +83,7 @@ const KEYS = {
   tribalArticles: 'admin_tribal_articles',
   personalities: 'admin_personalities_v2',
   siteSettings: 'admin_site_settings',
+  popularPlaces: 'admin_popular_places',
 };
 
 // ── Helper: load from localStorage or return default ──
@@ -117,6 +120,7 @@ interface AdminContextValue {
   tribalArticles: TribalArticle[];
   personalities: PersonalityItem[];
   siteSettings: SiteSettings;
+  popularPlaces: PopularPlaceItem[];
 
   // CRUD operations (generic pattern)
   updateDistricts: (data: District[]) => void;
@@ -131,6 +135,7 @@ interface AdminContextValue {
   updateTribalArticles: (data: TribalArticle[]) => void;
   updatePersonalities: (data: PersonalityItem[]) => void;
   updateSiteSettings: (data: SiteSettings) => void;
+  updatePopularPlaces: (data: PopularPlaceItem[]) => void;
 
   // Reset
   resetSection: (section: keyof typeof KEYS) => void;
@@ -143,6 +148,16 @@ interface AdminContextValue {
   updateArticleStatus: (id: string, status: string) => Promise<void>;
   addTribalArticle: (article: any) => Promise<void>;
   deleteTribalArticle: (id: string) => Promise<void>;
+  refreshProducts: () => Promise<void>;
+  approveProduct: (id: string | number) => Promise<void>;
+  rejectProduct: (id: string | number) => Promise<void>;
+  deleteProductDetail: (id: string | number) => Promise<void>;
+  updateProductDetail: (id: string | number, product: any) => Promise<void>;
+  createProductDetail: (product: any) => Promise<void>;
+  refreshDistricts: () => Promise<void>;
+  createDistrictDetail: (district: any) => Promise<void>;
+  updateDistrictDetail: (id: string, district: any) => Promise<void>;
+  deleteDistrictDetail: (id: string) => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextValue | null>(null);
@@ -159,11 +174,44 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
     return loaded.filter(c => !mockIds.includes(c.id));
   });
   const [discussionsState, setDiscussionsState] = useState<Discussion[]>(() => loadFromStorage(KEYS.discussions, defaultDiscussions));
-  const [products, setProducts] = useState<ProductItem[]>(() => loadFromStorage(KEYS.products, defaultProducts as ProductItem[]));
+  const [products, setProducts] = useState<ProductItem[]>([]);
   const [tribes, setTribes] = useState<TribeItem[]>(() => loadFromStorage(KEYS.tribes, mockTribes as any[]));
   const [tribalArticlesState, setTribalArticlesState] = useState<TribalArticle[]>(() => loadFromStorage(KEYS.tribalArticles, tribalArticles));
   const [personalities, setPersonalities] = useState<PersonalityItem[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => loadFromStorage(KEYS.siteSettings, defaultSiteSettings));
+  const [popularPlaces, setPopularPlaces] = useState<PopularPlaceItem[]>(() => loadFromStorage(KEYS.popularPlaces, defaultPopularPlaces));
+
+  const fetchProducts = useCallback(async () => {
+    const user = auth.currentUser;
+    let productsUrl = 'http://localhost:5000/api/v1/marketplace';
+    const headers: any = {};
+
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const profileResult = await profileRes.json();
+        if (profileResult.success && profileResult.data?.user?.role === 'ADMIN') {
+          productsUrl = 'http://localhost:5000/api/v1/marketplace?status=all';
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch (err) {
+        console.error('AdminContext: Failed to check user role:', err);
+      }
+    }
+
+    try {
+      const res = await fetch(productsUrl, { headers });
+      const result = await res.json();
+      if (result.success && result.data && result.data.products) {
+        setProducts(result.data.products);
+      }
+    } catch (e) {
+      console.error('AdminContext: Failed to fetch products:', e);
+    }
+  }, []);
 
   const fetchCulture = useCallback(async () => {
     const user = auth.currentUser;
@@ -263,7 +311,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
       if (user) {
         const token = await user.getIdToken();
         headers['Authorization'] = `Bearer ${token}`;
-        
+
         const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -297,7 +345,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
       if (user) {
         const token = await user.getIdToken();
         headers['Authorization'] = `Bearer ${token}`;
-        
+
         const profileRes = await fetch('http://localhost:5000/api/v1/users/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -378,6 +426,140 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
     }
   };
 
+  const fetchDistricts = useCallback(async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/districts');
+      const result = await res.json();
+      if (result.success && result.data && result.data.districts && result.data.districts.length > 0) {
+        const dbDistricts = result.data.districts.map((dist: any) => ({
+          id: dist.id,
+          name: dist.name,
+          image: resolveDistrictImage(dist.image),
+          tagline: dist.tagline || '',
+          introduction: dist.introduction || '',
+          richHistory: dist.richHistory || '',
+          topTouristAttraction: {
+            name: dist.topTouristName || '',
+            details: dist.topTouristDetails || '',
+          },
+          seasonalVisit: dist.seasonalVisits || [],
+          topAttractions: (dist.topAttractions || []).map((ta: any) => ({
+            ...ta,
+            image: resolveDistrictImage(ta.image)
+          })),
+          whyInTouristList: dist.whyInTouristList || [],
+          howToReach: {
+            air: dist.howToReachAir || '',
+            rail: dist.howToReachRail || '',
+            road: dist.howToReachRoad || '',
+          }
+        }));
+        setDistricts(dbDistricts);
+      } else {
+        setDistricts(allDistricts);
+      }
+    } catch (e) {
+      console.error('AdminContext: Failed to fetch districts:', e);
+      setDistricts(allDistricts);
+    }
+  }, []);
+
+  const createDistrictDetail = async (district: any) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+
+      const payload = {
+        name: district.name,
+        image: district.image,
+        tagline: district.tagline || null,
+        introduction: district.introduction || null,
+        richHistory: district.richHistory || null,
+        topTouristName: district.topTouristAttraction?.name || null,
+        topTouristDetails: district.topTouristAttraction?.details || null,
+        howToReachAir: district.howToReach?.air || null,
+        howToReachRail: district.howToReach?.rail || null,
+        howToReachRoad: district.howToReach?.road || null,
+        whyInTouristList: district.whyInTouristList || [],
+        seasonalVisits: district.seasonalVisit || [],
+        topAttractions: district.topAttractions || [],
+      };
+
+      const res = await fetch(`http://localhost:5000/api/v1/districts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to create district');
+      await fetchDistricts();
+    } catch (error) {
+      console.error('Error creating district:', error);
+      throw error;
+    }
+  };
+
+  const updateDistrictDetail = async (id: string, district: any) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+
+      const payload = {
+        name: district.name,
+        image: district.image,
+        tagline: district.tagline || null,
+        introduction: district.introduction || null,
+        richHistory: district.richHistory || null,
+        topTouristName: district.topTouristAttraction?.name || null,
+        topTouristDetails: district.topTouristAttraction?.details || null,
+        howToReachAir: district.howToReach?.air || null,
+        howToReachRail: district.howToReach?.rail || null,
+        howToReachRoad: district.howToReach?.road || null,
+        whyInTouristList: district.whyInTouristList || [],
+        seasonalVisits: district.seasonalVisit || [],
+        topAttractions: district.topAttractions || [],
+      };
+
+      const res = await fetch(`http://localhost:5000/api/v1/districts/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to update district');
+      await fetchDistricts();
+    } catch (error) {
+      console.error('Error updating district:', error);
+      throw error;
+    }
+  };
+
+  const deleteDistrictDetail = async (id: string) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+      const res = await fetch(`http://localhost:5000/api/v1/districts/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to delete district');
+      await fetchDistricts();
+    } catch (error) {
+      console.error('Error deleting district:', error);
+      throw error;
+    }
+  };
+
   // Fetch communities, discover items, and personalities from backend database on mount matching auth status
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -446,10 +628,12 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
       fetchPersonalities();
       fetchTribes();
       fetchTribalArticles();
+      fetchProducts();
+      fetchDistricts();
     });
 
     return () => unsubscribe();
-  }, [fetchCulture, fetchPersonalities, fetchTribes, fetchTribalArticles]);
+  }, [fetchCulture, fetchPersonalities, fetchTribes, fetchTribalArticles, fetchProducts, fetchDistricts]);
 
   // Auto-save on change
   const createUpdater = <T,>(key: string, setter: React.Dispatch<React.SetStateAction<T>>) =>
@@ -470,6 +654,124 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
   const updateTribalArticles = createUpdater(KEYS.tribalArticles, setTribalArticlesState);
   const updatePersonalities = createUpdater(KEYS.personalities, setPersonalities);
   const updateSiteSettings = createUpdater(KEYS.siteSettings, setSiteSettings);
+  const updatePopularPlaces = createUpdater(KEYS.popularPlaces, setPopularPlaces);
+
+  const approveProduct = async (id: string | number) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+      const res = await fetch(`http://localhost:5000/api/v1/marketplace/${id}/approve`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to approve product');
+      await fetchProducts();
+    } catch (error) {
+      console.error('Error approving product:', error);
+      throw error;
+    }
+  };
+
+  const rejectProduct = async (id: string | number) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+      const res = await fetch(`http://localhost:5000/api/v1/marketplace/${id}/reject`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to reject product');
+      await fetchProducts();
+    } catch (error) {
+      console.error('Error rejecting product:', error);
+      throw error;
+    }
+  };
+
+  const deleteProductDetail = async (id: string | number) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+      const res = await fetch(`http://localhost:5000/api/v1/marketplace/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to delete product');
+      await fetchProducts();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      throw error;
+    }
+  };
+
+  const updateProductDetail = async (id: string | number, product: any) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+      const cleanProduct = {
+        ...product,
+        id: undefined, // remove id if sent
+        email: product.email?.trim() || null,
+        website: product.website?.trim() || null,
+        mapLink: product.mapLink?.trim() || null,
+        address: product.address?.trim() || null,
+        contact: product.contact?.trim() || null,
+      };
+
+      const res = await fetch(`http://localhost:5000/api/v1/marketplace/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(cleanProduct)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to update product');
+      await fetchProducts();
+    } catch (error) {
+      console.error('Error updating product:', error);
+      throw error;
+    }
+  };
+
+  const createProductDetail = async (product: any) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not authenticated");
+      const token = await user.getIdToken();
+      const cleanProduct = {
+        ...product,
+        email: product.email?.trim() || null,
+        website: product.website?.trim() || null,
+        mapLink: product.mapLink?.trim() || null,
+        address: product.address?.trim() || null,
+        contact: product.contact?.trim() || null,
+      };
+
+      const res = await fetch(`http://localhost:5000/api/v1/marketplace`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(cleanProduct)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to create product');
+      await fetchProducts();
+    } catch (error) {
+      console.error('Error creating product:', error);
+      throw error;
+    }
+  };
 
   const resetSection = useCallback((section: keyof typeof KEYS) => {
     localStorage.removeItem(KEYS[section]);
@@ -486,6 +788,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
       tribalArticles: () => setTribalArticlesState(tribalArticles),
       personalities: () => setPersonalities([]),
       siteSettings: () => setSiteSettings(defaultSiteSettings),
+      popularPlaces: () => setPopularPlaces(defaultPopularPlaces),
     };
     defaults[section]?.();
   }, []);
@@ -505,6 +808,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
         tribalArticles: tribalArticlesState,
         personalities,
         siteSettings,
+        popularPlaces,
         updateDistricts,
         updateDistrictDetails,
         updateCulture,
@@ -517,6 +821,7 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
         updateTribalArticles,
         updatePersonalities,
         updateSiteSettings,
+        updatePopularPlaces,
         resetSection,
         refreshCulture: fetchCulture,
         refreshPersonalities: fetchPersonalities,
@@ -524,7 +829,17 @@ export const AdminDataProvider = ({ children }: { children: React.ReactNode }) =
         refreshTribalArticles: fetchTribalArticles,
         updateArticleStatus,
         addTribalArticle,
-        deleteTribalArticle
+        deleteTribalArticle,
+        refreshProducts: fetchProducts,
+        approveProduct,
+        rejectProduct,
+        deleteProductDetail,
+        updateProductDetail,
+        createProductDetail,
+        refreshDistricts: fetchDistricts,
+        createDistrictDetail,
+        updateDistrictDetail,
+        deleteDistrictDetail
       }}
     >
       {children}

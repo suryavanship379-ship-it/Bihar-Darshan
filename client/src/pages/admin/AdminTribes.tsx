@@ -4,7 +4,7 @@ import { auth } from '../../lib/firebase';
 import type { TribeItem } from '../../data/AdminContext';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
-import { AdminInput, AdminTextarea, AdminImagePreview } from '../../components/admin/AdminFormField';
+import { AdminInput, AdminTextarea, AdminImagePreview, AdminImageUpload } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
 import type { CultureSection } from '../../components/tribals/CulturalHighlightsGrid';
 import { getTribeCulturalSections } from '../../data/tribeCulturalData';
@@ -120,8 +120,13 @@ const SingleSectionEditor = ({ section, onChange }: SingleSectionEditorProps) =>
           <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <AdminInput label="Card Title" value={card.title}
               onChange={e => updateCard(idx, 'title', e.target.value)} placeholder="e.g. Karam Festival" />
-            <AdminInput label="Image URL" value={card.image}
-              onChange={e => updateCard(idx, 'image', e.target.value)} placeholder="/images/tribals/..." />
+            <div className="md:col-span-2">
+              <AdminImageUpload
+                label="Card Image"
+                value={card.image}
+                onChange={val => updateCard(idx, 'image', val)}
+              />
+            </div>
             <div className="md:col-span-2">
               <AdminTextarea label="Description" value={card.description}
                 onChange={e => updateCard(idx, 'description', e.target.value)} rows={2}
@@ -154,8 +159,8 @@ interface ArticleAdminRowProps {
 
 const ArticleAdminRow = ({ article, isUserArticle, onDelete, onPreview, onApprove, onReject }: ArticleAdminRowProps) => (
   <div className={`flex items-start gap-3 p-3 rounded-xl border transition-colors ${isUserArticle
-      ? 'border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/10'
-      : 'border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10'
+    ? 'border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/10'
+    : 'border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10'
     }`}>
     {/* Thumbnail */}
     <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-white/5">
@@ -431,10 +436,10 @@ const AdminTribes = () => {
                   <span className="hidden sm:inline">{tab.label}</span>
                   {(isSection || isArticles) && (
                     <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${count && count > 0
-                        ? isActive
-                          ? isArticles ? 'bg-blue-900/60 text-blue-200' : 'bg-black/30 text-black'
-                          : isArticles ? 'bg-blue-500/30 text-blue-300' : 'bg-green-500/30 text-green-400'
-                        : isActive ? 'bg-black/20 text-black/50' : 'bg-white/10 text-white/30'
+                      ? isActive
+                        ? isArticles ? 'bg-blue-900/60 text-blue-200' : 'bg-black/30 text-black'
+                        : isArticles ? 'bg-blue-500/30 text-blue-300' : 'bg-green-500/30 text-green-400'
+                      : isActive ? 'bg-black/20 text-black/50' : 'bg-white/10 text-white/30'
                       }`}>{count}</span>
                   )}
                 </button>
@@ -461,13 +466,12 @@ const AdminTribes = () => {
                 placeholder="Brief description shown on the tribes listing page..." />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                <AdminInput label="Image / Icon URL" value={formData.image || ''}
-                  onChange={e => setFormData({ ...formData, image: e.target.value })} required placeholder="/images/tribals/santhal_nobg.png" />
-                {formData.image && (
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <AdminImagePreview url={formData.image} />
-                  </div>
-                )}
+                <AdminImageUpload
+                  label="Image / Icon"
+                  value={formData.image || ''}
+                  onChange={val => setFormData({ ...formData, image: val })}
+                  required
+                />
               </div>
 
               <div className="pt-4 border-t border-white/10">
@@ -554,29 +558,18 @@ const AdminTribes = () => {
                       Images (up to 5)
                       <span className="text-white/30 font-normal normal-case tracking-normal">— first image is the cover</span>
                     </p>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {articleForm.images.map((img, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${idx === 0 ? 'bg-[#EAB308]/30 text-[#EAB308]' : 'bg-white/10 text-white/40'
-                            }`}>{idx + 1}</span>
-                          <input
-                            type="text"
+                        <div key={idx} className="space-y-1">
+                          <AdminImageUpload
+                            label={idx === 0 ? 'Cover Image (Required)' : `Article Image ${idx + 1}`}
                             value={img}
-                            onChange={e => {
+                            onChange={val => {
                               const updated = [...articleForm.images];
-                              updated[idx] = e.target.value;
+                              updated[idx] = val;
                               setArticleForm({ ...articleForm, images: updated });
                             }}
-                            placeholder={idx === 0 ? 'Cover image URL (required) — /images/articles/...' : `Image ${idx + 1} URL (optional)`}
-                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#EAB308]/50 focus:bg-white/8 transition-all"
                           />
-                          {img && (
-                            <img src={img} alt={`preview ${idx}`}
-                              className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-white/10"
-                              onError={e => { e.currentTarget.style.display = 'none'; }}
-                              onLoad={e => { e.currentTarget.style.display = 'block'; }}
-                            />
-                          )}
                         </div>
                       ))}
                     </div>

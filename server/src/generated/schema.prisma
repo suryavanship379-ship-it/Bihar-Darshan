@@ -398,6 +398,8 @@ model MarketplaceProduct {
   contact      String?
   email        String?
 
+  status ApprovalStatus @default(PENDING)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

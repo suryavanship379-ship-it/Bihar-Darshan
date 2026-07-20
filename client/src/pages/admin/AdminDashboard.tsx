@@ -1,8 +1,8 @@
 import { useAdminData } from '../../data/AdminContext';
-import { 
-  MapPin, Palette, Plane, Image as ImageIcon, 
+import {
+  MapPin, Palette, Plane, Image as ImageIcon,
   Users, Store, Mountain, UserCircle, Settings,
-  Activity, ArrowRight, LayoutDashboard
+  Activity, ArrowRight, LayoutDashboard, Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -12,8 +12,9 @@ const AdminDashboard = () => {
   const contentStats = [
     { label: 'Districts', count: data.districts.length, icon: MapPin, path: '/admin/districts', color: 'from-blue-500/30 to-blue-500/5', glow: 'bg-blue-500', textColor: 'text-blue-400', desc: 'Manage district profiles' },
     { label: 'Culture Items', count: data.culture.length, icon: Palette, path: '/admin/culture', color: 'from-purple-500/30 to-purple-500/5', glow: 'bg-purple-500', textColor: 'text-purple-400', desc: 'Arts, food & heritage' },
-    { label: 'Tribal Groups', count: data.tribes.length, icon: Mountain, path: '/admin/tribes', color: 'from-emerald-500/30 to-emerald-500/5', glow: 'bg-emerald-500', textColor: 'text-emerald-400', desc: 'Indigenous heritage' },
+    { label: 'Tribal Groups', count: data.tribes.length, icon: Mountain, path: '/admin/tribes', color: 'from-emerald-500/30 to-[#10B981]/5', glow: 'bg-emerald-500', textColor: 'text-emerald-400', desc: 'Indigenous heritage' },
     { label: 'Personalities', count: data.personalities.length, icon: UserCircle, path: '/admin/personalities', color: 'from-amber-500/30 to-amber-500/5', glow: 'bg-amber-500', textColor: 'text-amber-400', desc: 'Notable figures' },
+    { label: 'Popular Places', count: data.popularPlaces.length, icon: Sparkles, path: '/admin/places', color: 'from-yellow-500/30 to-[#EAB308]/5', glow: 'bg-yellow-500', textColor: 'text-yellow-400', desc: 'Manage showcase cards' },
   ];
 
   const communityStats = [
@@ -30,12 +31,12 @@ const AdminDashboard = () => {
   const StatCard = ({ stat }: { stat: any }) => {
     const Icon = stat.icon;
     return (
-      <Link 
+      <Link
         to={stat.path}
         className="group relative bg-[#1E1E1E]/40 border border-white/5 rounded-2xl p-6 overflow-hidden hover:bg-[#2A2A2A]/60 transition-all duration-300 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-1"
       >
         <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${stat.color} blur-[40px] opacity-40 group-hover:opacity-100 transition-opacity duration-500 rounded-full pointer-events-none`} />
-        
+
         <div className="relative z-10 flex justify-between items-start mb-4">
           <div className={`w-12 h-12 rounded-xl bg-black/20 border border-white/5 flex items-center justify-center ${stat.textColor} shadow-lg shadow-black/20 group-hover:scale-110 transition-transform duration-300`}>
             <Icon size={22} strokeWidth={2} />
@@ -44,16 +45,16 @@ const AdminDashboard = () => {
             <h3 className="text-3xl font-display font-bold text-white tracking-tight">{stat.count}</h3>
           </div>
         </div>
-        
+
         <div className="relative z-10 mt-6">
           <h4 className="text-white font-medium text-lg mb-1 group-hover:text-white transition-colors">{stat.label}</h4>
           <p className="text-white/40 text-sm mb-4 font-light">{stat.desc}</p>
-          
+
           <div className="flex items-center text-sm font-semibold text-white/40 group-hover:text-white/90 transition-colors uppercase tracking-wider">
             Manage <ArrowRight size={14} className="ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
           </div>
         </div>
-        
+
         <div className={`absolute bottom-0 left-0 h-[3px] w-0 group-hover:w-full transition-all duration-500 ${stat.glow}`} />
       </Link>
     );
@@ -65,7 +66,7 @@ const AdminDashboard = () => {
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#2A2A2A] to-[#1E1E1E] border border-white/10 p-8 md:p-10 shadow-2xl">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#EAB308]/20 to-transparent blur-[80px] rounded-full pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-emerald-500/10 to-transparent blur-[80px] rounded-full pointer-events-none" />
-        
+
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2">

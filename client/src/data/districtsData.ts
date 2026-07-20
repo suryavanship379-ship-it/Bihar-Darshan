@@ -20,9 +20,41 @@ import biharTempleImg from "../assets/bihar-temple.png";
 import { getDistrictDetail } from './districtDetailsData';
 import type { DistrictDetail } from './districtDetailsData';
 
+import patnaSahibImg from "../assets/patna-sahib.png";
+import biharMountainsImg from "../assets/bihar-mountains.png";
+import biharFolkDanceImg from "../assets/bihar-folk-dance.png";
+
 export interface District extends DistrictDetail {
+  id?: string;
   image: string;
 }
+
+const localAssets: Record<string, string> = {
+  "/src/assets/nalanda.png": nalandaImg,
+  "/src/assets/patna-district.png": patnaImg,
+  "/src/assets/gaya-district.png": gayaImg,
+  "/src/assets/bhagalpur-district.png": bhagalpurImg,
+  "/src/assets/muzaffarpur-district.png": muzaffarpurImg,
+  "/src/assets/darbhanga-district.png": darbhangaImg,
+  "/src/assets/bodh-gaya.png": bodhGayaImg,
+  "/src/assets/vaishali.png": vaishaliImg,
+  "/src/assets/rajgir.png": rajgirImg,
+  "/src/assets/pawapuri.png": pawapuriImg,
+  "/src/assets/bihar-monument.png": patnaMonumentImg,
+  "/src/assets/bihar-heritage.png": biharHeritageImg,
+  "/src/assets/bihar-temple.png": biharTempleImg,
+  "/src/assets/patna-sahib.png": patnaSahibImg,
+  "/src/assets/bihar-mountains.png": biharMountainsImg,
+  "/src/assets/bihar-folk-dance.png": biharFolkDanceImg,
+};
+
+export const resolveDistrictImage = (img: string): string => {
+  if (!img) return getFallback(0);
+  if (localAssets[img]) return localAssets[img];
+  const foundKey = Object.keys(localAssets).find(k => k.includes(img) || img.includes(k));
+  if (foundKey) return localAssets[foundKey];
+  return img;
+};
 
 // Cycle through available assets for districts that don't have dedicated images
 const fallbackImages = [
@@ -111,9 +143,9 @@ export const allDistricts: District[] = districtNames.map((name) => {
   const baseName = name.includes("(") ? name.split(" (")[0] : name;
   const image = dedicatedImages[baseName] ?? getFallback(fallbackIdx++);
   const details = getDistrictDetail(baseName);
-  return { 
+  return {
     ...details,
-    name, 
-    image 
+    name,
+    image
   };
 });

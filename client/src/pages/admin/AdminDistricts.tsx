@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAdminData } from '../../data/AdminContext';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
-import { AdminInput, AdminTextarea, AdminImagePreview } from '../../components/admin/AdminFormField';
+import { AdminInput, AdminTextarea, AdminImagePreview, AdminImageUpload } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
 import { Plus, Trash2, LayoutList, Info, Plane, SunSnow, MapPin } from 'lucide-react';
 import type { District } from '../../data/districtsData';
@@ -21,17 +21,22 @@ const emptyForm: Partial<District> = {
 };
 
 const AdminDistricts = () => {
-  const { districts, updateDistricts } = useAdminData();
+  const {
+    districts,
+    createDistrictDetail,
+    updateDistrictDetail,
+    deleteDistrictDetail
+  } = useAdminData();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<District | null>(null);
   const [formData, setFormData] = useState<Partial<District>>(emptyForm);
   const [itemToDelete, setItemToDelete] = useState<District | null>(null);
-  
+
   const [activeTab, setActiveTab] = useState<'basic' | 'content' | 'transport' | 'seasons' | 'attractions'>('basic');
 
-  const filteredData = districts.filter(item => 
+  const filteredData = districts.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -54,20 +59,30 @@ const AdminDistricts = () => {
     setIsDeleteOpen(true);
   };
 
-  const confirmDelete = () => {
-    if (itemToDelete) {
-      updateDistricts(districts.filter(d => d.name !== itemToDelete.name));
+  const confirmDelete = async () => {
+    if (itemToDelete && itemToDelete.id) {
+      try {
+        await deleteDistrictDetail(itemToDelete.id);
+        setIsDeleteOpen(false);
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'Failed to delete district.');
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingItem) {
-      updateDistricts(districts.map(d => d.name === editingItem.name ? { ...d, ...formData as District } : d));
-    } else {
-      updateDistricts([...districts, { ...formData as District }]);
+    try {
+      if (editingItem) {
+        if (!editingItem.id) throw new Error('Cannot update: Missing district ID.');
+        await updateDistrictDetail(editingItem.id, formData);
+      } else {
+        await createDistrictDetail(formData);
+      }
+      setIsModalOpen(false);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to save district.');
     }
-    setIsModalOpen(false);
   };
 
   const handleArrayStringChange = (index: number, value: string, arrayName: 'whyInTouristList') => {
@@ -133,11 +148,10 @@ const AdminDistricts = () => {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${
-                    activeTab === tab.id 
-                      ? 'bg-[#EAB308] text-black' 
-                      : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
+                    ? 'bg-[#EAB308] text-black'
+                    : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                    }`}
                 >
                   <Icon size={16} />
                   {tab.label}
@@ -149,7 +163,7 @@ const AdminDistricts = () => {
           {/* Form Content */}
           <form onSubmit={handleSubmit} className="flex-1 space-y-6 min-w-0">
             <div className="bg-black/20 p-6 rounded-2xl border border-white/10 min-h-[400px]">
-              
+
               {/* TAB 1: BASIC */}
               {activeTab === 'basic' && (
                 <div className="space-y-4 animate-fade-in">
@@ -164,13 +178,12 @@ const AdminDistricts = () => {
                     value={formData.tagline || ''}
                     onChange={e => setFormData({ ...formData, tagline: e.target.value })}
                   />
-                  <AdminInput
-                    label="Cover Image URL"
+                  <AdminImageUpload
+                    label="Cover Image"
                     value={formData.image || ''}
-                    onChange={e => setFormData({ ...formData, image: e.target.value })}
+                    onChange={val => setFormData({ ...formData, image: val })}
                     required
                   />
-                  <AdminImagePreview url={formData.image || ''} />
                 </div>
               )}
 
@@ -189,7 +202,7 @@ const AdminDistricts = () => {
                     onChange={e => setFormData({ ...formData, richHistory: e.target.value })}
                     rows={4}
                   />
-                  
+
                   <div className="pt-4">
                     <div className="flex justify-between items-center mb-2">
                       <label className="block text-sm font-medium text-white/70">Why it should be in your tourist list</label>
@@ -224,17 +237,17 @@ const AdminDistricts = () => {
                     <AdminInput
                       label="Attraction Name"
                       value={formData.topTouristAttraction?.name || ''}
-                      onChange={e => setFormData({ 
-                        ...formData, 
-                        topTouristAttraction: { ...(formData.topTouristAttraction || {name:'', details:''}), name: e.target.value } 
+                      onChange={e => setFormData({
+                        ...formData,
+                        topTouristAttraction: { ...(formData.topTouristAttraction || { name: '', details: '' }), name: e.target.value }
                       })}
                     />
                     <AdminTextarea
                       label="Attraction Details"
                       value={formData.topTouristAttraction?.details || ''}
-                      onChange={e => setFormData({ 
-                        ...formData, 
-                        topTouristAttraction: { ...(formData.topTouristAttraction || {name:'', details:''}), details: e.target.value } 
+                      onChange={e => setFormData({
+                        ...formData,
+                        topTouristAttraction: { ...(formData.topTouristAttraction || { name: '', details: '' }), details: e.target.value }
                       })}
                       rows={2}
                     />
@@ -245,27 +258,27 @@ const AdminDistricts = () => {
                     <AdminTextarea
                       label="By Air"
                       value={formData.howToReach?.air || ''}
-                      onChange={e => setFormData({ 
-                        ...formData, 
-                        howToReach: { ...(formData.howToReach || {air:'', rail:'', road:''}), air: e.target.value } 
+                      onChange={e => setFormData({
+                        ...formData,
+                        howToReach: { ...(formData.howToReach || { air: '', rail: '', road: '' }), air: e.target.value }
                       })}
                       rows={2}
                     />
                     <AdminTextarea
                       label="By Rail"
                       value={formData.howToReach?.rail || ''}
-                      onChange={e => setFormData({ 
-                        ...formData, 
-                        howToReach: { ...(formData.howToReach || {air:'', rail:'', road:''}), rail: e.target.value } 
+                      onChange={e => setFormData({
+                        ...formData,
+                        howToReach: { ...(formData.howToReach || { air: '', rail: '', road: '' }), rail: e.target.value }
                       })}
                       rows={2}
                     />
                     <AdminTextarea
                       label="By Road"
                       value={formData.howToReach?.road || ''}
-                      onChange={e => setFormData({ 
-                        ...formData, 
-                        howToReach: { ...(formData.howToReach || {air:'', rail:'', road:''}), road: e.target.value } 
+                      onChange={e => setFormData({
+                        ...formData,
+                        howToReach: { ...(formData.howToReach || { air: '', rail: '', road: '' }), road: e.target.value }
                       })}
                       rows={2}
                     />
@@ -278,10 +291,10 @@ const AdminDistricts = () => {
                 <div className="space-y-4 animate-fade-in">
                   <div className="flex justify-between items-center mb-2">
                     <h4 className="text-white font-medium">Seasonal Visits</h4>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => setFormData({
-                        ...formData, 
+                        ...formData,
                         seasonalVisit: [...(formData.seasonalVisit || []), { season: 'New Season', months: '', weather: '', whyVisit: '' }]
                       })}
                       className="text-xs flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-lg text-white hover:bg-white/20"
@@ -289,22 +302,22 @@ const AdminDistricts = () => {
                       <Plus size={14} /> Add Season
                     </button>
                   </div>
-                  
+
                   <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                     {(formData.seasonalVisit || []).map((season, index) => (
                       <div key={index} className="p-4 bg-white/5 rounded-xl border border-white/10 relative group">
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           onClick={() => {
                             const newArr = [...(formData.seasonalVisit || [])];
                             newArr.splice(index, 1);
                             setFormData({ ...formData, seasonalVisit: newArr });
-                          }} 
+                          }}
                           className="absolute top-3 right-3 text-white/40 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <Trash2 size={16} />
                         </button>
-                        
+
                         <div className="grid grid-cols-2 gap-4 mb-3">
                           <AdminInput
                             label="Season Name (e.g. Winter)"
@@ -360,10 +373,10 @@ const AdminDistricts = () => {
                 <div className="space-y-4 animate-fade-in">
                   <div className="flex justify-between items-center mb-2">
                     <h4 className="text-white font-medium">Top Attractions Grid</h4>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => setFormData({
-                        ...formData, 
+                        ...formData,
                         topAttractions: [...(formData.topAttractions || []), { name: 'New Attraction', image: '', description: '' }]
                       })}
                       className="text-xs flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-lg text-white hover:bg-white/20"
@@ -371,22 +384,22 @@ const AdminDistricts = () => {
                       <Plus size={14} /> Add Attraction
                     </button>
                   </div>
-                  
+
                   <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                     {(formData.topAttractions || []).map((attr, index) => (
                       <div key={index} className="p-4 bg-white/5 rounded-xl border border-white/10 relative group">
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           onClick={() => {
                             const newArr = [...(formData.topAttractions || [])];
                             newArr.splice(index, 1);
                             setFormData({ ...formData, topAttractions: newArr });
-                          }} 
+                          }}
                           className="absolute top-3 right-3 text-white/40 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <Trash2 size={16} />
                         </button>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                           <AdminInput
                             label="Attraction Name"
@@ -397,14 +410,15 @@ const AdminDistricts = () => {
                               setFormData({ ...formData, topAttractions: newArr });
                             }}
                           />
-                          <AdminInput
-                            label="Image URL"
+                          <AdminImageUpload
+                            label="Attraction Image"
                             value={attr.image}
-                            onChange={(e) => {
+                            onChange={(val) => {
                               const newArr = [...(formData.topAttractions || [])];
-                              newArr[index].image = e.target.value;
+                              newArr[index].image = val;
                               setFormData({ ...formData, topAttractions: newArr });
                             }}
+                            required
                           />
                         </div>
                         <AdminTextarea

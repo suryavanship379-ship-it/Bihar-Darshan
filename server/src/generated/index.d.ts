@@ -20622,6 +20622,7 @@ export namespace Prisma {
     mapLink: string | null
     contact: string | null
     email: string | null
+    status: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -20638,6 +20639,7 @@ export namespace Prisma {
     mapLink: string | null
     contact: string | null
     email: string | null
+    status: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -20655,6 +20657,7 @@ export namespace Prisma {
     mapLink: number
     contact: number
     email: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -20673,6 +20676,7 @@ export namespace Prisma {
     mapLink?: true
     contact?: true
     email?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -20689,6 +20693,7 @@ export namespace Prisma {
     mapLink?: true
     contact?: true
     email?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -20706,6 +20711,7 @@ export namespace Prisma {
     mapLink?: true
     contact?: true
     email?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -20796,6 +20802,7 @@ export namespace Prisma {
     mapLink: string | null
     contact: string | null
     email: string | null
+    status: $Enums.ApprovalStatus
     createdAt: Date
     updatedAt: Date
     _count: MarketplaceProductCountAggregateOutputType | null
@@ -20830,6 +20837,7 @@ export namespace Prisma {
     mapLink?: boolean
     contact?: boolean
     email?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["marketplaceProduct"]>
@@ -20847,6 +20855,7 @@ export namespace Prisma {
     mapLink?: boolean
     contact?: boolean
     email?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["marketplaceProduct"]>
@@ -20864,6 +20873,7 @@ export namespace Prisma {
     mapLink?: boolean
     contact?: boolean
     email?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["marketplaceProduct"]>
@@ -20881,11 +20891,12 @@ export namespace Prisma {
     mapLink?: boolean
     contact?: boolean
     email?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type MarketplaceProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessName" | "productName" | "category" | "image" | "images" | "description" | "address" | "website" | "mapLink" | "contact" | "email" | "createdAt" | "updatedAt", ExtArgs["result"]["marketplaceProduct"]>
+  export type MarketplaceProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessName" | "productName" | "category" | "image" | "images" | "description" | "address" | "website" | "mapLink" | "contact" | "email" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["marketplaceProduct"]>
 
   export type $MarketplaceProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "MarketplaceProduct"
@@ -20903,6 +20914,7 @@ export namespace Prisma {
       mapLink: string | null
       contact: string | null
       email: string | null
+      status: $Enums.ApprovalStatus
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["marketplaceProduct"]>
@@ -21340,6 +21352,7 @@ export namespace Prisma {
     readonly mapLink: FieldRef<"MarketplaceProduct", 'String'>
     readonly contact: FieldRef<"MarketplaceProduct", 'String'>
     readonly email: FieldRef<"MarketplaceProduct", 'String'>
+    readonly status: FieldRef<"MarketplaceProduct", 'ApprovalStatus'>
     readonly createdAt: FieldRef<"MarketplaceProduct", 'DateTime'>
     readonly updatedAt: FieldRef<"MarketplaceProduct", 'DateTime'>
   }
@@ -23158,6 +23171,7 @@ export namespace Prisma {
     mapLink: 'mapLink',
     contact: 'contact',
     email: 'email',
+    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -24922,6 +24936,7 @@ export namespace Prisma {
     mapLink?: StringNullableFilter<"MarketplaceProduct"> | string | null
     contact?: StringNullableFilter<"MarketplaceProduct"> | string | null
     email?: StringNullableFilter<"MarketplaceProduct"> | string | null
+    status?: EnumApprovalStatusFilter<"MarketplaceProduct"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"MarketplaceProduct"> | Date | string
     updatedAt?: DateTimeFilter<"MarketplaceProduct"> | Date | string
   }
@@ -24939,6 +24954,7 @@ export namespace Prisma {
     mapLink?: SortOrderInput | SortOrder
     contact?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24959,6 +24975,7 @@ export namespace Prisma {
     mapLink?: StringNullableFilter<"MarketplaceProduct"> | string | null
     contact?: StringNullableFilter<"MarketplaceProduct"> | string | null
     email?: StringNullableFilter<"MarketplaceProduct"> | string | null
+    status?: EnumApprovalStatusFilter<"MarketplaceProduct"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"MarketplaceProduct"> | Date | string
     updatedAt?: DateTimeFilter<"MarketplaceProduct"> | Date | string
   }, "id">
@@ -24976,6 +24993,7 @@ export namespace Prisma {
     mapLink?: SortOrderInput | SortOrder
     contact?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: MarketplaceProductCountOrderByAggregateInput
@@ -24999,6 +25017,7 @@ export namespace Prisma {
     mapLink?: StringNullableWithAggregatesFilter<"MarketplaceProduct"> | string | null
     contact?: StringNullableWithAggregatesFilter<"MarketplaceProduct"> | string | null
     email?: StringNullableWithAggregatesFilter<"MarketplaceProduct"> | string | null
+    status?: EnumApprovalStatusWithAggregatesFilter<"MarketplaceProduct"> | $Enums.ApprovalStatus
     createdAt?: DateTimeWithAggregatesFilter<"MarketplaceProduct"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"MarketplaceProduct"> | Date | string
   }
@@ -26880,6 +26899,7 @@ export namespace Prisma {
     mapLink?: string | null
     contact?: string | null
     email?: string | null
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -26897,6 +26917,7 @@ export namespace Prisma {
     mapLink?: string | null
     contact?: string | null
     email?: string | null
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -26914,6 +26935,7 @@ export namespace Prisma {
     mapLink?: NullableStringFieldUpdateOperationsInput | string | null
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26931,6 +26953,7 @@ export namespace Prisma {
     mapLink?: NullableStringFieldUpdateOperationsInput | string | null
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26948,6 +26971,7 @@ export namespace Prisma {
     mapLink?: string | null
     contact?: string | null
     email?: string | null
+    status?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -26965,6 +26989,7 @@ export namespace Prisma {
     mapLink?: NullableStringFieldUpdateOperationsInput | string | null
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26982,6 +27007,7 @@ export namespace Prisma {
     mapLink?: NullableStringFieldUpdateOperationsInput | string | null
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28360,6 +28386,7 @@ export namespace Prisma {
     mapLink?: SortOrder
     contact?: SortOrder
     email?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -28376,6 +28403,7 @@ export namespace Prisma {
     mapLink?: SortOrder
     contact?: SortOrder
     email?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -28392,6 +28420,7 @@ export namespace Prisma {
     mapLink?: SortOrder
     contact?: SortOrder
     email?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }

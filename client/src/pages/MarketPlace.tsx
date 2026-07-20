@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, LayoutGrid, Gem, Palette, Layers } from "lucide-react";
 import marketplaceBanner from "../assets/marketplace-banner.jpg";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -13,8 +13,12 @@ import { useContributions } from "../data/ContributionContext";
 
 const MarketPlace = () => {
   const navigate = useNavigate();
-  const { productSubmissions } = useContributions();
+  const { productSubmissions, refreshProducts } = useContributions();
   const [activeCategory, setActiveCategory] = useState("All");
+
+  useEffect(() => {
+    refreshProducts();
+  }, [refreshProducts]);
 
   const allProducts = [...productSubmissions, ...initialProducts];
   const categories = ["All", ...Array.from(new Set(allProducts.map((p) => p.category)))];
@@ -23,6 +27,21 @@ const MarketPlace = () => {
     activeCategory === "All"
       ? allProducts
       : allProducts.filter((p) => p.category === activeCategory);
+
+  const getCategoryIcon = (category: string) => {
+    switch (category.toLowerCase()) {
+      case "all":
+        return <LayoutGrid size={15} />;
+      case "jewelry":
+        return <Gem size={15} />;
+      case "art & craft":
+      case "art":
+      case "craft":
+        return <Palette size={15} />;
+      default:
+        return <Layers size={15} />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-brand-gray">
@@ -75,12 +94,13 @@ const MarketPlace = () => {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${activeCategory === cat
-                  ? "bg-brand-dark text-white shadow-md"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${activeCategory === cat
+                  ? "bg-brand-dark text-white shadow-md font-extrabold"
                   : "bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                   }`}
               >
-                {cat}
+                {getCategoryIcon(cat)}
+                <span>{cat === "All" ? "All Products" : cat}</span>
               </button>
             ))}
           </div>
@@ -91,7 +111,7 @@ const MarketPlace = () => {
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gold text-brand-dark font-bold text-xs uppercase tracking-wider shadow-md hover:brightness-105 transition-all cursor-pointer shrink-0"
           >
             <Plus size={16} strokeWidth={3} />
-            Add Your Product
+            ADD YOUR PRODUCT
           </button>
         </div>
 
@@ -109,7 +129,7 @@ const MarketPlace = () => {
                 <ProductCard
                   key={item.id}
                   {...item}
-                  onMoreInfo={(id) => navigate(`/marketplace/${id}`)}
+                  onMoreInfo={(id: string | number) => navigate(`/marketplace/${id}`)}
                 />
               ))
             ) : (

@@ -6,7 +6,8 @@ import * as validation from './marketplace.validation';
 
 export const getAllProducts = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const category = req.query.category as string;
-  const products = await marketplaceService.getAllProducts(category);
+  const status = req.query.status as string;
+  const products = await marketplaceService.getAllProducts(category, status);
   sendSuccess(res, 200, 'Products fetched successfully', { products });
 });
 
@@ -25,6 +26,16 @@ export const updateProduct = catchAsync(async (req: Request, res: Response, next
   const data = validation.updateProductSchema.parse(req.body);
   const product = await marketplaceService.updateProduct(req.params.id as string, data);
   sendSuccess(res, 200, 'Product updated successfully', { product });
+});
+
+export const approveProduct = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const product = await marketplaceService.approveProduct(req.params.id as string);
+  sendSuccess(res, 200, 'Product approved successfully', { product });
+});
+
+export const rejectProduct = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const product = await marketplaceService.rejectProduct(req.params.id as string);
+  sendSuccess(res, 200, 'Product rejected successfully', { product });
 });
 
 export const deleteProduct = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

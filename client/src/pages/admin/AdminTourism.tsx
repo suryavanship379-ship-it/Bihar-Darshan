@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAdminData } from '../../data/AdminContext';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
-import { AdminInput, AdminTextarea, AdminImagePreview, AdminSelect } from '../../components/admin/AdminFormField';
+import { AdminInput, AdminTextarea, AdminImagePreview, AdminSelect, AdminImageUpload } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
 import { Plus, Trash2, Info, LayoutList, Phone, Map, Image as ImageIcon, Clock, CheckCircle, XCircle, Tag, Building2, Star, MapPin, ListChecks } from 'lucide-react';
 import type { TourTrip } from '../../data/tourismData';
@@ -14,12 +14,12 @@ const CATEGORY_OPTIONS = [
 ];
 
 const BIHAR_DISTRICTS = [
-  'Araria','Arwal','Aurangabad','Banka','Begusarai','Bhagalpur','Bhojpur',
-  'Buxar','Darbhanga','East Champaran','Gaya','Gopalganj','Jamui','Jehanabad',
-  'Kaimur','Katihar','Khagaria','Kishanganj','Lakhisarai','Madhepura',
-  'Madhubani','Munger','Muzaffarpur','Nalanda','Nawada','Patna','Purnia',
-  'Rohtas','Saharsa','Samastipur','Saran','Sheikhpura','Sheohar','Sitamarhi',
-  'Siwan','Supaul','Vaishali','West Champaran',
+  'Araria', 'Arwal', 'Aurangabad', 'Banka', 'Begusarai', 'Bhagalpur', 'Bhojpur',
+  'Buxar', 'Darbhanga', 'East Champaran', 'Gaya', 'Gopalganj', 'Jamui', 'Jehanabad',
+  'Kaimur', 'Katihar', 'Khagaria', 'Kishanganj', 'Lakhisarai', 'Madhepura',
+  'Madhubani', 'Munger', 'Muzaffarpur', 'Nalanda', 'Nawada', 'Patna', 'Purnia',
+  'Rohtas', 'Saharsa', 'Samastipur', 'Saran', 'Sheikhpura', 'Sheohar', 'Sitamarhi',
+  'Siwan', 'Supaul', 'Vaishali', 'West Champaran',
 ];
 
 const BEST_TIME_OPTIONS = [
@@ -394,12 +394,12 @@ const AdminTourism = () => {
 
   // ── Tabs definition ──────────────────────────────────────────────────────
   const tabs: { id: TabType; label: string; icon: any }[] = [
-    { id: 'hero',     label: 'Hero Banner',   icon: ImageIcon },
-    { id: 'intro',    label: 'Introduction',  icon: LayoutList },
-    { id: 'guide',    label: 'Guide & Contact', icon: Phone },
-    { id: 'details',  label: 'Journey Details', icon: Info },
-    { id: 'gallery',  label: 'Gallery',       icon: ImageIcon },
-    { id: 'timeline', label: 'Timeline',      icon: Map },
+    { id: 'hero', label: 'Hero Banner', icon: ImageIcon },
+    { id: 'intro', label: 'Introduction', icon: LayoutList },
+    { id: 'guide', label: 'Guide & Contact', icon: Phone },
+    { id: 'details', label: 'Journey Details', icon: Info },
+    { id: 'gallery', label: 'Gallery', icon: ImageIcon },
+    { id: 'timeline', label: 'Timeline', icon: Map },
   ];
 
 
@@ -434,28 +434,34 @@ const AdminTourism = () => {
             onEdit={handleEdit}
             onDelete={handleDeleteClick}
             columns={[
-              { header: 'Image', accessor: (item: any) => (
-                <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 shrink-0">
-                  {item.image
-                    ? <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center text-white/20 text-[10px]">No img</div>
-                  }
-                </div>
-              )},
-              { header: 'Title', accessor: (item: any) => (
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-white">{item.title}</span>
-                  {item._isApprovedJourney && (
-                    <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded-full">
-                      Community
-                    </span>
-                  )}
-                </div>
-              )},
+              {
+                header: 'Image', accessor: (item: any) => (
+                  <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 shrink-0">
+                    {item.image
+                      ? <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center text-white/20 text-[10px]">No img</div>
+                    }
+                  </div>
+                )
+              },
+              {
+                header: 'Title', accessor: (item: any) => (
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-white">{item.title}</span>
+                    {item._isApprovedJourney && (
+                      <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded-full">
+                        Community
+                      </span>
+                    )}
+                  </div>
+                )
+              },
               { header: 'Provider / Author', accessor: 'provider' },
-              { header: 'Duration', accessor: (item: any) => (
-                <span className="text-white/60 text-xs">{item.duration || item.tripDuration || '—'}</span>
-              )},
+              {
+                header: 'Duration', accessor: (item: any) => (
+                  <span className="text-white/60 text-xs">{item.duration || item.tripDuration || '—'}</span>
+                )
+              },
             ]}
           />
 
@@ -516,14 +522,12 @@ const AdminTourism = () => {
                         onChange={(e: any) => setFormData({ ...formData, description: e.target.value })}
                         rows={2} placeholder="A one-line captivating hook for this journey…" />
 
-                      <InputField label="Hero / Main Image URL" value={formData.image}
-                        onChange={(e: any) => setFormData({ ...formData, image: e.target.value })}
-                        placeholder="https://..." required />
-                      {formData.image && (
-                        <div className="rounded-xl overflow-hidden h-40 border border-white/10">
-                          <img src={formData.image} alt="preview" className="w-full h-full object-cover" />
-                        </div>
-                      )}
+                      <AdminImageUpload
+                        label="Hero / Main Image"
+                        value={formData.image}
+                        onChange={val => setFormData({ ...formData, image: val })}
+                        required
+                      />
                     </div>
                   )}
 
@@ -573,9 +577,11 @@ const AdminTourism = () => {
                           <InputField label="Guide Name" value={formData.guide.name}
                             onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, name: e.target.value } })}
                             placeholder="e.g. Ramesh Kumar" />
-                          <InputField label="Guide Photo URL" value={formData.guide.image}
-                            onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, image: e.target.value } })}
-                            placeholder="https://..." />
+                          <AdminImageUpload
+                            label="Guide Photo"
+                            value={formData.guide.image}
+                            onChange={val => setFormData({ ...formData, guide: { ...formData.guide, image: val } })}
+                          />
                           <InputField label="Experience" value={formData.guide.experience}
                             onChange={(e: any) => setFormData({ ...formData, guide: { ...formData.guide, experience: e.target.value } })}
                             placeholder="e.g. 10+ Years" />
@@ -698,21 +704,20 @@ const AdminTourism = () => {
                       <p className="text-white/40 text-xs">Add image URLs for the gallery. The first image is used as the cover if no hero image is set.</p>
                       <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
                         {formData.galleryImages.map((url, idx) => (
-                          <div key={idx} className="space-y-2">
-                            <div className="flex gap-2">
-                              <input value={url} onChange={e => { const arr = [...formData.galleryImages]; arr[idx] = e.target.value; setFormData({ ...formData, galleryImages: arr }); }}
-                                placeholder={`Image URL ${idx + 1}`}
-                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-gold/50 placeholder-white/25" />
-                              <button type="button" onClick={() => { const arr = [...formData.galleryImages]; arr.splice(idx, 1); setFormData({ ...formData, galleryImages: arr }); }}
-                                className="p-2 text-white/30 hover:text-red-400 bg-white/5 rounded-xl border border-white/10 transition-colors">
-                                <Trash2 size={15} />
-                              </button>
-                            </div>
-                            {url && (
-                              <div className="h-24 rounded-xl overflow-hidden border border-white/10">
-                                <img src={url} alt="" className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                              </div>
-                            )}
+                          <div key={idx} className="relative group p-4 bg-white/5 rounded-xl border border-white/10">
+                            <button type="button" onClick={() => { const arr = [...formData.galleryImages]; arr.splice(idx, 1); setFormData({ ...formData, galleryImages: arr }); }}
+                              className="absolute top-2 right-2 text-white/40 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                              <Trash2 size={16} />
+                            </button>
+                            <AdminImageUpload
+                              label={`Gallery Image ${idx + 1}`}
+                              value={url}
+                              onChange={(val) => {
+                                const arr = [...formData.galleryImages];
+                                arr[idx] = val;
+                                setFormData({ ...formData, galleryImages: arr });
+                              }}
+                            />
                           </div>
                         ))}
                         {formData.galleryImages.length === 0 && (
@@ -859,7 +864,7 @@ const AdminTourism = () => {
                       {(() => {
                         let desc = journey.description || '';
                         if (desc.startsWith('{"__isImmersivePackage"')) {
-                          try { const p = JSON.parse(desc); if (p.__isImmersivePackage) desc = p.realDescription || ''; } catch (_) {}
+                          try { const p = JSON.parse(desc); if (p.__isImmersivePackage) desc = p.realDescription || ''; } catch (_) { }
                         }
                         return <p className="text-white/75 text-sm max-w-3xl leading-relaxed">{desc}</p>;
                       })()}

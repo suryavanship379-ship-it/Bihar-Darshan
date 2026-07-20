@@ -1053,15 +1053,20 @@ const ShareStory = () => {
 
       {/* Success Modal Card overlay */}
       {isSuccess && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-[#122A22] border border-[#d6a55e]/25 max-w-sm w-full rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-full bg-[#d6a55e]/10 border border-[#d6a55e]/30 flex items-center justify-center mx-auto mb-6 text-[#d6a55e]">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-[#1A3A2F] border border-[#EAB308]/25 max-w-sm w-full rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 text-[#EAB308] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/5">
+              <CheckCircle2 size={40} className="text-[#EAB308]" />
             </div>
-            <h3 className="font-display text-2xl font-bold text-white mb-3">Submission Received!</h3>
-            <p className="text-gray-300 text-sm leading-relaxed mb-8">
+            <h3 className="font-display text-3xl font-bold text-white mb-4">
+              Submission <span className="text-[#EAB308]">Successful!</span>
+            </h3>
+            <div className="heritage-divider mb-6">
+              <span className="divider-line text-white/20"></span>
+              <span className="divider-motif text-[#EAB308]">✦</span>
+              <span className="divider-line text-white/20"></span>
+            </div>
+            <p className="text-white/70 text-sm leading-relaxed mb-8">
               Thank you for sharing your story! Your submission has been successfully received and is currently in the moderation queue. It will be showcased on the website once approved by the admin.
             </p>
             <button
@@ -1080,7 +1085,7 @@ const ShareStory = () => {
                   navigate("/gallery");
                 }
               }}
-              className="w-full py-3.5 bg-[#d6a55e] hover:bg-[#c3924b] text-black font-extrabold rounded-xl transition-all cursor-pointer uppercase tracking-widest text-xs"
+              className="w-full py-3.5 bg-[#EAB308] hover:bg-[#EAB308]/90 text-black font-extrabold rounded-xl transition-all cursor-pointer uppercase tracking-wider text-xs shadow-lg hover:scale-105 duration-300"
             >
               Okay, Got it
             </button>

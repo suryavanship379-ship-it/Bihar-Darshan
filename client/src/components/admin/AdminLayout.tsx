@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import {
-  LayoutDashboard, MapPin, Palette, Plane, Image, Users, Store, Mountain, UserCircle, Settings, LogOut, Menu, X, ChevronRight, Shield
+  LayoutDashboard, MapPin, Palette, Plane, Image, Users, Store, Mountain, UserCircle, Settings, LogOut, Menu, X, ChevronRight, Shield, Sparkles
 } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
@@ -11,6 +11,7 @@ const sidebarItems = [
   { label: 'Districts', path: '/admin/districts', icon: MapPin },
   { label: 'Culture', path: '/admin/culture', icon: Palette },
   { label: 'Tourism', path: '/admin/tourism', icon: Plane },
+  { label: 'Popular Places', path: '/admin/places', icon: Sparkles },
   { label: 'Gallery', path: '/admin/gallery', icon: Image },
   { label: 'Community', path: '/admin/community', icon: Users },
   { label: 'Marketplace', path: '/admin/marketplace', icon: Store },

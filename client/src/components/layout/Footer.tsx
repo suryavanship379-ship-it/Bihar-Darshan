@@ -26,7 +26,7 @@ const Footer = () => {
   return (
     <footer className="relative bg-[#1A1814] text-[#C4B59D] overflow-hidden border-b-[5px] border-[#5b7a66]">
       {/* Faint Background Image */}
-      <div 
+      <div
         className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none"
         style={{
           backgroundImage: `url(${templeBg})`,
@@ -36,16 +36,7 @@ const Footer = () => {
         }}
       />
 
-      {/* Top Tribal Pattern Border */}
-      <div 
-        className="h-[22px] w-full relative z-10" 
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='22' viewBox='0 0 80 22' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='80' height='22' fill='%2317130D' /%3E%3Cpath d='M0 6 L10 0 L20 6 L30 0 L40 6 L50 0 L60 6 L70 0 L80 6' fill='none' stroke='%23D4A017' stroke-width='0.5' opacity='0.7'/%3E%3Cpath d='M0 22 L20 6 L40 22 L60 6 L80 22' fill='none' stroke='%23D4A017' stroke-width='1.2' opacity='0.7'/%3E%3Cpath d='M10 22 L20 13 L30 22 M50 22 L60 13 L70 22' fill='none' stroke='%23D4A017' stroke-width='0.6' opacity='0.5'/%3E%3Ccircle cx='20' cy='17' r='1.5' fill='%23D4A017' opacity='0.8'/%3E%3Ccircle cx='60' cy='17' r='1.5' fill='%23D4A017' opacity='0.8'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat-x',
-          backgroundColor: '#17130D',
-          borderBottom: '1px solid rgba(212, 160, 23, 0.15)'
-        }} 
-      />
+
 
       <div className="max-w-[1200px] mx-auto px-6 lg:px-8 pt-16 pb-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16">

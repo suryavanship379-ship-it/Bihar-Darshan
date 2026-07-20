@@ -58,6 +58,52 @@ const GalleryLightbox = ({
     if (hasNext) onNavigate(items[currentIndex + 1]);
   }, [hasNext, currentIndex, items, onNavigate]);
 
+  const handleDownload = async () => {
+    try {
+      if (!item) return;
+      const imageUrl = item.image;
+
+      if (imageUrl.startsWith('data:')) {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = item.title.toLowerCase().replace(/[^a-z0-9]+/g, '_') + '.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
+
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+
+      let extension = 'jpg';
+      if (blob.type.includes('png')) extension = 'png';
+      else if (blob.type.includes('gif')) extension = 'gif';
+      else if (blob.type.includes('video/mp4') || imageUrl.endsWith('.mp4')) extension = 'mp4';
+      else if (blob.type.includes('webp')) extension = 'webp';
+
+      link.download = `${item.title.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download media:', err);
+      if (item) {
+        const link = document.createElement('a');
+        link.href = item.image;
+        link.target = '_blank';
+        link.download = item.title;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+  };
+
   // Keyboard navigation
   useEffect(() => {
     if (!item) return;
@@ -158,7 +204,7 @@ const GalleryLightbox = ({
 
             {/* Info Panel */}
             <div className="w-full md:w-[400px] flex flex-col bg-[#12161c] border-l border-white/[0.05] overflow-y-auto overflow-x-hidden">
-              
+
               {/* Header */}
               <div className="p-6 border-b border-white/[0.05]">
                 <h2 className="text-white font-serif text-2xl font-bold leading-snug mb-4">
@@ -195,7 +241,7 @@ const GalleryLightbox = ({
               <div className="p-6 mt-auto">
                 <div className="flex flex-col gap-3">
                   {item.source === "official" && item.link && (
-                    <button 
+                    <button
                       onClick={() => {
                         onClose();
                         navigate(item.link!);
@@ -204,14 +250,17 @@ const GalleryLightbox = ({
                       Know More
                     </button>
                   )}
-                  <button className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-gold hover:bg-gold-dark text-black font-bold text-sm tracking-wide transition-all duration-300">
+                  <button
+                    onClick={handleDownload}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-gold hover:bg-gold-dark text-black font-bold text-sm tracking-wide transition-all duration-300"
+                  >
                     <Download size={16} />
                     Download Media
                   </button>
                 </div>
               </div>
             </div>
-            
+
             {/* Mobile Navigation Arrows (Overlay) */}
             <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 md:hidden pointer-events-none">
               {hasPrev ? (

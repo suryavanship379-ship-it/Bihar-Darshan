@@ -1,15 +1,15 @@
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ProductCardProps {
-  id: number;
+  id: string | number;
   image: string;
   businessName: string;
   productName: string;
   contact?: string;
   email?: string;
   mapLink?: string;
-  onMoreInfo: (id: number) => void;
+  onMoreInfo: (id: string | number) => void;
 }
 
 const ProductCard = ({
@@ -19,17 +19,21 @@ const ProductCard = ({
   productName,
   contact,
   email,
-  mapLink,
   onMoreInfo,
 }: ProductCardProps) => {
   return (
     <motion.div
       whileHover={{ y: -12 }}
       transition={{ duration: 0.35 }}
-      className="group relative overflow-hidden rounded-3xl bg-white shadow-lg hover:shadow-2xl"
+      className="group relative overflow-hidden rounded-3xl bg-white shadow-lg hover:shadow-2xl border border-gray-100"
     >
-      {/* Image */}
-      <div className="relative h-72 overflow-hidden">
+      {/* Image Container */}
+      <div className="relative h-64 overflow-hidden">
+        {/* Tag Badge */}
+        <div className="absolute top-4 left-4 z-20 w-8 h-8 rounded-full bg-[#EAB308] flex items-center justify-center shadow-md">
+          <Tag size={15} className="text-black" />
+        </div>
+
         <motion.img
           src={image}
           alt={productName}
@@ -37,57 +41,55 @@ const ProductCard = ({
           whileHover={{ scale: 1.12 }}
           transition={{ duration: 0.7 }}
         />
-
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-
-        {/* Product Name */}
-        <div className="absolute bottom-6 left-6 right-6 transition-all duration-500 group-hover:-translate-y-5">
-          <h2 className="text-2xl font-bold text-white">
-            {productName}
-          </h2>
-
-          <p className="mt-1 text-white/80">
-            {businessName}
-          </p>
-        </div>
+        {/* Subtle orange accent line below image */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#EAB308] opacity-80" />
       </div>
 
       {/* Bottom Content */}
-      <div className="bg-white p-6">
-        <div className="space-y-4">
-          {/* Contact */}
-          <div className="flex items-center gap-3 text-gray-700">
-            <Phone size={18} className="text-brand-gold" />
-            <span>{contact}</span>
+      <div className="p-5 flex flex-col justify-between">
+        {/* Title, Subtitle, and Left Cushion icon */}
+        <div className="flex items-center gap-3.5 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-[#FAF6F0] flex items-center justify-center text-[#EAB308] shrink-0">
+            <Tag size={20} className="stroke-[1.8]" />
           </div>
-
-          {/* Email */}
-          <div className="flex items-center gap-3 text-gray-700">
-            <Mail size={18} className="text-brand-gold" />
-            <span className="truncate">{email}</span>
+          <div>
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-[#1A2530] leading-snug">
+              {productName}
+            </h2>
+            <p className="text-xs font-semibold text-gray-400 mt-0.5">
+              {businessName}
+            </p>
           </div>
+        </div>
 
-          {/* View on Map */}
-          {/* <div className="pt-2">
-            <a
-              href={mapLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg border border-brand-gold px-4 py-2 text-sm font-medium text-brand-gold transition-all duration-300 hover:bg-brand-gold hover:text-white"
-            >
-              <MapPin size={16} />
-              View on Map
-            </a>
-          </div> */}
+        {/* Divider line */}
+        <div className="border-t border-gray-100 my-2" />
+
+        {/* Contact Info (Row layout with vertical divider) */}
+        <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-700 py-3.5">
+          {contact && (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Phone size={14} className="text-[#EAB308]" />
+              <span>{contact}</span>
+            </div>
+          )}
+          {contact && email && (
+            <div className="h-3 w-[1px] bg-slate-200 hidden sm:block" />
+          )}
+          {email && (
+            <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+              <Mail size={14} className="text-[#EAB308] shrink-0" />
+              <span className="truncate text-slate-600 font-medium">{email}</span>
+            </div>
+          )}
         </div>
 
         {/* Learn More Button */}
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => onMoreInfo(id)}
-          className="mt-6 w-full rounded-xl bg-brand-gold py-3 font-bold text-brand-dark shadow-lg transition-all duration-300 hover:brightness-105"
+          className="w-full rounded-xl bg-[#EAB308] hover:bg-[#EAB308]/90 py-3 font-bold text-black border border-transparent shadow shadow-yellow-600/10 hover:shadow-lg transition-all duration-300 text-sm tracking-wide mt-2"
         >
           Learn More →
         </motion.button>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAdminData } from '../../data/AdminContext';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
-import { AdminInput, AdminTextarea, AdminSelect, AdminImagePreview } from '../../components/admin/AdminFormField';
+import { AdminInput, AdminTextarea, AdminSelect, AdminImagePreview, AdminImageUpload } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
 import type { CultureItem } from '../../data/cultureData';
 import { Plus, Trash2, CheckCircle, XCircle, LayoutList, ListChecks } from 'lucide-react';
@@ -297,18 +297,12 @@ const AdminCulture = () => {
                 <option key={d.name} value={d.name}>{d.name}</option>
               ))}
             </AdminSelect>
-            <AdminInput
-              label="Thumbnail Image URL"
+            <AdminImageUpload
+              label="Thumbnail Image"
               value={formData.image || ''}
-              onChange={e => setFormData({ ...formData, image: e.target.value })}
+              onChange={val => setFormData({ ...formData, image: val })}
               required
             />
-          </div>
-
-          {/* ROW 3 */}
-          <div>
-            <label className="block text-sm font-medium text-white/70 mb-2">Thumbnail Preview</label>
-            <AdminImagePreview url={formData.image || ''} />
           </div>
 
           {/* ROW 4 */}
@@ -352,18 +346,12 @@ const AdminCulture = () => {
                     <Trash2 size={16} />
                   </button>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <AdminInput
-                        label={`Image URL ${index + 1}`}
-                        value={url}
-                        onChange={(e) => handleGalleryChange(index, e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white/70 mb-2">Preview</label>
-                      <AdminImagePreview url={url} />
-                    </div>
+                  <div className="w-full">
+                    <AdminImageUpload
+                      label={`Gallery Image ${index + 1}`}
+                      value={url}
+                      onChange={(val) => handleGalleryChange(index, val)}
+                    />
                   </div>
                 </div>
               ))}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Award, FileText, CheckCircle2, Clock, Edit3, X, LogOut, Users, Shield, Bell, Trophy, Megaphone, Eye, Trash2, XCircle } from 'lucide-react';
+import { Share2, FileText, Clock, Edit3, X, LogOut, Users, Eye, Trash2, XCircle } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
@@ -9,19 +9,16 @@ import { signOut, onAuthStateChanged, updateProfile, type User as FirebaseUser }
 import { auth } from '../lib/firebase';
 import { useEffect } from 'react';
 
-// Mock Posts Data
-const mockPosts = [
-  { id: 1, title: "Exploring the Ruins of Nalanda", date: "Oct 15, 2023", views: "1.2K Views", category: "Heritage", status: "published", image: "/images/culture/rajgir-mahotsav.png" },
-  { id: 2, title: "My Experience at Sonepur Mela", date: "Oct 10, 2023", views: "956 Views", category: "Culture", status: "published", image: "/images/culture/sonepur-mela.png" },
-  { id: 3, title: "Ancient Temples of Bodh Gaya", date: "Oct 5, 2023", views: "1.8K Views", category: "Spirituality", status: "published", image: "/images/culture/hero-artwork.png" },
-];
-
-const mockNotifications = [
-  { id: 1, group: 'Today', type: 'approved', title: 'Post Approved', message: 'Your article "Exploring the Ruins of Nalanda" has been approved and published.', time: '2 hours ago', unread: true },
-  { id: 2, group: 'Yesterday', type: 'reward', title: 'Reward Points Earned', message: 'You earned 100 reward points for your contribution.', time: 'Yesterday, 10:30 AM', unread: true },
-  { id: 3, group: 'Yesterday', type: 'badge', title: 'Badge Earned', message: 'Congratulations! You earned the "Heritage Explorer" badge.', time: 'Yesterday, 09:15 AM', unread: true },
-  { id: 4, group: 'Older', type: 'announcement', title: 'Admin Announcement', message: 'New guidelines for content submission are now updated.', time: '2 days ago', unread: false },
-];
+interface UserPostItem {
+  id: string | number;
+  title: string;
+  date: string;
+  views?: string;
+  category: string;
+  status: 'published' | 'pending' | 'rejected';
+  image: string;
+  type: 'journey' | 'gallery' | 'culture' | 'personality';
+}
 
 const PREDEFINED_AVATARS = [
   "/images/culture/avatar-man1.png",
@@ -40,43 +37,161 @@ const PREDEFINED_BACKGROUNDS = [
 
 const Profile = () => {
   const navigate = useNavigate();
-  
+
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [authChecking, setAuthChecking] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [userPosts, setUserPosts] = useState<UserPostItem[]>([]);
+
+  // Profile State
+  const [profile, setProfile] = useState({
+    name: "User",
+    title: "Cultural Enthusiast",
+    bio: "Explore and discover the rich culture & destinations of Bihar!",
+    avatar: "/images/culture/avatar-man1.png",
+    background: "/images/culture/hero-artwork.png",
+    rewardPoints: 0,
+    totalPosts: 0,
+    communitiesJoined: 0,
+    pendingPosts: 0,
+    rejectedPosts: 0,
+    badgesEarned: 0,
+  });
+
+  const fetchProfile = async (firebaseUser: FirebaseUser) => {
+    try {
+      const token = await firebaseUser.getIdToken();
+      const res = await fetch('http://localhost:5000/api/v1/users/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (data.success && data.data?.user) {
+        const item = data.data.user;
+        const userName = (item.name || firebaseUser.displayName || "").toLowerCase().trim();
+        const userEmail = (item.email || firebaseUser.email || "").toLowerCase().trim();
+
+        const matchUser = (authorNameOrEmail: string | null) => {
+          if (!authorNameOrEmail) return false;
+          const authorStr = authorNameOrEmail.toLowerCase().trim();
+          return authorStr === userName || authorStr === userEmail || authorStr.includes(userEmail);
+        };
+
+        // Fetch discover items from DB
+        let culturePosts: UserPostItem[] = [];
+        try {
+          const discoverRes = await fetch('http://localhost:5000/api/v1/discover?status=all');
+          const discoverData = await discoverRes.json();
+          if (discoverData.success && discoverData.data?.items) {
+            const matchedDiscover = discoverData.data.items.filter((d: any) => matchUser(d.author));
+            culturePosts = matchedDiscover.map((d: any) => ({
+              id: d.id,
+              title: d.title,
+              date: new Date(d.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              views: "100 Views",
+              category: d.category === "FOOD" ? "Food" : "Festival",
+              status: d.status === "APPROVED" ? "published" : d.status === "REJECTED" ? "rejected" : "pending",
+              image: d.image || "/images/culture/hero-artwork.png",
+              type: "culture"
+            }));
+          }
+        } catch (err) {
+          console.error('Failed to fetch culture items:', err);
+        }
+
+        // Fetch personalities submissions from DB
+        let personalityPosts: UserPostItem[] = [];
+        try {
+          const personalityRes = await fetch('http://localhost:5000/api/v1/culture/personalities?status=all');
+          const personalityData = await personalityRes.json();
+          if (personalityData.success && personalityData.data?.personalities) {
+            const matchedPersonalities = personalityData.data.personalities.filter((p: any) => matchUser(p.author));
+            personalityPosts = matchedPersonalities.map((p: any) => ({
+              id: p.id,
+              title: p.name,
+              date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              views: "20 Views",
+              category: p.category || "Personality",
+              status: p.status === "APPROVED" ? "published" : p.status === "REJECTED" ? "rejected" : "pending",
+              image: p.imageUrl || "/images/culture/hero-artwork.png",
+              type: "personality"
+            }));
+          }
+        } catch (err) {
+          console.error('Failed to fetch personalities:', err);
+        }
+
+        // Retrieve journeys and gallery items
+        const journeys = item.journeys || [];
+        const galleryItems = item.galleryItems || [];
+
+        const mappedJourneys: UserPostItem[] = journeys.map((j: any) => ({
+          id: j.id,
+          title: j.title,
+          date: new Date(j.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          views: "50 Views",
+          category: j.category || "Tourism",
+          status: j.status === "APPROVED" ? "published" : j.status === "REJECTED" ? "rejected" : "pending",
+          image: j.image || "/images/culture/hero-artwork.png",
+          type: "journey"
+        }));
+
+        const mappedGallery: UserPostItem[] = galleryItems.map((g: any) => ({
+          id: g.id,
+          title: g.title,
+          date: new Date(g.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          views: `${g.views || 0} Views`,
+          category: g.category || "Gallery",
+          status: g.status === "APPROVED" ? "published" : g.status === "REJECTED" ? "rejected" : "pending",
+          image: g.image || "/images/culture/hero-artwork.png",
+          type: "gallery"
+        }));
+
+        const allCombinedPosts = [
+          ...mappedJourneys,
+          ...mappedGallery,
+          ...culturePosts,
+          ...personalityPosts
+        ];
+        setUserPosts(allCombinedPosts);
+
+        setProfile({
+          name: item.name || firebaseUser.displayName || "User",
+          title: item.title || "Cultural Enthusiast",
+          bio: item.bio || "Explore and discover the rich culture & destinations of Bihar!",
+          avatar: item.avatar || firebaseUser.photoURL || "/images/culture/avatar-man1.png",
+          background: item.background || "/images/culture/hero-artwork.png",
+          rewardPoints: item.rewardPoints || 0,
+          totalPosts: allCombinedPosts.filter(p => p.status === 'published').length,
+          pendingPosts: allCombinedPosts.filter(p => p.status === 'pending').length,
+          rejectedPosts: allCombinedPosts.filter(p => p.status === 'rejected').length,
+          communitiesJoined: item.communityMemberships?.length || 0,
+          badgesEarned: item.badges || 0,
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching user profile:', err);
+    } finally {
+      setAuthChecking(false);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      setAuthChecking(false);
       if (user) {
-        setProfile(prev => ({
-          ...prev,
-          name: user.displayName || "User",
-          avatar: localStorage.getItem('userAvatar') || user.photoURL || prev.avatar
-        }));
+        fetchProfile(user);
+      } else {
+        setAuthChecking(false);
+        setLoading(false);
       }
     });
     return () => unsubscribe();
   }, []);
 
   const [activeTab, setActiveTab] = useState<'published' | 'pending' | 'rejected'>('published');
-
-  // Profile State
-  const [profile, setProfile] = useState(() => {
-    const savedAvatar = localStorage.getItem('userAvatar');
-    return {
-      name: "Paras Sawal",
-      title: "Cultural Ambassador",
-      bio: "Passionate about preserving and promoting the rich cultural heritage of Bihar.",
-      avatar: savedAvatar || "/images/culture/avatar-man1.png",
-      background: "/images/culture/hero-artwork.png",
-      rewardPoints: 1250,
-      totalPosts: 8,
-      communitiesJoined: 12,
-      pendingPosts: 2,
-      badgesEarned: 5,
-    };
-  });
 
   // Edit Modal State
   const [isEditing, setIsEditing] = useState(false);
@@ -89,7 +204,7 @@ const Profile = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (authChecking) {
+  if (authChecking || loading) {
     return <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">Loading...</div>;
   }
 
@@ -128,18 +243,52 @@ const Profile = () => {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const finalAvatar = isCustomAvatar && customAvatarInput.trim() !== "" ? customAvatarInput : editForm.avatar;
-    localStorage.setItem('userAvatar', finalAvatar);
-    window.dispatchEvent(new Event('userAvatarChanged'));
-    setProfile({
-      ...profile,
-      name: editForm.name,
-      title: editForm.title,
-      bio: editForm.bio,
-      avatar: finalAvatar,
-      background: editForm.background
-    });
+
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const token = await user.getIdToken();
+        const payload = {
+          name: editForm.name,
+          title: editForm.title || null,
+          bio: editForm.bio || null,
+          background: editForm.background || null,
+          avatar: finalAvatar || null,
+        };
+
+        const res = await fetch('http://localhost:5000/api/v1/users/profile', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success && result.data?.user) {
+            const dbUser = result.data.user;
+            setProfile(prev => ({
+              ...prev,
+              name: dbUser.name,
+              title: dbUser.title || "Cultural Enthusiast",
+              bio: dbUser.bio || "Explore and discover the rich culture & destinations of Bihar!",
+              avatar: dbUser.avatar || user.photoURL || "/images/culture/avatar-man1.png",
+              background: dbUser.background || "/images/culture/hero-artwork.png",
+              badgesEarned: dbUser.badges || 0,
+            }));
+            localStorage.setItem('userAvatar', finalAvatar);
+            window.dispatchEvent(new Event('userAvatarChanged'));
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error saving profile to backend:', err);
+    }
+
     setIsEditing(false);
 
     if (currentUser) {
@@ -147,61 +296,69 @@ const Profile = () => {
     }
   };
 
+  const handleDeletePost = (id: string | number) => {
+    if (confirm("Are you sure you want to delete this contribution?")) {
+      setUserPosts(prev => prev.filter(p => p.id !== id));
+    }
+  };
+
+  const activePosts = userPosts.filter(post => post.status === activeTab);
+
   return (
     <div className="min-h-screen font-sans bg-[#FDFBF7]">
       <Navbar forceDarkText={true} />
-      
+
       <div className="pt-24 pb-12">
         <Container>
           {/* Top Banner */}
           <div className="bg-[#FFF6E9] rounded-2xl p-8 border border-[#F4A261]/30 relative overflow-hidden mb-6">
-             {/* Background pattern overlay */}
-             <div 
-               className="absolute inset-0 opacity-15 pointer-events-none" 
-               style={{ 
-                 backgroundImage: `url("${profile.background}")`, 
-                 backgroundSize: 'cover', 
-                 backgroundPosition: 'center',
-                 filter: 'sepia(80%) hue-rotate(5deg) saturate(150%)'
-               }}
-             ></div>
-             
-             <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start gap-8">
-                {/* Avatar */}
-                <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden shrink-0 ring-2 ring-[#F4A261]/30 bg-white">
-                   <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+            {/* Background pattern overlay */}
+            <div
+              className="absolute inset-0 opacity-15 pointer-events-none"
+              style={{
+                backgroundImage: `url("${profile.background}")`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: 'sepia(80%) hue-rotate(5deg) saturate(150%)'
+              }}
+            ></div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start gap-8">
+              {/* Avatar */}
+              <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden shrink-0 ring-2 ring-[#F4A261]/30 bg-white">
+                <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+              </div>
+
+              {/* User Info */}
+              <div className="flex-1 text-center lg:text-left pt-2">
+                <h1 className="font-display font-bold text-4xl lg:text-5xl text-[#8B3E2F] flex items-center justify-center lg:justify-start gap-3 mb-2">
+                  <span className="text-[#F4A261] text-3xl">★</span> {profile.name} <span className="text-[#F4A261] text-3xl">★</span>
+                </h1>
+                <p className="text-[#F4A261] uppercase tracking-[0.15em] font-bold text-sm mb-4">{profile.title}</p>
+                <p className="text-gray-700 text-sm mb-6 max-w-xl">{profile.bio}</p>
+
+                <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                  <div className="flex items-center gap-2 bg-white/70 border border-[#F4A261]/30 px-4 py-2 rounded-lg text-sm text-[#8B3E2F] font-bold shadow-sm">
+                    <FileText className="w-4 h-4 text-[#8B3E2F]" /> {profile.totalPosts} Posts
+                  </div>
                 </div>
-                
-                {/* User Info */}
-                <div className="flex-1 text-center lg:text-left pt-2">
-                   <h1 className="font-display font-bold text-4xl lg:text-5xl text-[#8B3E2F] flex items-center justify-center lg:justify-start gap-3 mb-2">
-                     <span className="text-[#F4A261] text-3xl">★</span> {profile.name} <span className="text-[#F4A261] text-3xl">★</span>
-                   </h1>
-                   <p className="text-[#F4A261] uppercase tracking-[0.15em] font-bold text-sm mb-4">{profile.title}</p>
-                   <p className="text-gray-700 text-sm mb-6 max-w-xl">{profile.bio}</p>
-                   
-                   <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-                      <div className="flex items-center gap-2 bg-white/70 border border-[#F4A261]/30 px-4 py-2 rounded-lg text-sm text-[#8B3E2F] font-bold shadow-sm">
-                        <FileText className="w-4 h-4 text-[#8B3E2F]" /> {profile.totalPosts} Posts
-                      </div>
-                   </div>
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="flex flex-wrap justify-center gap-3 mt-4 lg:mt-0">
-                  <button onClick={openEditModal} className="px-5 py-2.5 bg-white border border-[#8B3E2F]/20 text-[#8B3E2F] rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-gray-50 transition shadow-sm">
-                    <Edit3 className="w-4 h-4" /> Edit Profile
-                  </button>
-                  <button onClick={handleShare} className="px-5 py-2.5 bg-[#8B3E2F] text-white rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-[#7a3528] transition shadow-sm">
-                    <Share2 className="w-4 h-4" /> Share Profile
-                  </button>
-                  <button onClick={handleLogout} className="px-5 py-2.5 bg-white border border-red-200 text-red-600 rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-red-50 transition shadow-sm">
-                    <LogOut className="w-4 h-4" /> Logout
-                  </button>
-                </div>
-             </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap justify-center gap-3 mt-4 lg:mt-0">
+                <button onClick={openEditModal} className="px-5 py-2.5 bg-white border border-[#8B3E2F]/20 text-[#8B3E2F] rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-gray-50 transition shadow-sm">
+                  <Edit3 className="w-4 h-4" /> Edit Profile
+                </button>
+                <button onClick={handleShare} className="px-5 py-2.5 bg-[#8B3E2F] text-white rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-[#7a3528] transition shadow-sm">
+                  <Share2 className="w-4 h-4" /> Share Profile
+                </button>
+                <button onClick={handleLogout} className="px-5 py-2.5 bg-white border border-red-200 text-red-600 rounded-xl flex items-center gap-2 font-bold text-sm hover:bg-red-50 transition shadow-sm">
+                  <LogOut className="w-4 h-4" /> Logout
+                </button>
+              </div>
+            </div>
           </div>
-          
+
           {/* Stats Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {[
@@ -215,99 +372,106 @@ const Profile = () => {
                 </div>
                 <div>
                   <div className="font-bold text-2xl text-gray-800">{stat.value}</div>
-                  <div className="text-xs text-gray-500 font-semibold leading-tight mt-0.5">{stat.label.split(' ').map((w,i)=><span key={i} className="block">{w}</span>)}</div>
+                  <div className="text-xs text-gray-500 font-semibold leading-tight mt-0.5">{stat.label.split(' ').map((w, i) => <span key={i} className="block">{w}</span>)}</div>
                 </div>
               </div>
             ))}
           </div>
-          
+
           {/* Main Content Area */}
           <div className="max-w-5xl mx-auto mb-20">
             <div className="space-y-6">
-              
+
               {/* Tabs */}
               <div className="flex flex-wrap border-b border-gray-200">
-                <button 
+                <button
                   onClick={() => setActiveTab('published')}
                   className={`flex-1 min-w-[150px] py-4 flex justify-center items-center gap-2 font-bold text-sm transition ${activeTab === 'published' ? 'border-b-2 border-[#8B3E2F] text-[#8B3E2F]' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
                   <FileText className="w-4 h-4" /> Published Posts
                 </button>
-                <button 
+                <button
                   onClick={() => setActiveTab('pending')}
                   className={`flex-1 min-w-[150px] py-4 flex justify-center items-center gap-2 font-bold text-sm transition ${activeTab === 'pending' ? 'border-b-2 border-[#8B3E2F] text-[#8B3E2F]' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
                   <Clock className="w-4 h-4" /> Pending Review
                 </button>
-                <button 
+                <button
                   onClick={() => setActiveTab('rejected')}
                   className={`flex-1 min-w-[150px] py-4 flex justify-center items-center gap-2 font-bold text-sm transition ${activeTab === 'rejected' ? 'border-b-2 border-[#8B3E2F] text-[#8B3E2F]' : 'text-gray-500 hover:bg-gray-50'}`}
                 >
                   <XCircle className="w-4 h-4" /> Rejected Posts
                 </button>
               </div>
-              
+
               <h2 className="text-xl font-bold text-gray-800 pt-2">
                 {activeTab === 'published' && 'Published Posts'}
                 {activeTab === 'pending' && 'Pending Posts'}
                 {activeTab === 'rejected' && 'Rejected Posts'}
               </h2>
-              
-              {activeTab === 'published' && (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {mockPosts.map((post) => (
-                      <div key={post.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col group hover:shadow-md transition">
-                        <div className="h-44 relative overflow-hidden">
-                          <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                          <div className="absolute bottom-3 left-3 bg-[#FFF6E9] text-[#8B3E2F] text-[10px] font-bold px-2 py-1 rounded-md shadow-sm">
-                            {post.category}
-                          </div>
-                          <div className="absolute top-3 right-3 bg-green-50 text-green-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-green-200 shadow-sm">
-                            Published
-                          </div>
+
+              {activePosts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {activePosts.map((post) => (
+                    <div key={post.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col group hover:shadow-md transition">
+                      <div className="h-44 relative overflow-hidden">
+                        <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                        <div className="absolute bottom-3 left-3 bg-[#FFF6E9] text-[#8B3E2F] text-[10px] font-bold px-2 py-1 rounded-md shadow-sm">
+                          {post.category}
                         </div>
-                        <div className="p-5 flex-1 flex flex-col">
-                          <h3 className="font-bold text-gray-900 text-[15px] mb-3 leading-snug">{post.title}</h3>
-                          <div className="flex items-center justify-between text-[11px] text-gray-500 mb-4 mt-auto font-medium">
-                            <span>{post.date}</span>
-                            <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> {post.views}</span>
-                          </div>
-                          <div className="flex justify-between border-t border-gray-100 pt-4">
-                            <button className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 text-xs font-bold transition"><Eye className="w-4 h-4" /> View</button>
-                            <button className="flex items-center gap-1.5 text-red-400 hover:text-red-600 text-xs font-bold transition"><Trash2 className="w-4 h-4" /> Delete</button>
-                          </div>
+                        <div className={`absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm ${post.status === 'published'
+                            ? 'bg-green-50 text-green-700 border-green-200'
+                            : post.status === 'pending'
+                              ? 'bg-amber-50 text-amber-700 border-amber-250'
+                              : 'bg-red-50 text-red-700 border-red-200'
+                          }`}>
+                          {post.status.toUpperCase()}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex justify-center mt-8">
-                    <button className="px-6 py-2.5 border-2 border-[#8B3E2F]/20 text-[#8B3E2F] rounded-full font-bold text-sm hover:bg-[#8B3E2F] hover:text-white transition shadow-sm">
-                      View All Published Posts
-                    </button>
-                  </div>
-                </>
-              )}
-              
-              {activeTab === 'pending' && (
-                <div className="py-12 text-center">
-                  <p className="text-gray-500 font-medium">No pending posts found.</p>
+                      <div className="p-5 flex-1 flex flex-col">
+                        <h3 className="font-bold text-gray-900 text-[15px] mb-3 leading-snug">{post.title}</h3>
+                        <div className="flex items-center justify-between text-[11px] text-gray-500 mb-4 mt-auto font-medium">
+                          <span>{post.date}</span>
+                          <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> {post.views}</span>
+                        </div>
+                        <div className="flex justify-between border-t border-gray-100 pt-4">
+                          <button
+                            onClick={() => {
+                              if (post.type === 'journey') {
+                                navigate(`/tourism/${post.id}`);
+                              } else if (post.type === 'gallery') {
+                                navigate('/gallery');
+                              } else if (post.type === 'culture') {
+                                navigate('/discover');
+                              }
+                            }}
+                            className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 text-xs font-bold transition"
+                          >
+                            <Eye className="w-4 h-4" /> View
+                          </button>
+                          <button
+                            onClick={() => handleDeletePost(post.id)}
+                            className="flex items-center gap-1.5 text-red-400 hover:text-red-600 text-xs font-bold transition"
+                          >
+                            <Trash2 className="w-4 h-4" /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              )}
-              
-              {activeTab === 'rejected' && (
-                <div className="py-12 text-center">
-                  <p className="text-gray-500 font-medium">No rejected posts found.</p>
+              ) : (
+                <div className="py-12 text-center bg-white rounded-2xl border border-gray-100">
+                  <p className="text-gray-500 font-medium">No posts found in this category.</p>
                 </div>
               )}
 
             </div>
-            
+
           </div>
         </Container>
       </div>
-      
+
       <Footer />
 
       {/* Edit Profile Modal Overlay */}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAdminData } from '../../data/AdminContext';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminModal } from '../../components/admin/AdminModal';
-import { AdminInput, AdminSelect, AdminImagePreview } from '../../components/admin/AdminFormField';
+import { AdminInput, AdminSelect, AdminImagePreview, AdminImageUpload } from '../../components/admin/AdminFormField';
 import { AdminDeleteConfirm } from '../../components/admin/AdminDeleteConfirm';
 import type { GalleryItem } from '../../data/galleryData';
 
@@ -29,7 +29,7 @@ const AdminGallery = () => {
   const [formData, setFormData] = useState<Partial<GalleryItem>>(emptyForm);
   const [itemToDelete, setItemToDelete] = useState<GalleryItem | null>(null);
 
-  const filteredData = gallery.filter(item => 
+  const filteredData = gallery.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -134,13 +134,12 @@ const AdminGallery = () => {
             />
           </div>
 
-          <AdminInput
-            label="Image URL"
+          <AdminImageUpload
+            label="Image"
             value={formData.image || ''}
-            onChange={e => setFormData({ ...formData, image: e.target.value })}
+            onChange={val => setFormData({ ...formData, image: val })}
             required
           />
-          <AdminImagePreview url={formData.image || ''} />
 
           <div className="pt-4 flex justify-end gap-3 border-t border-white/10">
             <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-white font-medium hover:bg-white/5 transition-colors">

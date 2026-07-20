@@ -44,12 +44,12 @@ const CATEGORY_OPTIONS = [
 ];
 
 const BIHAR_DISTRICTS = [
-  "Araria","Arwal","Aurangabad","Banka","Begusarai","Bhagalpur","Bhojpur",
-  "Buxar","Darbhanga","East Champaran","Gaya","Gopalganj","Jamui","Jehanabad",
-  "Kaimur","Katihar","Khagaria","Kishanganj","Lakhisarai","Madhepura",
-  "Madhubani","Munger","Muzaffarpur","Nalanda","Nawada","Patna","Purnia",
-  "Rohtas","Saharsa","Samastipur","Saran","Sheikhpura","Sheohar","Sitamarhi",
-  "Siwan","Supaul","Vaishali","West Champaran",
+  "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur",
+  "Buxar", "Darbhanga", "East Champaran", "Gaya", "Gopalganj", "Jamui", "Jehanabad",
+  "Kaimur", "Katihar", "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura",
+  "Madhubani", "Munger", "Muzaffarpur", "Nalanda", "Nawada", "Patna", "Purnia",
+  "Rohtas", "Saharsa", "Samastipur", "Saran", "Sheikhpura", "Sheohar", "Sitamarhi",
+  "Siwan", "Supaul", "Vaishali", "West Champaran",
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -956,22 +956,29 @@ const CreateJourney = () => {
 
       {/* Success Modal */}
       {showSuccessCard && (
-        <div className="fixed inset-0 bg-[#0F3D2E]/80 backdrop-blur-md flex items-center justify-center z-[9999] p-4 font-sans">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md flex items-center justify-center z-[9999] p-4 font-sans">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-[#1A3A2F] border border-[#F4A261]/35 rounded-3xl p-8 max-w-md w-full shadow-2xl relative text-center text-white"
+            className="bg-[#1A3A2F] border border-[#EAB308]/25 rounded-[2rem] p-8 max-w-sm w-full shadow-2xl relative text-center text-white"
           >
-            <div className="w-20 h-20 bg-[#F4A261]/10 rounded-full border border-[#F4A261]/30 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="text-[#F4A261] w-10 h-10 animate-bounce" />
+            <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 text-[#EAB308] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/5">
+              <CheckCircle className="text-[#EAB308] w-10 h-10" />
             </div>
-            <h3 className="font-display font-medium text-2xl mb-3 text-white">Journey Submitted!</h3>
-            <p className="text-white/80 text-sm leading-relaxed mb-8 font-sans">
-              Your custom journey itinerary has been submitted. It is currently in a <span className="text-yellow-400 font-bold">Pending</span> status and will be visible to everyone once approved by an administrator.
+            <h3 className="font-display text-3xl font-bold text-white mb-4">
+              Submission <span className="text-[#EAB308]">Successful!</span>
+            </h3>
+            <div className="heritage-divider mb-6">
+              <span className="divider-line text-white/20"></span>
+              <span className="divider-motif text-[#EAB308]">✦</span>
+              <span className="divider-line text-white/20"></span>
+            </div>
+            <p className="text-white/70 text-sm leading-relaxed mb-8">
+              Your custom journey itinerary has been submitted and is currently <strong>Pending Admin Approval</strong>. It will be visible to everyone once approved by an administrator.
             </p>
             <button
               onClick={() => { setShowSuccessCard(false); navigate("/tourism"); }}
-              className="w-full bg-[#F4A261] hover:bg-[#E5914F] text-black font-bold py-3 px-6 rounded-xl transition-all duration-300 font-sans shadow-lg hover:shadow-xl"
+              className="w-full py-3.5 bg-[#EAB308] hover:bg-[#EAB308]/90 text-black font-extrabold rounded-xl transition-all cursor-pointer uppercase tracking-wider text-xs shadow-lg hover:scale-105 duration-300"
             >
               Continue to Tourism Page
             </button>

@@ -2,9 +2,22 @@ import { prisma as db } from '../../db';
 import { CreateProductInput } from './marketplace.validation';
 import { AppError } from '../../errors/AppError';
 
-export const getAllProducts = async (category?: string) => {
+export const getAllProducts = async (category?: string, status?: string) => {
+  const whereClause: any = {};
+  if (category) {
+    whereClause.category = category;
+  }
+  if (status) {
+    const upperStatus = status.toUpperCase();
+    if (upperStatus !== 'ALL') {
+      whereClause.status = upperStatus;
+    }
+  } else {
+    whereClause.status = 'APPROVED';
+  }
+
   return db.marketplaceProduct.findMany({
-    where: category ? { category } : undefined,
+    where: whereClause,
     orderBy: { createdAt: 'desc' }
   });
 };
@@ -15,15 +28,31 @@ export const getProductById = async (id: string) => {
   return product;
 };
 
-export const createProduct = async (data: CreateProductInput) => {
+export const createProduct = async (data: CreateProductInput & { status?: any }) => {
   return db.marketplaceProduct.create({ data });
 };
 
-export const updateProduct = async (id: string, data: Partial<CreateProductInput>) => {
+export const updateProduct = async (id: string, data: Partial<CreateProductInput> & { status?: any }) => {
   await getProductById(id);
   return db.marketplaceProduct.update({
     where: { id },
     data,
+  });
+};
+
+export const approveProduct = async (id: string) => {
+  await getProductById(id);
+  return db.marketplaceProduct.update({
+    where: { id },
+    data: { status: 'APPROVED' },
+  });
+};
+
+export const rejectProduct = async (id: string) => {
+  await getProductById(id);
+  return db.marketplaceProduct.update({
+    where: { id },
+    data: { status: 'REJECTED' },
   });
 };
 

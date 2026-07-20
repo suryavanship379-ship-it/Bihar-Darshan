@@ -4,6 +4,10 @@ import { AppError } from '../../errors/AppError';
 
 export const getAllDistricts = async () => {
   return db.district.findMany({
+    include: {
+      seasonalVisits: true,
+      topAttractions: true,
+    },
     orderBy: { name: 'asc' },
   });
 };
@@ -46,23 +50,63 @@ export const createDistrict = async (data: CreateDistrictInput) => {
 
 export const updateDistrict = async (id: string, data: UpdateDistrictInput) => {
   const { seasonalVisits, topAttractions, ...districtData } = data;
-  
+
   // Verify existence
   await getDistrictById(id);
 
-  // Simplified update: we won't handle complex nested updates for seasonalVisits/topAttractions here 
-  // for brevity, usually we delete and recreate or use a dedicated endpoint. 
-  // We'll just update the main district fields.
-  const updated = await db.district.update({
-    where: { id },
-    data: districtData,
-    include: {
-      seasonalVisits: true,
-      topAttractions: true,
-    }
-  });
+  return db.$transaction(async (tx) => {
+    // 1. Update main district columns
+    await tx.district.update({
+      where: { id },
+      data: districtData,
+    });
 
-  return updated;
+    // 2. Re-create seasonalVisits if provided
+    if (seasonalVisits) {
+      await tx.seasonRow.deleteMany({
+        where: { districtId: id },
+      });
+      if (seasonalVisits.length > 0) {
+        await tx.seasonRow.createMany({
+          data: seasonalVisits.map((sv) => ({
+            season: sv.season,
+            months: sv.months,
+            weather: sv.weather,
+            whyVisit: sv.whyVisit,
+            districtId: id,
+          })),
+        });
+      }
+    }
+
+    // 3. Re-create topAttractions if provided
+    if (topAttractions) {
+      await tx.topAttraction.deleteMany({
+        where: { districtId: id },
+      });
+      if (topAttractions.length > 0) {
+        await tx.topAttraction.createMany({
+          data: topAttractions.map((ta) => ({
+            name: ta.name,
+            image: ta.image,
+            description: ta.description,
+            shortDescription: ta.shortDescription || ta.description.slice(0, 100),
+            rating: ta.rating || 4.5,
+            bestTime: ta.bestTime || 'Throughout the year',
+            districtId: id,
+          })),
+        });
+      }
+    }
+
+    return tx.district.findUniqueOrThrow({
+      where: { id },
+      include: {
+        seasonalVisits: true,
+        topAttractions: true,
+      },
+    });
+  });
 };
 
 export const deleteDistrict = async (id: string) => {

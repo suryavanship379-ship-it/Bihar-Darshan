@@ -23,7 +23,7 @@ import type { Community } from './communityData';
 import { auth } from '../lib/firebase';
 
 export interface ProductItem {
-  id: number;
+  id: string | number;
   businessName: string;
   productName: string;
   category: string;
@@ -35,6 +35,7 @@ export interface ProductItem {
   mapLink?: string;
   contact?: string;
   email?: string;
+  status?: string;
 }
 
 interface ContributionContextValue {
@@ -50,8 +51,9 @@ interface ContributionContextValue {
   addJourneySubmission: (submission: any) => void;
   updateJourneySubmission: (id: string, submission: any) => Promise<void>;
   addCommunitySubmission: (submission: Omit<Community, 'id' | 'members' | 'posts' | 'online' | 'verified' | 'createdOn'>) => void;
-  addProductSubmission: (submission: Omit<ProductItem, 'id'>) => void;
+  addProductSubmission: (submission: Omit<ProductItem, 'id'>) => Promise<void>;
   refreshJourneys: () => Promise<void>;
+  refreshProducts: () => Promise<void>;
 }
 
 const ContributionContext = createContext<ContributionContextValue>({
@@ -67,8 +69,9 @@ const ContributionContext = createContext<ContributionContextValue>({
   addJourneySubmission: () => { },
   updateJourneySubmission: async () => { },
   addCommunitySubmission: () => { },
-  addProductSubmission: () => { },
+  addProductSubmission: async () => { },
   refreshJourneys: async () => { },
+  refreshProducts: async () => { },
 });
 
 export const ContributionProvider = ({ children }: { children: React.ReactNode }) => {
@@ -151,6 +154,19 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  const fetchApprovedProducts = useCallback(async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/marketplace');
+      const result = await res.json();
+      if (result.success && result.data && result.data.products) {
+        setProductSubmissions(result.data.products);
+      }
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+      setProductSubmissions([]);
+    }
+  }, []);
+
   // Load submissions from localStorage on mount
   useEffect(() => {
     try {
@@ -167,8 +183,8 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
       const storedCommunities = localStorage.getItem('bihar_community_submissions');
       if (storedCommunities) setCommunitySubmissions(JSON.parse(storedCommunities));
 
-      const storedProducts = localStorage.getItem('bihar_product_submissions');
-      if (storedProducts) setProductSubmissions(JSON.parse(storedProducts));
+      localStorage.removeItem('bihar_product_submissions');
+      fetchApprovedProducts();
 
       // Clear old local storage to prevent conflicts with the new API
       localStorage.removeItem('bihar_community_submissions');
@@ -414,21 +430,42 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  const addProductSubmission = useCallback((submission: Omit<ProductItem, 'id'>) => {
-    setProductSubmissions((prev) => {
-      const newItem: ProductItem = {
+  const addProductSubmission = useCallback(async (submission: Omit<ProductItem, 'id'>) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Must be logged in to submit a product");
+
+      const token = await user.getIdToken();
+
+      // Clean optional fields: empty string to null to pass backend Zod validation
+      const cleanSubmission = {
         ...submission,
-        id: Date.now(),
+        email: submission.email?.trim() || null,
+        website: submission.website?.trim() || null,
+        mapLink: submission.mapLink?.trim() || null,
+        address: submission.address?.trim() || null,
+        contact: submission.contact?.trim() || null,
       };
-      const updated = [newItem, ...prev];
-      try {
-        localStorage.setItem('bihar_product_submissions', JSON.stringify(updated));
-      } catch (error) {
-        console.error('Failed to save:', error);
+
+      const response = await fetch('http://localhost:5000/api/v1/marketplace', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(cleanSubmission)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create product: ${await response.text()}`);
       }
-      return updated;
-    });
-  }, []);
+
+      await fetchApprovedProducts();
+    } catch (error) {
+      console.error('Failed to submit product to backend:', error);
+      throw error;
+    }
+  }, [fetchApprovedProducts]);
 
   return (
     <ContributionContext.Provider
@@ -447,6 +484,7 @@ export const ContributionProvider = ({ children }: { children: React.ReactNode }
         addCommunitySubmission,
         addProductSubmission,
         refreshJourneys: fetchApprovedJourneys,
+        refreshProducts: fetchApprovedProducts,
       }}
     >
       {children}

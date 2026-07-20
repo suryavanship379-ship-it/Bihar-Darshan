@@ -13,19 +13,14 @@ const ProductDetails = () => {
   const { id } = useParams();
   const { productSubmissions } = useContributions();
 
-  const productId = useMemo(() => {
-    if (!id) return NaN;
-    return Number(id);
-  }, [id]);
-
   const allProducts = useMemo(() => {
     return [...productSubmissions, ...initialProducts];
   }, [productSubmissions]);
 
-  const selectedProduct = useMemo(
-    () => allProducts.find((item) => item.id === productId),
-    [productId, allProducts]
-  );
+  const selectedProduct = useMemo(() => {
+    if (!id) return undefined;
+    return allProducts.find((item) => String(item.id) === String(id));
+  }, [id, allProducts]);
 
   const [selectedImage, setSelectedImage] = useState<string>("");
 
@@ -83,7 +78,7 @@ const ProductDetails = () => {
               {/* Gallery */}
               {galleryImages.length > 0 && (
                 <div className="flex gap-4 mt-6 flex-wrap">
-                  {galleryImages.map((img, index) => (
+                  {galleryImages.map((img: string, index: number) => (
                     <img
                       key={index}
                       src={img}
@@ -184,16 +179,16 @@ const ProductDetails = () => {
               </div>
 
               <div className="pt-2">
-  <a
-    href={selectedProduct.mapLink}
-    target="_blank"
-    rel="noreferrer"
-    className="w-full flex items-center justify-center gap-2 bg-brand-gold text-brand-dark font-semibold py-3 rounded-xl hover:brightness-110 transition-all duration-300 shadow-md"
-  >
-    <MapPin size={20} />
-    View on Map
-  </a>
-</div>
+                <a
+                  href={selectedProduct.mapLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full flex items-center justify-center gap-2 bg-brand-gold text-brand-dark font-semibold py-3 rounded-xl hover:brightness-110 transition-all duration-300 shadow-md"
+                >
+                  <MapPin size={20} />
+                  View on Map
+                </a>
+              </div>
 
 
 

@@ -4,7 +4,8 @@ export type CategoryOption =
   | 'Culture'
   | 'Food'
   | 'Photography'
-  | 'History';
+  | 'History'
+  | 'Others';
 
 const primaryCategories: { label: CategoryOption }[] = [
   { label: 'All Categories' },
@@ -13,6 +14,7 @@ const primaryCategories: { label: CategoryOption }[] = [
   { label: 'Food' },
   { label: 'Photography' },
   { label: 'History' },
+  { label: 'Others' },
 ];
 
 interface CategoryFilterProps {
@@ -30,8 +32,8 @@ const CategoryFilter = ({ active, onChange }: CategoryFilterProps) => {
             key={label}
             onClick={() => onChange(label)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap ${isActive
-                ? 'bg-brand-gold text-black shadow-md shadow-brand-gold/30'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-gold hover:text-accent-brown'
+              ? 'bg-brand-gold text-black shadow-md shadow-brand-gold/30'
+              : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-gold hover:text-accent-brown'
               }`}
           >
             {label}

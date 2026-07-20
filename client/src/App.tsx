@@ -35,6 +35,7 @@ import AdminCommunity from './pages/admin/AdminCommunity';
 import AdminMarketplace from './pages/admin/AdminMarketplace';
 import AdminTribes from './pages/admin/AdminTribes';
 import AdminPersonalities from './pages/admin/AdminPersonalities';
+import AdminPopularPlaces from './pages/admin/AdminPopularPlaces';
 import AdminSettings from './pages/admin/AdminSettings';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import FloatingSocials from './components/shared/FloatingSocials';
@@ -118,6 +119,7 @@ function App() {
               <Route path="marketplace" element={<AdminMarketplace />} />
               <Route path="tribes" element={<AdminTribes />} />
               <Route path="personalities" element={<AdminPersonalities />} />
+              <Route path="places" element={<AdminPopularPlaces />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Route>

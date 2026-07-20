@@ -381,6 +381,7 @@ exports.Prisma.MarketplaceProductScalarFieldEnum = {
   mapLink: 'mapLink',
   contact: 'contact',
   email: 'email',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { SelectHTMLAttributes, TextareaHTMLAttributes, InputHTMLAttributes } from 'react';
+import { Upload } from 'lucide-react';
 
 interface AdminFormFieldProps {
   label: string;
@@ -46,6 +48,94 @@ export const AdminImagePreview = ({ url, alt = "Preview" }: { url: string, alt?:
   return (
     <div className="mt-2 rounded-xl border border-white/10 overflow-hidden bg-white/5 relative aspect-video w-full max-w-sm">
       <img src={url} alt={alt} className="w-full h-full object-cover" />
+    </div>
+  );
+};
+
+interface AdminImageUploadProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+}
+
+export const AdminImageUpload = ({ label, value, onChange, required = false }: AdminImageUploadProps) => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-1.5 w-full">
+      <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">{label}</label>
+
+      <div
+        className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-4 transition-all cursor-pointer min-h-[140px] ${isDragging
+            ? 'border-[#EAB308] bg-[#EAB308]/10'
+            : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20'
+          }`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              onChange(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+          }
+        }}
+        onClick={() => {
+          const inputId = `file-input-${label.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}`;
+          document.getElementById(inputId)?.click();
+        }}
+      >
+        <input
+          id={`file-input-${label.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}`}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files && e.target.files[0]) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                onChange(reader.result as string);
+              };
+              reader.readAsDataURL(e.target.files[0]);
+            }
+          }}
+        />
+        {value ? (
+          <div className="relative w-full aspect-video max-h-[160px] rounded-lg overflow-hidden group/img flex items-center justify-center bg-[#07070b]">
+            <img src={value} alt={label} className="max-w-full max-h-full object-contain" />
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity">
+              <p className="text-white text-xs font-semibold flex items-center gap-1.5">
+                <Upload size={14} /> Drag image or click to replace
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-2">
+            <Upload size={20} className="text-white/40 mx-auto mb-2" />
+            <p className="text-xs font-semibold text-white">Drag & drop image here</p>
+            <p className="text-[10px] text-white/40 mt-0.5">or click to browse files from system</p>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-1" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="text"
+          placeholder={`Or paste ${label.toLowerCase()} URL or relative path...`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required={required && !value}
+          className="w-full bg-white/[0.02] border border-white/10 rounded-xl px-4 py-2 text-white text-xs focus:outline-none focus:border-[#EAB308]/50 focus:ring-1 focus:ring-[#EAB308]/50"
+        />
+      </div>
     </div>
   );
 };

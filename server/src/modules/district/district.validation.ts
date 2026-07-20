@@ -9,7 +9,7 @@ export const seasonRowSchema = z.object({
 
 export const topAttractionSchema = z.object({
   name: z.string().min(1),
-  image: z.string().url(),
+  image: z.string().min(1, 'Image path or URL is required'),
   description: z.string().min(1),
   shortDescription: z.string().optional().nullable(),
   rating: z.number().min(0).max(5).optional().nullable(),
@@ -18,7 +18,7 @@ export const topAttractionSchema = z.object({
 
 export const createDistrictSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  image: z.string().url('Image must be a valid URL'),
+  image: z.string().min(1, 'Image path or URL is required'),
   tagline: z.string().optional().nullable(),
   introduction: z.string().optional().nullable(),
   richHistory: z.string().optional().nullable(),
@@ -28,7 +28,7 @@ export const createDistrictSchema = z.object({
   howToReachRail: z.string().optional().nullable(),
   howToReachRoad: z.string().optional().nullable(),
   whyInTouristList: z.array(z.string()).optional().default([]),
-  
+
   seasonalVisits: z.array(seasonRowSchema).optional().default([]),
   topAttractions: z.array(topAttractionSchema).optional().default([]),
 });
